@@ -6,10 +6,11 @@
 **/
 app.controller('ApplicationController', function ($scope) {
     $scope.nav = [
-        {name: 'Home', path:'/'},
-        {name: 'About', path: '/about.html'},
-        {name: 'Sponsor',path: '/sponsor.html'},
-        {name: 'Join', path: '/join.html'},
-        {name: 'Contact',path: '/contact.html'}
+        {name: 'About', path: '/about'},
+        {name: 'SIGs', path: '/sigs'}
+        {name: 'Events', path: '/events'},
+        {name: 'Reflections|Projections', path: '/confrence'},
+        {name: 'Sponsor',path: '/sponsor'},
+        {name: 'Join', path: '/join'},
     ];
 });
