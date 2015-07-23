@@ -3,19 +3,25 @@
   </head>
   <body ng-controller="ApplicationController">
 
+      <div id="nav-container">
+          <ul class="main-nav" ng-repeat="link in nav">
+              <li class="page">
+                  <a href="{{link.path}}">
+                      {{link.name}}
+                  </a>
+             </li>
+          </ul>
+      </div>
       <!--note for me: partials are backwards in Angualar-->
       <div ng-view>
       </div>
 
-      <div ng-repeat="link in nav">
-          {{link.name}}
-      </div>
 
   </body>
   <footer>
     <!-- load in footer -->
     <script src="lib/angular-1.4.3/angular.min.js"></script>
-    <script src="lib/angular-1.4.3/angular-route.min.js"></script>    
+    <script src="lib/angular-1.4.3/angular-route.min.js"></script>
     <script src="lib/jquery-2.1.4.min.js"></script>
     <script src="js/app.js"></script>
     <script src="js/app.ctrl.js"></script>
