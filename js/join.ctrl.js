@@ -6,4 +6,8 @@
 **/
 app.controller('JoinController', function ($scope){
     // contact groot-users service from form handler
+    $scope.addMember = function () {
+        console.log("Welcome " + $scope.newMember.firstName + " " + $scope.newMember.lastName + ".");
+        console.log("You have NetID " + $scope.newMember.netid + " and UIN " + $scope.newMember.uin);
+    }
 });

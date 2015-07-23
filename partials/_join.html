@@ -25,25 +25,25 @@
     <div class="field-group required">
         <label class="field-label" for="id_first_name">First Name</label>
         <div class="field">
-            <input id="first_name" type="text" name="first_name" maxlength="32" />
+            <input id="first_name" type="text" name="first_name" maxlength="32" ng-model="newMember.firstName"/>
         </div>
     </div>
     <div class="field-group required">
         <label class="field-label" for="last_name">Last Name</label>
         <div class="field">
-            <input id="last_name" type="text" name="last_name" maxlength="32" />
+            <input id="last_name" type="text" name="last_name" maxlength="32" ng-model="newMember.lastName" />
         </div>
     </div>
     <div class="field-group required">
         <label class="field-label" for="netid">NetID</label>
         <div class="field">
-            <input id="netid" type="text" name="netid" maxlength="15" />
+            <input id="netid" type="text" name="netid" maxlength="15" ng-model="newMember.netid"/>
         </div>
     </div>
     <div class="field-group required">
         <label class="field-label" for="uin">UIN</label>
         <div class="field">
-            <input id="uin" type="text" name="uin" maxlength="9" />
+            <input id="uin" type="text" name="uin" maxlength="9" ng-model="newMember.uin"/>
         </div>
     </div>
     <p>Lifetime Membership $40</p>
@@ -63,7 +63,7 @@
    </div>
    <div class="control-group">
      <div class="controls">
-       <button type="submit" class="btn btn-primary">Join</button>
+       <button type="submit" class="btn btn-primary" ng-click="addMember()">Join</button>
      </div>
    </div>
  </form>
