@@ -4,6 +4,7 @@
     - Interfaces with the GROOT API GATEWAY
 **/
 app.controller('SIGController', function ($scope){
-    // uses groot to load a list of SIGS,
-    // will be hard coded for now 
+    // uses groot-sigs service to list,
+    // perhaps easy joins of SIGs would need to contact users/sigs to validate new member 
+    // will be hard coded for now
 });
