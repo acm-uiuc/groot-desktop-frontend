@@ -1,3 +1,9 @@
+/** ApplicationController
+    Responsible for application level activites
+    - navigation
+    - header and footer
+    DO NOT PUT ANY CONTENT CONTROLLING CODE HERE
+**/
 app.controller('ApplicationController', function ($scope) {
     $scope.nav = [
         {name: 'Home', path:'/'},
