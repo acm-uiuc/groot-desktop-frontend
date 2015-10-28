@@ -1,35 +1,40 @@
 <html ng-app="grootDesktop">
   <head>
+      <!-- Meta Info -->
+      <meta charset="utf-8">
+      <title>Welcome to ACM@UIUC</title>
+      <meta name="author" content="">
+      <meta name="description" content="The Official Website of ACM@UIUC">
+      <meta name="viewport" content="width=device-width">
 
+      <!-- CSS -->
+      <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css"/>
   </head>
-  <body ng-controller="ApplicationController">
-
-      <div id="nav-container">
-          <ul class="main-nav" ng-repeat="link in nav">
-              <li class="page">
+  <body >
+      <!-- Nav -->
+      <div id="nav-container" ng-controller="NavCtrl">
+          <ul class="main-nav">
+              <li class="page" ng-repeat="link in nav">
                   <a href="{{link.path}}">
                       {{link.name}}
                   </a>
              </li>
           </ul>
       </div>
-      <!--note for Naren: partials are backwards in Angualar-->
-      <div ng-view="">
-      </div>
 
+      <!-- Main View -->
+      <div ng-view></div>
 
+      <!-- Scripts -->
+      <script src="lib/angular-1.4.3/angular.min.js"></script>
+      <script src="lib/angular-1.4.3/angular-route.min.js"></script>
+      <script src="lib/jquery-2.1.4.min.js"></script>
+      <script src="js/app.js"></script>
+      <script src="js/app.ctrl.js"></script>
+      <script src="js/home.ctrl.js"></script>
+      <script src="js/join.ctrl.js"></script>
+      <script src="js/sig.ctrl.js"></script>
+      <script src="js/sponsor.ctrl.js"></script>
+      <script src="js/events.ctrl.js"></script>
   </body>
-  <footer>
-    <!-- load in footer -->
-    <script src="lib/angular-1.4.3/angular.min.js"></script>
-    <script src="lib/angular-1.4.3/angular-route.min.js"></script>
-    <script src="lib/jquery-2.1.4.min.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/app.ctrl.js"></script>
-    <script src="js/home.ctrl.js"></script>
-    <script src="js/join.ctrl.js"></script>
-    <script src="js/sig.ctrl.js"></script>
-    <script src="js/sponsor.ctrl.js"></script>
-    <script src="js/events.ctrl.js"></script>
-  </footer>
 </html>

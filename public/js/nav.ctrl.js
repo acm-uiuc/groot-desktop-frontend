@@ -4,7 +4,7 @@
     - header and footer
     DO NOT PUT ANY CONTENT CONTROLLING CODE HERE
 **/
-app.controller('ApplicationController', function ($scope) {
+app.controller('NavCtrl', function ($scope) {
     $scope.nav = [
         {name: 'About', path: '#/about'},
         {name: 'SIGs', path: '#/sigs'},

@@ -13,3 +13,4 @@ app.use(express.static(__dirname + '/public'));
 
 //Start server
 app.listen(PORT);
+console.log('Groot is live on port ' + PORT + "!");

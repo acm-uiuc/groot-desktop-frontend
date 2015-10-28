@@ -5,40 +5,35 @@ var app = angular.module('grootDesktop',['ngRoute']);
 //Internal and Sign in are not necessary yet but when add two controllers and routes
 app.config(function ($routeProvider) {
     $routeProvider
-        .when('/',
-        {
+        .when('/', {
             controller: "HomeController",
             templateUrl: "partials/_home.html"
         })
-        .when('/about',
-        {
+        .when('/about', {
             controller: "HomeController",
             templateUrl: "partials/_about.html"
         })
-        .when('/join',
-        {
+        .when('/join', {
             controller: "JoinController",
             templateUrl: "partials/_join.html"
         })
-        .when('/events',
-        {
+        .when('/events', {
             controller: "EventsController",
             templateUrl: "partials/_events.html"
         })
-        .when('/sigs',
-        {
+        .when('/sigs', {
             controller: "SIGController",
             templateUrl: "partials/_sig.html"
         })
-        .when('/conference',
-        {
+        .when('/conference', {
             controller: "HomeController",
             templateUrl: "partials/_conference.html"
         })
-        .when('/sponsor',
-        {
+        .when('/sponsor', {
             controller: "sponsorController",
             templateUrl: "partials/_sponsor.html"
         })
-        .otherwise({ redirectTo: '/' });
+        .otherwise({
+            redirectTo: '/'
+        });
 })
