@@ -9,7 +9,7 @@ app.controller('NavCtrl', function ($scope) {
         {name: 'About', path: '#/about'},
         {name: 'SIGs', path: '#/sigs'},
         {name: 'Events', path: '#/events'},
-        {name: 'Reflections|Projections', path: '#/confrence'},
+        {name: 'Reflections|Projections', path: '#/conference'},
         {name: 'Sponsor',path: '#/sponsor'},
         {name: 'Join', path: '#/join'}
     ];

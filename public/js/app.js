@@ -1,10 +1,7 @@
 //Declare app grootDesktop
 var app = angular.module('grootDesktop',['ngRoute']);
 
-//config routes
-//Internal and Sign in are not necessary yet but when add two controllers and routes
 app.config(function ($routeProvider) {
-
     $routeProvider
         .when('/', {
             controller: "HomeCtrl",

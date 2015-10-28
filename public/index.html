@@ -11,20 +11,25 @@
         <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="css/main.css"/>
     </head>
-    <body >
-      <!-- Nav -->
-      <div ng-controller="NavCtrl">
-          <ul>
-              <li ng-repeat="link in nav">
-                  <a href="{{link.path}}">
-                      {{link.name}}
-                  </a>
-             </li>
-          </ul>
-      </div>
+    <body>
 
-      <!-- Main View -->
-      <div ng-view></div>
+    <div class="container-fluid">
+        <div class="row row-centered">
+            <!-- Nav -->
+            <div ng-controller="NavCtrl">
+                <ul class="nav nav-pills">
+                    <li ng-repeat="link in nav">
+                        <a href="{{link.path}}">
+                            {{link.name}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main View -->
+            <div class="col-md-8 col-centered main-view" ng-view></div>
+        </div>
+    </div>
 
       <!-- Scripts -->
       <script src="lib/angular-1.4.3/angular.min.js"></script>
