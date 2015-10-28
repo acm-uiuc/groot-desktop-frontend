@@ -1,0 +1,13 @@
+{
+  "name": "acm-groot",
+  "version": "0.0.1",
+  "description": "The Official ACM@UIUC Website",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/acm-uiuc/groot-desktop-frontend.git"
+  },
+  "dependencies": {
+    "express": "latest",
+    "forever": "latest"
+  }
+}

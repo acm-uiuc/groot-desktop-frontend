@@ -30,7 +30,7 @@ app.config(function ($routeProvider) {
             controller: "SIGController",
             templateUrl: "partials/_sig.html"
         })
-        .when('/confrence',
+        .when('/conference',
         {
             controller: "HomeController",
             templateUrl: "partials/_conference.html"
