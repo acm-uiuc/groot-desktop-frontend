@@ -7,31 +7,31 @@ app.config(function ($routeProvider) {
     $routeProvider
         .when('/', {
             controller: "HomeController",
-            templateUrl: "partials/_home.html"
+            templateUrl: "partials/home.html"
         })
         .when('/about', {
             controller: "HomeController",
-            templateUrl: "partials/_about.html"
+            templateUrl: "partials/about.html"
         })
         .when('/join', {
-            controller: "JoinController",
-            templateUrl: "partials/_join.html"
+            controller: "JoinCtrl",
+            templateUrl: "partials/join.html"
         })
         .when('/events', {
-            controller: "EventsController",
-            templateUrl: "partials/_events.html"
+            controller: "EventsCtrl",
+            templateUrl: "partials/events.html"
         })
         .when('/sigs', {
-            controller: "SIGController",
-            templateUrl: "partials/_sig.html"
+            controller: "SIGCtrl",
+            templateUrl: "partials/sigs.html"
         })
         .when('/conference', {
-            controller: "HomeController",
-            templateUrl: "partials/_conference.html"
+            controller: "ConferenceCtrl",
+            templateUrl: "partials/conference.html"
         })
         .when('/sponsor', {
-            controller: "sponsorController",
-            templateUrl: "partials/_sponsor.html"
+            controller: "SponsorCtrl",
+            templateUrl: "partials/sponsor.html"
         })
         .otherwise({
             redirectTo: '/'
