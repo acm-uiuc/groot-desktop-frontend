@@ -4,7 +4,7 @@
     - Provides form validation for input
     - Interfaces with the GROOT API GATEWAY
 **/
-app.controller('JoinController', function ($scope){
+app.controller('JoinCtrl', function ($scope){
     // contact groot-users service from form handler
     $scope.addMember = function () {
         console.log("Welcome " + $scope.newMember.firstName + " " + $scope.newMember.lastName + ".");

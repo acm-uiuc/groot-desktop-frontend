@@ -1,20 +1,21 @@
 <html ng-app="grootDesktop">
-  <head>
-      <!-- Meta Info -->
-      <meta charset="utf-8">
-      <title>Welcome to ACM@UIUC</title>
-      <meta name="author" content="">
-      <meta name="description" content="The Official Website of ACM@UIUC">
-      <meta name="viewport" content="width=device-width">
+    <head>
+        <!-- Meta Info -->
+        <meta charset="utf-8">
+        <title>Welcome to ACM@UIUC</title>
+        <meta name="author" content="">
+        <meta name="description" content="The Official Website of ACM@UIUC">
+        <meta name="viewport" content="width=device-width">
 
-      <!-- CSS -->
-      <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css"/>
-  </head>
-  <body >
+        <!-- CSS -->
+        <link rel="stylesheet" href="lib/bootstrap-3.3.5/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/main.css"/>
+    </head>
+    <body >
       <!-- Nav -->
-      <div id="nav-container" ng-controller="NavCtrl">
-          <ul class="main-nav">
-              <li class="page" ng-repeat="link in nav">
+      <div ng-controller="NavCtrl">
+          <ul>
+              <li ng-repeat="link in nav">
                   <a href="{{link.path}}">
                       {{link.name}}
                   </a>
@@ -30,11 +31,33 @@
       <script src="lib/angular-1.4.3/angular-route.min.js"></script>
       <script src="lib/jquery-2.1.4.min.js"></script>
       <script src="js/app.js"></script>
-      <script src="js/app.ctrl.js"></script>
+      <script src="js/nav.ctrl.js"></script>
       <script src="js/home.ctrl.js"></script>
       <script src="js/join.ctrl.js"></script>
       <script src="js/sig.ctrl.js"></script>
       <script src="js/sponsor.ctrl.js"></script>
       <script src="js/events.ctrl.js"></script>
-  </body>
+
+      <!-- Analyatics -->
+      <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-30929649-1']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+      </script>
+    </body>
+    <footer>
+      ACM@UIUC |
+      <a href="tel:12173335828">(217)-333-5828</a> |
+      <a href="mailto:acm@illinois.edu">acm@illinois.edu</a> |
+      Ste. 1104 Thomas M. Siebel Center for Computer Science, 201 N. Goodwin Ave. Urbana, IL 61801 |
+      <a class="icon ion-social-github footer-icon" href="http://github.com/acm-uiuc/"></a>
+      <a class="icon ion-social-twitter footer-icon" href="https://twitter.com/acmuiuc"></a>
+      <a class="icon ion-social-facebook footer-icon" href="https://www.facebook.com/acmuiuc"></a>
+    </footer>
 </html>

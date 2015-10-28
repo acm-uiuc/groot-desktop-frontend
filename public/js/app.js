@@ -3,14 +3,17 @@ var app = angular.module('grootDesktop',['ngRoute']);
 
 //config routes
 //Internal and Sign in are not necessary yet but when add two controllers and routes
-app.config(function ($routeProvider) {
+app.config(function ($routeProvider, $locationProvider) {
+
+    // Set up pretty URLs to remove #
+    $locationProvider.html5Mode({enabled:true});
+
     $routeProvider
         .when('/', {
-            controller: "HomeController",
+            controller: "HomeCtrl",
             templateUrl: "partials/home.html"
         })
         .when('/about', {
-            controller: "HomeController",
             templateUrl: "partials/about.html"
         })
         .when('/join', {
@@ -26,7 +29,6 @@ app.config(function ($routeProvider) {
             templateUrl: "partials/sigs.html"
         })
         .when('/conference', {
-            controller: "ConferenceCtrl",
             templateUrl: "partials/conference.html"
         })
         .when('/sponsor', {
