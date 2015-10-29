@@ -7,7 +7,7 @@
     "url": "https://github.com/acm-uiuc/groot-desktop-frontend.git"
   },
   "dependencies": {
-    "express": "latest",
-    "forever": "latest"
+    "express": "4.13.x",
+    "forever": "0.15.x"
   }
 }
