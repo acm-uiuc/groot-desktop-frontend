@@ -1,69 +1,70 @@
 <html ng-app="grootDesktop">
-    <head>
-        <!-- Meta Info -->
-        <meta charset="utf-8">
-        <title>Welcome to ACM@UIUC</title>
-        <meta name="author" content="">
-        <meta name="description" content="The Official Website of ACM@UIUC">
-        <meta name="viewport" content="width=device-width">
 
-        <!-- CSS -->
-        <link rel="stylesheet"
-              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
-              integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
-              crossorigin="anonymous">
-        <link rel="stylesheet" href="css/main.css"/>
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row row-centered">
-                <!-- Nav -->
-                <div ng-controller="NavCtrl">
-                    <ul class="nav nav-pills">
-                        <li ng-repeat="link in nav">
-                            <a href="{{link.path}}">
-                                {{link.name}}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+<head>
+  <!-- Meta Info -->
+  <meta charset="utf-8">
+  <title>Welcome to ACM@UIUC</title>
+  <meta name="author" content="">
+  <meta name="description" content="The Official Website of ACM@UIUC">
+  <meta name="viewport" content="width=device-width">
 
-                <!-- Main View -->
-                <div class="col-md-8 col-centered main-view" ng-view></div>
-            </div>
-        </div>
+  <!-- CSS -->
+  <link rel="stylesheet" href="lib/foundation-6/css/foundation.css">
+  <link rel="stylesheet" href="css/main.css" />
+</head>
 
-        <!-- Scripts -->
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
-              integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ=="
-              crossorigin="anonymous"></script>
+<body>
+  <div>
+    <div class="top-bar" ng-controller="NavCtrl">
+      <div class="top-bar-left">
+        <ul class="dropdown menu" data-dropdown-menu>
+          <li class="menu-text">ACM @ UIUC</li>
+          <li ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
+        </ul>
+      </div>
+      <div class="top-bar-right">
+        <ul class="menu">
+          <li>
+            <button type="button" class="button">Login</button>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-        <!-- Minified Angular Scripts -->
-        <!-- NOTE: For development purposes, use full version of angular instead of minified version
+    <!-- Main View -->
+    <div class="" ng-view></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="lib/jquery-2.1.4.min.js"></script>
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="lib/foundation-6/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+
+  <!-- Minified Angular Scripts -->
+  <!-- NOTE: For development purposes, use full version of angular instead of minified version
             for easier debugging -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.1/angular-route.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0-beta.1/angular.min.js"></script>
+  <script src="lib/angular-1.4.3/angular.min.js"></script>
+  <script src="lib/angular-1.4.3/angular-route.min.js"></script>
 
+  <script src="js/app.js"></script>
+  <script src="js/nav.ctrl.js"></script>
+  <script src="js/home.ctrl.js"></script>
+  <script src="js/join.ctrl.js"></script>
+  <script src="js/sig.ctrl.js"></script>
+  <script src="js/sponsor.ctrl.js"></script>
+  <script src="js/events.ctrl.js"></script>
+</body>
+<footer>
+  ACM@UIUC |
+  <a href="tel:12173335828">(217)-333-5828</a> |
+  <a href="mailto:acm@illinois.edu">acm@illinois.edu</a> | Ste. 1104 Thomas M. Siebel Center for Computer Science, 201 N. Goodwin Ave. Urbana, IL 61801 |
+  <a class="icon ion-social-github footer-icon" href="http://github.com/acm-uiuc/"></a>
+  <a class="icon ion-social-twitter footer-icon" href="https://twitter.com/acmuiuc"></a>
+  <a class="icon ion-social-facebook footer-icon" href="https://www.facebook.com/acmuiuc"></a>
+</footer>
 
-        <script src="lib/angular-1.4.3/angular.min.js"></script>
-        <script src="lib/angular-1.4.3/angular-route.min.js"></script>
-        <script src="lib/jquery-2.1.4.min.js"></script>
-        <script src="js/app.js"></script>
-        <script src="js/nav.ctrl.js"></script>
-        <script src="js/home.ctrl.js"></script>
-        <script src="js/join.ctrl.js"></script>
-        <script src="js/sig.ctrl.js"></script>
-        <script src="js/sponsor.ctrl.js"></script>
-        <script src="js/events.ctrl.js"></script>
-    </body>
-    <footer>
-      ACM@UIUC |
-      <a href="tel:12173335828">(217)-333-5828</a> |
-      <a href="mailto:acm@illinois.edu">acm@illinois.edu</a> |
-      Ste. 1104 Thomas M. Siebel Center for Computer Science, 201 N. Goodwin Ave. Urbana, IL 61801 |
-      <a class="icon ion-social-github footer-icon" href="http://github.com/acm-uiuc/"></a>
-      <a class="icon ion-social-twitter footer-icon" href="https://twitter.com/acmuiuc"></a>
-      <a class="icon ion-social-facebook footer-icon" href="https://www.facebook.com/acmuiuc"></a>
-    </footer>
 </html>
