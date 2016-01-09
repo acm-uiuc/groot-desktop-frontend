@@ -1,5 +1,33 @@
 body {
     background-color: lightblue;
+    color: #008ECF;
+}
+
+.footer {
+  background-color: #2980b9;
+  padding: 0.5rem 0.5rem;
+  text-align: center;
+  color: #fff;
+  bottom: 0;
+  position: fixed;
+  width: 100%;
+}
+
+.footer p, .footer a {
+  font-weight: 300;
+  font-size: .8em;
+  color: #fff;
+}
+
+@media only screen and (min-width: 40.063em) {
+}
+
+.footer-links {
+  list-style-type: none;
+}
+
+.footer-links li {
+  margin-top: .5em;
 }
 
 .main-view {
