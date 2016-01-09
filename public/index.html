@@ -18,7 +18,9 @@
     <div class="top-bar" ng-controller="NavCtrl">
       <div class="top-bar-left">
         <ul class="dropdown menu" data-dropdown-menu>
-          <li class="menu-text">ACM @ UIUC</li>
+          <li class="menu-text">
+            <a href="#/"><img src="images/acm-logo.png" style="height:56px;width:auto"></img></a>
+          </li>
           <li ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
         </ul>
       </div>
