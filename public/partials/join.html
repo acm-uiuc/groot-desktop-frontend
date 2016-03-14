@@ -1,4 +1,4 @@
-<div class="container main">
+<div class="container main row">
 <header>
     <h1>Join Us...</h1>
 </header>
@@ -48,8 +48,8 @@
     </div>
     <p>Lifetime Membership $40</p>
     </div>
-    <div>
-        <p>What Special Interest Groups (SIGS) are you interested in? (This will add you to the selected SIGs' mailing lists)</p>
+    <div class="row">
+        <p>What Special Interest Groups (SIGs) are you interested in? (This will add you to the selected SIGs' mailing lists)</p>
         <div class="sig-container" ng-controller="SIGController">
             <ul class="sigs" ng-repeat="sig in sigs">
                 <li>
@@ -61,9 +61,9 @@
          </div>
       </div>
    </div>
-   <div class="control-group">
+   <div class="control-group row">
      <div class="controls">
-       <button type="submit" class="btn btn-primary" ng-click="addMember()">Join</button>
+       <button type="submit" class="button" ng-click="addMember()">Join</button>
      </div>
    </div>
  </form>

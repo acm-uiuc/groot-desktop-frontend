@@ -3,29 +3,34 @@
 <head>
   <!-- Meta Info -->
   <meta charset="utf-8">
-  <title>Welcome to ACM@UIUC</title>
+  <title>Association for Computing Machinery - Univerisity of Illinois Urbana-Champaign</title>
   <meta name="author" content="">
   <meta name="description" content="The Official Website of ACM@UIUC">
   <meta name="viewport" content="width=device-width">
 
   <!-- CSS -->
   <link rel="stylesheet" href="lib/foundation-6/css/foundation.css">
-  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet/less" type="text/css" href="less/main.less" />
 </head>
 
 <body>
   <div>
-    <div class="top-bar" ng-controller="NavCtrl">
+    <div class="top-bar nav" ng-controller="NavCtrl">
       <div class="top-bar-left">
         <ul class="dropdown menu" data-dropdown-menu>
           <li class="menu-text">
-            <a href="#/"><img src="images/acm-logo.png" style="height:56px;width:auto"></img></a>
+              <span id="title">
+                  <a href="#/">
+                      <img class="logo" src="images/acm-logo-flat.svg" style="height:56px;width:auto"></img>
+                      <h3 id="title-text">ACM@UIUC</h3>
+                  </a>
+              </span>
           </li>
-          <li ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
+          <li class="nav-loc" ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
         </ul>
       </div>
       <div class="top-bar-right">
-        <ul class="menu">
+        <ul class="dropdown menu">
           <li>
             <button type="button" class="button">Login</button>
           </li>
@@ -51,6 +56,7 @@
             for easier debugging -->
   <script src="lib/angular-1.4.3/angular.min.js"></script>
   <script src="lib/angular-1.4.3/angular-route.min.js"></script>
+  <script src="lib//less/dist/less.js" type="text/javascript"></script>
 
   <script src="js/app.js"></script>
   <script src="js/nav.ctrl.js"></script>
@@ -62,11 +68,25 @@
 </body>
 <!-- Footer -->
 <footer class="footer">
-  <div class="row full-width">
-    <div class="small-12 medium-12 large-12 columns">
-      <p>&copy; 2016 ACM@UIUC </p>
+    <div class="small-4 medium-4 large-4 columns">
+        <a id="illinois" href="https://illinois.edu">
+            <img class="logo" id="illinois" src="images/ilogo.gif" style="height:56px;width:auto"></img>
+        </a>
     </div>
-  </div>
+    <div class="small-4 medium-4 large-4 columns">
+      <p>&copy; 2016 ACM@UIUC</p>
+    </div>
+    <div class="small-4 medium-4 large-4 columns">
+        <a  href="https://github.com/acm-uiuc">
+            <img class="logo" id="github" src="images/github.svg" style="height:56px;width:auto"></img>
+        </a>
+        <a  href="https://twitter.com/acmuiuc">
+            <img class="logo" id="twitter" src="images/twitter.svg" style="height:56px;width:auto"></img>
+        </a>
+        <a  href="https://www.facebook.com/acmuiuc">
+            <img class="logo" id="fb" src="images/fb.svg" style="height:56px;width:auto"></img>
+        </a>
+    </div>
 </footer>
 
 </html>
