@@ -25,9 +25,9 @@ app.config(function ($routeProvider) {
         .when('/conference', {
             templateUrl: "partials/conference.html"
         })
-        .when('/sponsor', {
+        .when('/sponsors', {
             controller: "SponsorCtrl",
-            templateUrl: "partials/sponsor.html"
+            templateUrl: "partials/sponsors.html"
         })
         .otherwise({
             redirectTo: '/'

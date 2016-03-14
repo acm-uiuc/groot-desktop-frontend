@@ -1,0 +1,24 @@
+ul.dashed {
+  margin: 0;
+}
+ul.dashed {
+  list-style-type: none;
+}
+ul.dashed > li {
+  text-indent: -5px;
+  color: @font-color;
+}
+ul.dashed > li:before {
+  content: "-";
+  text-indent: -5px;
+}
+ul.dashed > li > a{
+  text-indent: -5px;
+  color: @font-color;
+}
+
+ul.dashed > li > a:hover{
+  text-indent: -5px;
+  color: @font-color;
+  text-decoration: underline;
+}
