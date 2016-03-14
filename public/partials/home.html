@@ -4,19 +4,6 @@
     <span id="we-are">acm@uiuc$
         <span id="qualities"></span>
     </span>
-    <script>
-        var showText = function(target, message, index, interval) {
-            if (index < message.length) {
-                $(target).append(message[index++]);
-                setTimeout(function() {
-                    showText(target, message, index, interval);
-                }, interval);
-            }
-        }
-        $(function() {
-            showText("#qualities", "echo Hello, World!", 0, 150);
-        });
-    </script>
 </div>
 <div class="row" id="home-container">
     <div class="small-12 medium-9 large-9 columns" id="main-container">
