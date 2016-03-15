@@ -29,6 +29,10 @@ app.config(function ($routeProvider) {
             controller: "SponsorCtrl",
             templateUrl: "partials/sponsors.html"
         })
+        .when('/sponsors/resume_book', {
+            controller: "SponsorCtrl",
+            templateUrl: "partials/resume_book.html"
+        })
         .otherwise({
             redirectTo: '/'
         });

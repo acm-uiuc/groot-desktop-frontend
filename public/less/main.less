@@ -21,19 +21,26 @@
 /*********************************
             MIXINS
 **********************************/
-.coder-font() {
+.monospace-font() {
     font-family: "InconsolataReg";
+}
+.serif-font() {
+    font-family: 'Lato', sans-serif;
 }
 
 /*********************************
             IMPORTS
 **********************************/
-@import "partials/components/nav.less";
-@import "partials/components/footer.less";
-@import "partials/components/form.less";
-@import "partials/views/about.less";
-@import "partials/views/home.less";
-@import "partials/elements.less";
+@import "elements/partials/nav.less";
+@import "elements/partials/footer.less";
+
+@import "elements/views/home.less";
+
+@import "elements/components/form.less";
+@import "elements/components/button.less";
+@import "elements/components/dashed_ul.less";
+@import "elements/components/structure.less";
+
 @import url(https://fonts.googleapis.com/css?family=Lato:300);
 
 
@@ -45,31 +52,43 @@ body {
 
 h1 {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
 }
 
 h2 {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
 }
 
 h3 {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
 }
 
 h4 {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
 }
 
 h5 {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
 }
 
 p {
-    font-family: 'Lato', sans-serif;
+    .serif-font();
+}
+
+a {
+    color: @font-color;
+    .monospace-font();
+    background: @background-color;
+    font-weight: bold;
+ }
+
+a:hover {
+    text-decoration: underline;
+    color: @font-color;
 }
 
 @media only screen and (min-width: 40.063em) {

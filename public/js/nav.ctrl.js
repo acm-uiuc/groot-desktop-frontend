@@ -11,6 +11,7 @@ app.controller('NavCtrl', function ($scope) {
         {name: 'Events', path: '#/events'},
         {name: 'Reflections|Projections', path: '#/conference'},
         {name: 'Sponsors',path: '#/sponsors'},
+        {name: 'Resume_Book',path: '#/sponsors/resume_book'},
         {name: 'Join', path: '#/join'}
     ];
 });

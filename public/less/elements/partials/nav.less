@@ -1,35 +1,13 @@
 .nav-loc a {
     color: @font-color;
-    .coder-font();
+    .monospace-font();
     background: @background-color;
+    font-weight: normal;
  }
 
 .nav-loc:hover {
     color: @font-color;
-    .coder-font();
-    text-decoration: underline;
-}
-
-
-.button {
-    background: @font-color;
-    vertical-align: middle;
-    position: relative;
-    transform: translateY(50%);
-    transition: all 0.5s ease-out;
-}
-
-.button:hover {
-    color: @background-color;
-    .coder-font();
-    text-decoration: underline;
-    background: @button-color-lighter;
-}
-.button:active {
-    color: @background-color;
-    .coder-font();
-    text-decoration: underline;
-    background: @button-color-lighter;
+    .monospace-font();
 }
 
 #title {
@@ -40,6 +18,10 @@
 #title-text {
     display: inline-block;
     transform: translateY(10%);
+}
+
+#nav-home:hover {
+    text-decoration: none;
 }
 
 .logo {
