@@ -42,5 +42,18 @@
                 <option ng-repeat="option in job.types" value="{{option.name}}">{{option.name}}</option>
             </select>
         </div>
+        <div class="field-group required">
+            <label class="field-label" for="jobType">Resume</label>
+            <input type="file" class="upload" file-model="resume" name="resume"/>
+        </div>
+        <br/>
+        <div class="control-group">
+            <p>
+                By submitting this form you verify that all the information above is correct and give ACM@UIUC permission to distribute your resume to all interested parties.
+            </p>
+          <div class="controls">
+            <button type="submit" class="button" ng-click="uploadResume()">Submit</button>
+          </div>
+        </div>
      </form>
 </div>

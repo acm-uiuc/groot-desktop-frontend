@@ -1,6 +1,15 @@
 //Declare app grootDesktop
 var app = angular.module('grootDesktop',['ngRoute']);
 
+app.constant("RESUME_SERVICE", {
+    "url": "groot/resumes",
+    "port": "80"
+});
+app.constant("USER_SERVICE", {
+    "url": "groot/users",
+    "port": "80"
+});
+
 app.config(function ($routeProvider) {
     $routeProvider
         .when('/', {
@@ -26,11 +35,11 @@ app.config(function ($routeProvider) {
             templateUrl: "partials/conference.html"
         })
         .when('/sponsors', {
-            controller: "SponsorCtrl",
+            controller: "SponsorsCtrl",
             templateUrl: "partials/sponsors.html"
         })
         .when('/sponsors/resume_book', {
-            controller: "SponsorCtrl",
+            controller: "SponsorsCtrl",
             templateUrl: "partials/resume_book.html"
         })
         .otherwise({
