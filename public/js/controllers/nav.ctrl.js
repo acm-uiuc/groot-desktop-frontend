@@ -4,7 +4,7 @@
     - header and footer
     DO NOT PUT ANY CONTENT CONTROLLING CODE HERE
 **/
-app.controller('NavCtrl', function ($scope) {
+app.controller('NavCtrl', ['$scope', '$location', function ($scope, $location) {
     $scope.nav = [
         {name: 'About', path: '#/about'},
         {name: 'SIGs', path: '#/sigs'},
@@ -13,4 +13,11 @@ app.controller('NavCtrl', function ($scope) {
         {name: 'Sponsors',path: '#/sponsors'},
         {name: 'Join', path: '#/join'}
     ];
-});
+    $scope.$watch(function(){
+        $scope.login_page = $location.path() === '/login';
+    });
+    $scope.$watch(function(){
+        $scope.authenticated = false;
+    });
+    console.log($scope.login_page);
+}]);

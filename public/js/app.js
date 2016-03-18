@@ -17,6 +17,7 @@ app.config(function ($routeProvider) {
             templateUrl: "partials/home.html"
         })
         .when('/about', {
+            controller: "AboutCtrl",
             templateUrl: "partials/about.html"
         })
         .when('/join', {
@@ -32,11 +33,16 @@ app.config(function ($routeProvider) {
             templateUrl: "partials/sigs.html"
         })
         .when('/conference', {
+            controller: "ConferenceCtrl",
             templateUrl: "partials/conference.html"
         })
         .when('/sponsors', {
             controller: "SponsorsCtrl",
             templateUrl: "partials/sponsors.html"
+        })
+        .when('/login', {
+            controller: "AuthCtrl",
+            templateUrl: "partials/login.html"
         })
         .when('/sponsors/resume_book', {
             controller: "SponsorsCtrl",
