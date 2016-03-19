@@ -1,0 +1,29 @@
+<div class="login-container">
+   <div class="row col-centered small-12 medium-4 large-4 login-form">
+       <h3>Login</h3>
+        <p>
+            Your username is your NetID. Your password is your Campus Active Directory password.
+
+You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!
+        </p>
+        <form>
+            <div class="field-group required">
+                <label class="field-label" for="netid">Netid</label>
+                <div class="field">
+                    <input id="netid-login" type="text" name="netid" maxlength="8" ng-model="user.netid" />
+                </div>
+            </div>
+            <div class="field-group required">
+                <label class="field-label" for="password">Password</label>
+                <div class="field">
+                    <input id="password-login" type="password" name="password" ng-model="user.password" />
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="button" ng-click="login()">Login</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

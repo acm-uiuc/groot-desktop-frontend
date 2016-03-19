@@ -3,34 +3,52 @@
 <head>
   <!-- Meta Info -->
   <meta charset="utf-8">
-  <title>Welcome to ACM@UIUC</title>
+  <title>Association for Computing Machinery - University of Illinois Urbana-Champaign</title>
   <meta name="author" content="">
   <meta name="description" content="The Official Website of ACM@UIUC">
   <meta name="viewport" content="width=device-width">
 
   <!-- CSS -->
   <link rel="stylesheet" href="lib/foundation-6/css/foundation.css">
-  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet/less" type="text/css" href="less/main.less" />
 </head>
 
 <body>
   <div>
-    <div class="top-bar" ng-controller="NavCtrl">
+    <div class="top-bar nav" ng-controller="NavCtrl">
       <div class="top-bar-left">
         <ul class="dropdown menu" data-dropdown-menu>
           <li class="menu-text">
-            <a href="#/"><img src="images/acm-logo.png" style="height:56px;width:auto"></img></a>
+              <span id="title">
+                  <a id="nav-home" href="#/">
+                      <img class="logo" src="images/acm-logo-flat.svg"></img>
+                      <h3 id="title-text">ACM@UIUC</h3>
+                  </a>
+              </span>
           </li>
-          <li ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
+          <li class="nav-loc" ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
         </ul>
       </div>
-      <div class="top-bar-right">
-        <ul class="menu">
-          <li>
-            <button type="button" class="button">Login</button>
-          </li>
-        </ul>
-      </div>
+      <div class="top-bar-right" ng-if="!login_page">
+          <div class="top-bar-right" ng-if="!authenticated">
+            <ul class="dropdown menu">
+              <li>
+                  <a id="nav-login" href="#/login">
+                      <button type="button" id="login" class="button">Login</button>
+                  </a>
+              </li>
+            </ul>
+          </div>
+          <div class="top-bar-right" ng-if="authenticated">
+            <ul class="dropdown menu">
+              <li>
+                  <a id="nav-login" href="#/login">
+                      <button type="button" id="logout" class="button">Logout</button>
+                  </a>
+              </li>
+            </ul>
+          </div>
+       </div>
     </div>
 
     <!-- Main View -->
@@ -51,22 +69,40 @@
             for easier debugging -->
   <script src="lib/angular-1.4.3/angular.min.js"></script>
   <script src="lib/angular-1.4.3/angular-route.min.js"></script>
+  <script src="lib//less/dist/less.js" type="text/javascript"></script>
 
   <script src="js/app.js"></script>
-  <script src="js/nav.ctrl.js"></script>
-  <script src="js/home.ctrl.js"></script>
-  <script src="js/join.ctrl.js"></script>
-  <script src="js/sig.ctrl.js"></script>
-  <script src="js/sponsor.ctrl.js"></script>
-  <script src="js/events.ctrl.js"></script>
+   <script src="js/controllers/about.ctrl.js"></script>
+  <script src="js/controllers/conference.ctrl.js"></script>
+  <script src="js/controllers/nav.ctrl.js"></script>
+  <script src="js/controllers/auth.ctrl.js"></script>
+  <script src="js/controllers/home.ctrl.js"></script>
+  <script src="js/controllers/join.ctrl.js"></script>
+  <script src="js/controllers/sig.ctrl.js"></script>
+  <script src="js/controllers/sponsors.ctrl.js"></script>
+  <script src="js/controllers/events.ctrl.js"></script>
 </body>
 <!-- Footer -->
 <footer class="footer">
-  <div class="row full-width">
-    <div class="small-12 medium-12 large-12 columns">
-      <p>&copy; 2016 ACM@UIUC </p>
+    <div class="small-4 medium-4 large-4 columns">
+        <a id="illinois" href="https://illinois.edu">
+            <img class="logo" id="illinois" src="images/ilogo.gif"></img>
+        </a>
     </div>
-  </div>
+    <div class="small-4 medium-4 large-4 columns">
+      <p>&copy; 2016 ACM@UIUC</p>
+    </div>
+    <div class="small-4 medium-4 large-4 columns">
+        <a  href="https://github.com/acm-uiuc">
+            <img class="logo" id="github" src="images/github.svg"></img>
+        </a>
+        <a  href="https://twitter.com/acmuiuc">
+            <img class="logo" id="twitter" src="images/twitter.svg"></img>
+        </a>
+        <a  href="https://www.facebook.com/acmuiuc">
+            <img class="logo" id="fb" src="images/fb.svg"></img>
+        </a>
+    </div>
 </footer>
 
 </html>

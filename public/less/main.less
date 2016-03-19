@@ -1,0 +1,115 @@
+/**********************
+       CONSTANTS
+***********************/
+@font-color: #333333;
+@font-color-neg: white;
+@background-color: white;
+@button-color: #333333;
+@form-text-color:#464646;
+@font-face {
+    font-family: 'InconsolataReg';
+    src: url('../fonts/Inconsolata-Regular.ttf') format('truetype');
+}
+
+
+/*********************************
+   OPERATIONS & COLOR FUNCTIONS
+**********************************/
+@button-color-lighter: @button-color + #2a2a2a;
+
+
+/*********************************
+            MIXINS
+**********************************/
+.monospace-font() {
+    font-family: "InconsolataReg";
+}
+.serif-font() {
+    font-family: 'Lato', sans-serif;
+}
+
+/*********************************
+            IMPORTS
+**********************************/
+@import "components/nav.less";
+@import "components/footer.less";
+
+@import "partials/home.less";
+@import "partials/login.less";
+@import "partials/conference.less";
+
+@import "elements/form.less";
+@import "elements/button.less";
+@import "elements/dashed_ul.less";
+@import "elements/structure.less";
+
+@import url(https://fonts.googleapis.com/css?family=Lato:300);
+
+
+
+body {
+    color: @font-color;
+    font-family: "InconsolataReg";
+}
+
+h1 {
+    color: @font-color;
+    .monospace-font();
+}
+
+h2 {
+    color: @font-color;
+    .monospace-font();
+}
+
+h3 {
+    color: @font-color;
+    .monospace-font();
+}
+
+h4 {
+    color: @font-color;
+    .monospace-font();
+}
+
+h5 {
+    color: @font-color;
+    .monospace-font();
+}
+
+p {
+    .serif-font();
+}
+
+a {
+    color: @font-color;
+    .monospace-font();
+    background: @background-color;
+    font-weight: bold;
+ }
+
+a:hover {
+    text-decoration: underline;
+    color: @font-color;
+}
+
+@media only screen and (min-width: 40.063em) {
+}
+
+.main-view {
+    background-color: white;
+    border-color: black;
+}
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+.row-centered {
+    text-align:center;
+}
+
+.content{
+    margin-bottom: 100px;
+}
