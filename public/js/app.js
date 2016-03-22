@@ -32,6 +32,10 @@ app.config(function ($routeProvider) {
             controller: "SIGCtrl",
             templateUrl: "partials/sigs.html"
         })
+        .when('/intranet', {
+            controller: "IntranetCtrl",
+            templateUrl: "partials/intranet.html"
+        })
         .when('/conference', {
             controller: "ConferenceCtrl",
             templateUrl: "partials/conference.html"
@@ -47,6 +51,18 @@ app.config(function ($routeProvider) {
         .when('/sponsors/resume_book', {
             controller: "SponsorsCtrl",
             templateUrl: "partials/resume_book.html"
+        })
+        .when('/sponsors/recruiting', {
+            controller: "SponsorsCtrl",
+            templateUrl: "partials/recruiting.html"
+        })
+        .when('/sponsors/recruiter_login', {
+            controller: "SponsorsCtrl",
+            templateUrl: "partials/recruiter_login.html"
+        })
+        .when('/sponsors/new_job_post', {
+            controller: "SponsorsCtrl",
+            templateUrl: "partials/new_job_post.html"
         })
         .otherwise({
             redirectTo: '/'

@@ -26,7 +26,9 @@
                   </a>
               </span>
           </li>
-          <li class="nav-loc" ng-repeat="n in nav"><a href="{{n.path}}">{{n.name}}</a></li>
+          <li class="nav-loc" ng-if="!authenticated" ng-repeat="n in nav_un_auth"><a href="{{n.path}}">{{n.name}}</a></li>
+          <li class="nav-loc" ng-if="authenticated" ng-repeat="n in nav_auth"><a href="{{n.path}}">{{n.name}}</a></li>
+        </ul>
         </ul>
       </div>
       <div class="top-bar-right" ng-if="!login_page">
@@ -76,6 +78,7 @@
   <script src="js/controllers/conference.ctrl.js"></script>
   <script src="js/controllers/nav.ctrl.js"></script>
   <script src="js/controllers/auth.ctrl.js"></script>
+  <script src="js/controllers/intranet.ctrl.js"></script>
   <script src="js/controllers/home.ctrl.js"></script>
   <script src="js/controllers/join.ctrl.js"></script>
   <script src="js/controllers/sig.ctrl.js"></script>
