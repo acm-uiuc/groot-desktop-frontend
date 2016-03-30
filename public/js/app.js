@@ -1,13 +1,14 @@
 //Declare app grootDesktop
 var app = angular.module('grootDesktop',['ngRoute']);
 
-app.constant("RESUME_SERVICE", {
-    "url": "groot/resumes",
-    "port": "80"
+const GROOT = 'http://localhost:8000';
+app.constant('RESUME_SERVICE', {
+    'url':  GROOT+'/resumes',
+    'port': '80'
 });
-app.constant("USER_SERVICE", {
-    "url": "groot/users",
-    "port": "80"
+app.constant('USER_SERVICE', {
+    'url':  GROOT+'/users',
+    'port': '80'
 });
 
 app.config(function ($routeProvider) {

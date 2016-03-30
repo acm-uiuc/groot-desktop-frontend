@@ -2,7 +2,7 @@
  * Created by SujayKhandekar on 10/3/15.
  */
 
-const PORT = 8000;
+const PORT = 5000;
 
 // Requires
 var express = require('express');
@@ -13,4 +13,4 @@ app.use(express.static(__dirname + '/public'));
 
 //Start server
 app.listen(PORT);
-console.log('Groot is live on port ' + PORT + "!");
+console.log('GROOT_DESKTOP is live on port ' + PORT + "!");
