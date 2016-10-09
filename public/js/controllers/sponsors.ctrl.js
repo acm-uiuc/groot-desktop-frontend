@@ -6,7 +6,7 @@
     - Handles new job posting (should we list jobs too? maybe with login?)
     - Interfaces with the GROOT API GATEWAY
 **/
-app.controller('SponsorsCtrl', ['$scope', 'RESUME_SERVICE', function($scope, RESUME_SERVICE) { // mostly static - dont know if we want anything cool here later
+app.controller('SponsorsCtrl', ['$scope', '$http', 'USER_SERVICE', function($scope, $http, USER_SERVICE) { // mostly static - dont know if we want anything cool here later
     // contacts groot-sponsors service
     $scope.job = {
         jobType: null,
@@ -17,6 +17,16 @@ app.controller('SponsorsCtrl', ['$scope', 'RESUME_SERVICE', function($scope, RES
         }, {
             name: 'Full Time'
         }],
+    };
+    
+    $scope.pdfUpload = function(input)
+    {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            var data = this.result;
+            $scope.$apply(function () { $scope.resume = data; });
+        };
+        reader.readAsBinaryString(input.files[0]);
     };
 
     $scope.degree = {
@@ -107,17 +117,18 @@ app.controller('SponsorsCtrl', ['$scope', 'RESUME_SERVICE', function($scope, RES
             return;
         }
         console.log($scope.student);
-        return;
-        // $http({
-        //     method: 'POST',
-        //     url: RESUME_SERVICE.url,
-        //     data: $scope.student,
-        //     headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-        // })
-        // .success(function(){
-        //     console.log($scope.studnet);
-        // })
-        // .error(function(){
-        // });
+        
+        $http({
+            method: 'POST',
+            dataType: 'json',
+            url: USER_SERVICE.url,
+            data: $scope.student,
+            headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(){
+            console.log($scope.student);
+        })
+        .error(function(){
+        });
     }
 }]);
