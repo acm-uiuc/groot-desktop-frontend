@@ -1,0 +1,14 @@
+<div class="small-12 medium-12 large-12 columns" id="quotess-container">
+    <div class="row" id="quotes-title">
+        <h2>Quotes</h2>
+    </div>
+    <div class="row" id="quotes">
+        <div ng-repeat="q in quotes" class="quotes">
+            <h5>{{q.title}}</h5>
+            <ul class="dashed">
+            <li>
+                {{q.text}}
+            </li>
+        </div>
+    </div>
+</div>

@@ -14,22 +14,18 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 var request = require('request');
 
-app.post('/user-auth', function(req, res) {
-	console.log(req);
-	console.log(req.body);
-	var userName = req.body.user,
-		pass = req.body.pass;
-		request.post({
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				},
-				url: 'http://localhost:8000/authentication?username=' + userName,
-				body: JSON.stringify({"value": pass}),
-			}, function(error, response, body){
-				console.log(body);
-				res.send(body);
-		});
+app.post('/authenticate', function(req, res) {
+	request.post({
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			url: 'http://localhost:8000/session',
+			body: JSON.stringify(req.body),
+		}, function(error, response, body){
+			console.log(body);
+			res.send(body);
+	});
 });
 
 

@@ -11,19 +11,19 @@ app.controller('AboutCtrl', function ($scope){
                 contacts: [
                     {
                         title: 'Chair',
-                        name: 'Sujay Khandekar',
+                        name: 'Naren Dasan',
                         email: 'acm@illinois.edu'
                     },{
                         title: 'Vice Chair',
-                        name: 'Laura Licari',
+                        name: 'Sathvika Ashokkumar',
                         email: 'vice-chair@acm.illinois.edu'
                     },{
                         title: 'Treasurer',
-                        name: 'Sebastian Conybeare',
+                        name: 'Tommy Yu',
                         email: 'treasurer@acm.illinois.edu'
                     },{
                         title: 'Secretary',
-                        name: 'Connie Fan',
+                        name: 'Alec Kochevar-Cureton',
                         email: 'secretary@acm.illinois.edu'
                     }
                 ]
@@ -38,19 +38,11 @@ app.controller('AboutCtrl', function ($scope){
                 name: 'Corporate',
                 contacts: [
                     {
-                        name: 'Zach Millier'
-                    },{
                         name: 'Amanda Sopkin'
                     },{
-                        name: 'Mike Parilla'
+                        name: 'Sujay Khandekar'
                     },{
-                        name: 'Aashna Makkar'
-                    },{
-                        name: 'David Zmick'
-                    },{
-                        name: 'Karunya Tota'
-                    },{
-                        name: 'Harshit Kumar'
+                        name: 'Tyler Kim'
                     },{
                         email: 'corporate@acm.illinois.edu'
                     }
@@ -60,9 +52,6 @@ app.controller('AboutCtrl', function ($scope){
                 contacts: [
                     {
                         name: 'Kevin Wang',
-                        title: 'Co-Chair'
-                    },{
-                        name: 'Milan Dasgupta',
                         title: 'Co-Chair'
                     },{
                         email: 'projects@acm.illinois.edu'

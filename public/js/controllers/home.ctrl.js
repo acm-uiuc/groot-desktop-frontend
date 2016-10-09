@@ -5,7 +5,7 @@
 app.controller('HomeCtrl', function ($scope){
     // mostly static - dont know if we want anything cool here later
     $scope.message_str = "echo Hello, World!"
-
+    console.log($scope.message_str);
     var showText = function(target, message, index, interval) {
         if (index < message.length) {
             $(target).append(message[index++]);
