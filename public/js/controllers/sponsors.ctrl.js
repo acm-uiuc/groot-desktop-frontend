@@ -75,6 +75,8 @@ app.controller('SponsorsCtrl', ['$scope', 'RESUME_SERVICE', function($scope, RES
     };
 
     $scope.uploadResume = function() {
+        debugger;
+        
         $scope.student.resume = $scope.resume;
         console.log($scope.resume);
         $scope.student.email = $scope.student.netid + "@illinois.edu";
@@ -107,17 +109,28 @@ app.controller('SponsorsCtrl', ['$scope', 'RESUME_SERVICE', function($scope, RES
             return;
         }
         console.log($scope.student);
-        return;
-        // $http({
-        //     method: 'POST',
-        //     url: RESUME_SERVICE.url,
-        //     data: $scope.student,
-        //     headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-        // })
-        // .success(function(){
-        //     console.log($scope.studnet);
-        // })
-        // .error(function(){
-        // });
+        
+        $http({
+            method: 'POST',
+            dataType: 'json',
+            url: RESUME_SERVICE.url,
+            data: $scope.student,
+            headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+        })
+        .success(function(){
+            console.log($scope.student);
+        })
+        .error(function(){
+        });
+    }
+    
+    $scope.pdfUpload = function(input) {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            var data = this.result;
+            $scope.$apply(function () { $scope.resume = data; });
+            console.log(data);
+        };
+        reader.readAsBinaryString(input.files[0]);
     }
 }]);
