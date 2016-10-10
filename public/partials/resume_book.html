@@ -51,7 +51,7 @@
             </div>
             <div class="field-group required">
                 <label class="field-label" for="jobType">Resume</label>
-                <input type="file" class="upload" ng-change="pdfUpload()" file-model="resume" name="resume"/>
+                <input type="file" class="upload" onchange="angular.element(this).scope().pdfUpload(this)" file-model="resume" name="resume"/>
             </div>
             <br/>
             <div class="control-group">
