@@ -6,7 +6,7 @@
     - Handles new job posting (should we list jobs too? maybe with login?)
     - Interfaces with the GROOT API GATEWAY
 **/
-app.controller('SponsorsCtrl', ['$scope', '$http', 'USER_SERVICE', function($scope, $http, USER_SERVICE) { // mostly static - dont know if we want anything cool here later
+app.controller('SponsorsCtrl', ['$scope', '$window', '$http', 'RESUME_SERVICE', function($scope, $window, $http, RESUME_SERVICE) { // mostly static - dont know if we want anything cool here later
     // contacts groot-sponsors service
     $scope.job = {
         jobType: null,
@@ -17,16 +17,6 @@ app.controller('SponsorsCtrl', ['$scope', '$http', 'USER_SERVICE', function($sco
         }, {
             name: 'Full Time'
         }],
-    };
-    
-    $scope.pdfUpload = function(input)
-    {
-        var reader = new FileReader();
-        reader.onloadend = function () {
-            var data = this.result;
-            $scope.$apply(function () { $scope.resume = data; });
-        };
-        reader.readAsBinaryString(input.files[0]);
     };
 
     $scope.degree = {
@@ -86,7 +76,7 @@ app.controller('SponsorsCtrl', ['$scope', '$http', 'USER_SERVICE', function($sco
 
     $scope.uploadResume = function() {
         $scope.student.resume = $scope.resume;
-        console.log($scope.resume);
+        
         $scope.student.email = $scope.student.netid + "@illinois.edu";
         if ($scope.student.firstName === null) {
             $window.alert("Please type in your first name");
@@ -117,18 +107,26 @@ app.controller('SponsorsCtrl', ['$scope', '$http', 'USER_SERVICE', function($sco
             return;
         }
         console.log($scope.student);
-        
         $http({
             method: 'POST',
-            dataType: 'json',
-            url: USER_SERVICE.url,
+            url: RESUME_SERVICE.url,
             data: $scope.student,
-            headers : {'Content-Type': 'application/x-www-form-urlencoded'}
+            headers : {'Content-Type': 'text/plain'}
         })
         .success(function(){
             console.log($scope.student);
         })
         .error(function(){
         });
+    }
+    
+    $scope.pdfUpload = function(input) {
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            var data = this.result;
+            $scope.$apply(function () { $scope.resume = data; });
+            console.log(data);
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 }]);
