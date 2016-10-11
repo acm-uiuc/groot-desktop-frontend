@@ -76,9 +76,11 @@ app.controller('SponsorsCtrl', ['$scope', '$window', '$http', 'RESUME_SERVICE', 
 
     $scope.uploadResume = function() {
         $scope.student.resume = $scope.resume;
-        
-        $scope.student.email = $scope.student.netid + "@illinois.edu";
+
+        //NOTE: idk if everyone wants to use their illinois email
+        //$scope.student.email = $scope.student.netid + "@illinois.edu";
         if ($scope.student.firstName === null) {
+            //TODO: Change to look better later
             $window.alert("Please type in your first name");
             return;
         }
@@ -107,11 +109,15 @@ app.controller('SponsorsCtrl', ['$scope', '$window', '$http', 'RESUME_SERVICE', 
             return;
         }
         console.log($scope.student);
+        console.log(RESUME_SERVICE.url);
         $http({
             method: 'POST',
-            url: RESUME_SERVICE.url,
-            data: $scope.student,
-            headers : {'Content-Type': 'text/plain'}
+            url: '/resume',
+            data: JSON.stringify($scope.student),
+            headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+            },
         })
         .success(function(){
             console.log($scope.student);
@@ -119,7 +125,7 @@ app.controller('SponsorsCtrl', ['$scope', '$window', '$http', 'RESUME_SERVICE', 
         .error(function(){
         });
     }
-    
+
     $scope.pdfUpload = function(input) {
         var reader = new FileReader();
         reader.onloadend = function () {
