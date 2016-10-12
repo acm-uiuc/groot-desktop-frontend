@@ -28,7 +28,7 @@
             <div class="field-group required">
                 <label class="field-label" for="netid">Prefered Email</label>
                 <div class="field">
-                    <input id="email" type="email" name="email" ng-model="student.email"/>
+                    <input id="email" type="text" name="email" ng-model="student.email"/>
                 </div>
             </div>
             <div class="field-group required">
@@ -51,7 +51,7 @@
             </div>
             <div class="field-group required">
                 <label class="field-label" for="jobType">Resume</label>
-                <input type="file" class="upload" file-model="resume" name="resume"/>
+                <input type="file" class="upload" onchange="angular.element(this).scope().pdfUpload(this)" file-model="resume" name="resume"/>
             </div>
             <br/>
             <div class="control-group">

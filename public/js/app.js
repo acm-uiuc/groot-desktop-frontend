@@ -3,7 +3,7 @@ const app = angular.module('grootDesktop', ['ui.router']);
 
 const GROOT = 'http://localhost:8000';
 app.constant('RESUME_SERVICE', {
-    'url': `${GROOT}/resumes`,
+    'url': `${GROOT}/resume`,
     'port': '80'
 });
 app.constant('AUTH_SERVICE', {
