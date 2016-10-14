@@ -25,7 +25,7 @@ html
               each n in nav_un_auth
                 li.nav-loc
                   a(href=n.path)= n.name
-            else
+            if authenticated
               each n in nav_auth
                 li.nav-loc
                   a(href=n.path)= n.name
@@ -47,7 +47,23 @@ html
 
     script(src='lib/jquery-2.1.4.min.js')/
     script(src='lib/foundation-6/js/foundation.min.js')/
-    script
-      // $(document).foundation();
+    script.
+      $(document).foundation();
 
     script(src='lib/less/dist/less.js' type='text/javascript')
+    script.
+      (function(){
+        var message_str = "echo Hello, World!"
+        var showText = function(target, message, index, interval) {
+            if (index < message.length) {
+                $(target).append(message[index++]);
+                setTimeout(function() {
+                    showText(target, message, index, interval);
+                }, interval);
+            }
+        }
+        console.log($)
+        $(function() {
+            showText("#qualities", message_str, -1, 150);
+        });
+      })()

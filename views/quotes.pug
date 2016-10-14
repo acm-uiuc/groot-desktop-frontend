@@ -1,0 +1,13 @@
+extends index.pug
+
+block app
+  .small-12.medium-12.large-12.columns#quotess-container
+    .row#quotes-title
+      h2 Quotes
+    .row#quotes
+      each q in quotes
+        .quotes
+          h5= q.title
+          ul.dashed
+            li
+              q.text

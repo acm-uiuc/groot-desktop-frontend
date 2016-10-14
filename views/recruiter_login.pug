@@ -1,0 +1,20 @@
+extends index.pug
+
+block app
+  #login-container
+   .row.col-centered.small-12.medium-4.large-4.login-form
+     h3 Recruiter Login
+     p.
+       If you would like access to the ACM@UIUC Resume Book please email <a href="corporate@acm.illinois.edu">corporate@acm.illinois.edu</a>.
+    form
+      .field-group.required
+        label.field-label(for="username") Username
+        .field
+          input#username(type="text" name="username" maxlength="8" ng-model="user.username")
+      .field-group.required
+        label.field-label(for="password") Password
+        .field
+          input#password_login(type="password" name="password" ng-model="user.password")
+      .control-group
+        .controls
+          button.button(type="submit" ng-click="login()") Login

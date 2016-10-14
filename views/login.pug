@@ -3,21 +3,21 @@ extends index.pug
 block app
   - var login_page = true
   #login-container
-     .row.col-centered.small-12.medium-4.large-4.login-form
-       h3 Login
-        p.
-          Your username is your NetID. Your password is your Campus Active Directory password.
-
-          You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!
-        form
-          .field-group.required
-            label.field-label(for='netid') Netid
-              .field
-                input#netid-login(type='text' name='netid' maxlength='8' ng-model='user.netid')
-          .field-group.required
-            label.field-label(for='password') Password
-              .field
-                input#password-login(type='password' name='password' maxlength='8' ng-model='user.password')
-          .control-group
-            .controls
-              button.button(type='submit' ng-click='login(user)') Login
+   .row.col-centered.small-12.medium-4.large-4.login-form
+     h3 Login
+     p
+      | Your username is your NetID. Your password is your Campus Active Directory password.
+      br
+      | You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!
+     form
+      .field-group.required
+        label.field-label(for='netid') Netid
+          .field
+            input#netid-login(type='text' name='netid' maxlength='8' ng-model='user.netid')
+      .field-group.required
+        label.field-label(for='password') Password
+          .field
+            input#password-login(type='password' name='password' maxlength='8' ng-model='user.password')
+      .control-group
+        .controls
+          button.button(type='submit' ng-click='login(user)') Login
