@@ -12,6 +12,9 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 
+app.set('views', './views');
+app.set('view engine', 'pug');
+
 app.post('/authenticate', function(req, res) {
 	request.post({
 			headers: {
@@ -40,6 +43,42 @@ app.post('/resume', function(req, res) {
 	});
 });
 
+// test data
+var nav_un_auth = [
+		{name: 'About', path: '/about'},
+		{name: 'SIGs', path: '/sigs'},
+		{name: 'Events', path: '/events'},
+		{name: 'Reflections|Projections', path: '/conference'},
+		{name: 'Sponsors',path: '/sponsors'},
+		{name: 'Join', path: '/join'}
+];
+
+var nav_auth = [
+		{name: 'About', path: '/about'},
+		{name: 'SIGs', path: '/sigs'},
+		{name: 'Events', path: '/events'},
+		{name: 'Reflections|Projections', path: '/conference'},
+		{name: 'Sponsors',path: '/sponsors'},
+		{name: 'Intranet', path: '/intranet'}
+];
+
+
+
+app.get('/', function (req, res) {
+  res.render('index', {
+		authenticated: false,
+		nav_un_auth: nav_un_auth,
+		nav_auth: nav_auth
+	});
+});
+
+app.get('/login', function(req, res) {
+	res.render('login', {
+		authenticated: false,
+		nav_un_auth: nav_un_auth,
+		nav_auth: nav_auth
+	})
+});
 
 // Serve files from public
 app.use(express.static(__dirname + '/public'));
