@@ -15,6 +15,12 @@ var request = require('request');
 app.set('views', './views');
 app.set('view engine', 'pug');
 
+//TODO Add more POST endpoints for all our form interactions
+app.post('/login', function(req, res){
+	// Login
+	console.log(req.body.netid, req.body.password)
+});
+
 app.post('/authenticate', function(req, res) {
 	request.post({
 			headers: {
