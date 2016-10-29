@@ -49,4 +49,4 @@ crashlytics-build.properties
 fabric.properties
 
 npm-debug.log
-DS_Store
+.DS_Store
