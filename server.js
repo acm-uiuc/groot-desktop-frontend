@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 
 app.set('views', './views');
-app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 
 //TODO Add more POST endpoints for all our form interactions
 app.post('/login', function(req, res){
@@ -605,6 +605,7 @@ app.get('/sponsors', function (req, res) {
 
 // Serve files from public
 app.use(express.static(__dirname + '/public'));
+app.use('/sponsors', express.static(__dirname + '/public'));
 
 //Start server
 app.listen(PORT);
