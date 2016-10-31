@@ -1,0 +1,63 @@
+<%- include('_partials/header') -%>
+
+<div id="resume-container">
+  <div class="row">
+    <h2>Job Posting</h2>
+    <p>Looking to hire? Use this simple form to submit your job posting and it will be included in a weekly mailing to ACM members looking for employment. All fields are required. If you have any questions <a href="mailto:corporate@acm.illinois.edu">email us</a>.</p>
+    <form>
+      <div class="field-group required">
+        <label for="job_title" class="field-label">Job Title</label>
+        <div class="field">
+          <input id="job_title" type="text" name="job_title" ng-model="job.title"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="org" class="field-label">Orginization</label>
+        <div class="field">
+          <input id="org" type="text" name="org" ng-model="job.org"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact-name" class="field-label">Contact Name</label>
+        <div class="field">
+          <input id="contact-name" type="text" name="contact-name" ng-model="job.contact.name"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact-email" class="field-label">Contact Email</label>
+        <div class="field">
+          <input id="contact-email" type="text" name="contact-email" ng-model="job.contact.email"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact-phone" class="field-label">Contact Phone</label>
+        <div class="field">
+          <input id="contact-phone" type="text" name="contact-phone" ng-model="job.contact.phone"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="type" class="field-label">Job Type:</label>
+        <label>Full-Time
+          <input type="checkbox" ng-model="job.type.fulltime"/>
+        </label>
+        <label>Part-Time
+          <input type="checkbox" ng-model="job.type.parttime"/>
+        </label>
+        <label>Intern/Co-op
+          <input type="checkbox" ng-model="job.type.intern"/>
+        </label>
+      </div>
+      <div class="field-group required">
+        <label for="type" class="field-label">Desciption</label>
+        <textarea id="text" rows="15"></textarea>
+      </div><br/>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" ng-click="uploadResume()" class="button">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>

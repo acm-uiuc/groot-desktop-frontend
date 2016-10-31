@@ -1,0 +1,19 @@
+<%- include('_partials/header') -%>
+
+<div id="quotess-container" class="small-12 medium-12 large-12 columns">
+  <div id="quotes-title" class="row">
+    <h2>Quotes</h2>
+  </div>
+  <div id="quotes" class="row">
+    <% for (var q of quotes) { %>
+      <div class="quotes">
+        <h5> <%= q.title %> </h5>
+        <ul class="dashed">
+          <li> <%= q.text %> </li>
+        </ul>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
