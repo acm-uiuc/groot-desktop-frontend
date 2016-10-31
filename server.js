@@ -149,6 +149,17 @@ app.get('/login', function(req, res) {
 	})
 });
 
+app.get('/sponsors/resume_filter', function(req, res) {
+	res.render('resume_filter', {
+		authenticated: false,
+		nav_un_auth: nav_un_auth,
+		nav_auth: nav_auth,
+		degree: sponsorsScope.degree,
+		job: sponsorsScope.job
+	})
+});
+
+
 app.get('/about', function(req, res) {
 	res.render('about', {
 		authenticated: false,
@@ -180,6 +191,8 @@ app.get('/about', function(req, res) {
         name: 'Admin',
         contacts: [
           {
+						title: 'Chair',
+						name: 'Eric Ahn',
             email: 'admin@acm.illinois.edu'
           }
         ]
@@ -187,12 +200,12 @@ app.get('/about', function(req, res) {
         name: 'Corporate',
         contacts: [
               {
-                  name: 'Amanda Sopkin'
-              },{
-                  name: 'Sujay Khandekar'
-              },{
-                  name: 'Tyler Kim'
-              },{
+									title: 'Co-Chair',
+                  name: 'Amanda Sopkin',
+                  email: 'corporate@acm.illinois.edu'
+						  },{
+								  title: 'Co-Chair',
+									name: 'Tyler Kim',
                   email: 'corporate@acm.illinois.edu'
               }
           ]
@@ -201,8 +214,7 @@ app.get('/about', function(req, res) {
           contacts: [
               {
                   name: 'Kevin Wang',
-                  title: 'Co-Chair'
-              },{
+                  title: 'Chair',
                   email: 'projects@acm.illinois.edu'
               }
           ]
@@ -210,23 +222,12 @@ app.get('/about', function(req, res) {
           name: 'Social',
           contacts: [
               {
-                  name: 'Laura Licari',
-                  title: 'Chair'
-              },{
+                  name: 'Margie Chubin',
+                  title: 'Chair',
                   email: 'social@acm.illinois.edu'
               }
           ]
-      },{
-          name: 'Banks of the Boneyard',
-          contacts: [
-              {
-                  name: 'Connie Fan',
-                  title: 'Editor'
-              },{
-                  email: 'boneyard@acm.illinois.edu'
-              }
-          ]
-        }
+      }
     ]
 	})
 });
