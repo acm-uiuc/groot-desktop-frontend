@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Association for Computing Machinery - University of Illinois Urbana-Champaign</title>
+    <meta name="author" content=""/>
+    <meta name="description" content="The Official Website of ACM@UIUC"/>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="stylesheet" href="lib/foundation-6/css/foundation.css"/>
+    <link rel="stylesheet/less" type="text/css" href="less/main.less"/>
+  </head>
+  <body>
+    <div>
+      <div class="top-bar nav">
+        <div class="top-bar-left">
+          <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
+            <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="images/acm-logo-flat.svg" class="logo"/>
+                  <h3 id="title-text">ACM@UIUC</h3></a></span></li>
+            <% if (!authenticated) { %>
+              <% for (var n of nav_un_auth) { %>
+                <li class="nav-loc">
+                  <a href= <%= n.path %> > <%= n.name %> </a>
+                </li>
+              <% } %>
+            <% } else { %>
+              <% for (var n of nav_auth) { %>
+                <li class="nav-loc">
+                  <a href= <%= n.path %> > <%= n.name %> </a>
+                </li>
+              <% } %>
+            <% } %>
+          </ul>
+        </div>
+        <div class="top-bar-right">
+          <div class="top-bar-right">
+            <ul class="dropdown menu">
+              <% if (!authenticated) { %>
+                <li><a id="nav-login" href="/login">
+                  <button id="login" class="button">Login</button></a></li>
+              <% } else { %>}
+                <li><a id="nav-login" href="/logout">
+                  <button id="logout" class="button">Logout</button></a></li>
+              <% } %>
+            </ul>
+          </div>
+        </div>
+      </div>
