@@ -7,12 +7,13 @@ const PORT = process.env.PORT || 5000;
 // Requires
 var express = require('express');
 var app = express();
+var path = require('path');
 var bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 
-app.set('views', './views');
+app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
 
 //TODO Add more POST endpoints for all our form interactions
@@ -48,25 +49,6 @@ app.post('/resume', function(req, res) {
 			res.send(body);
 	});
 });
-
-// test data
-var nav_un_auth = [
-		{name: 'About', path: '/about'},
-		{name: 'SIGs', path: '/sigs'},
-		{name: 'Events', path: '/events'},
-		{name: 'Reflections|Projections', path: '/conference'},
-		{name: 'Sponsors',path: '/sponsors'},
-		{name: 'Join', path: '/join'}
-];
-
-var nav_auth = [
-		{name: 'About', path: '/about'},
-		{name: 'SIGs', path: '/sigs'},
-		{name: 'Events', path: '/events'},
-		{name: 'Reflections|Projections', path: '/conference'},
-		{name: 'Sponsors',path: '/sponsors'},
-		{name: 'Intranet', path: '/intranet'}
-];
 
 var sponsorsScope = {
 	job: {
@@ -136,24 +118,18 @@ if (m > 6) {
 app.get('/', function (req, res) {
   res.render('home', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	});
 });
 
 app.get('/login', function(req, res) {
 	res.render('login', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	})
 });
 
 app.get('/about', function(req, res) {
 	res.render('about', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth,
 		groups:[
       {
         name: 'Top4',
@@ -234,8 +210,6 @@ app.get('/about', function(req, res) {
 app.get('/conference', function(req, res) {
 	res.render('conference', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth,
 		editions: [
 				{year: '2016', path: '/conference/2016'},
 				{year: '2015', path: '/conference/2015'},
@@ -266,285 +240,25 @@ app.get('/conference', function(req, res) {
 app.get('/events', function(req, res) {
 	res.render('events', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	})
 });
 
 app.get('/intranet', function(req, res) {
 	res.render('intranet', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	})
 });
 
 app.get('/join', function(req, res) {
 	res.render('join', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth,
-		sigs: [
-				{
-						name:'Gamebuilders',
-						description: "Anything and everything related to game development",
-						Chairs:'Michael Parilla',
-						meetingTime:'19:00',
-						meetingDay:'Tuesday',
-						meetingLoc:'Siebel 3405',
-						site:'http://www.acm.uiuc.edu/gamebuilders/',
-						members:[],
-						email:'Gamebuilders@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'GNU LUG',
-						description: "GNU Linux Users Group",
-						chairs:'Wayland Morgan, Jonathan Schipp',
-						meetingTime:'20:00',
-						meetingDay:'Monday',
-						meetingLoc:'CSL 301',
-						site:'http://www.acm.uiuc.edu/lug/',
-						members:[],
-						email:'Gnulug-l@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'ICPC',
-						description: "Facilitate the development of contest programming skills, with the goal of producing highly competitive teams in the prestigious ACM ICPC competition.",
-						chairs:'Arthur Li, Matthew Worley',
-						meetingTime:'18:00',
-						meetingDay:'Tuesday',
-						meetingLoc:'Siebel 218',
-						site:' http://icpc.cs.illinois.edu/',
-						members:[],
-						email:'ICPC-l@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'OpenNSM',
-						description: "Special Interest Group for Open (sourced) Network Security Monitoring",
-						chairs:'Shane Rogers, Jonathan Schipp',
-						meetingTime:'18:00',
-						meetingDay:'Monday',
-						meetingLoc:'CSL 301',
-						site:'http://open-nsm.net/',
-						members:[],
-						email:'Website-l@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'SIGArt',
-						 description: "Special Interest Group for Artificial Intelligence",
-						 chairs:'Jordan Luber',
-						 meetingTime:'13:00',
-						 meetingDay:'Sunday',
-						 meetingLoc:'Siebel 1105',
-						 site:'http://www.acm.uiuc.edu/sigart/',
-						 members:[],
-						 email:'SIGArt-l@acm.uiuc.edu',
-						 join:false
-				 },
-				{
-						name:'SIGBio',
-						description: "To pursue biological computing and cybernetics.",
-						chairs:'Jennifer Kokkines, Austin Walters',
-						meetingTime:'17:00',
-						meetingDay:'Tuesday',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'SIGBio-l@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'SIGBot',
-						description: "Special Interest Group for Robotics",
-						chairs:'Anna Galusza, Bryan Plummer',
-						meetingTime:'14:00',
-						meetingDay:'Sunday',
-						meetingLoc:'Siebel 1105',
-						site:'http://www.acm.uiuc.edu/sigbot/',
-						members:[],
-						email:' SIGBot@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'SIGCHI',
-						description: "Special Interest Group for Human-Computer Interaction.",
-						chairs:'Andrew Kuznetsov',
-						meetingTime:'17:00',
-						meetingDay:'Wednesday',
-						meetingLoc:'Siebel 1302',
-						site:'http://www.acm.uiuc.edu/sigchi',
-						members:[],
-						email:'SIGCHI-l@acm.uiuc.edu',
-						join:false
-				},
-				{
-						name:'SIGCoin',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGDave',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGEducation',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGEmbedded',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGGRAPH',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGMIS',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGMobile',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGMusic',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGOps',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGPlan',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'SIGPony',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						 email:'',
-						 join:false
-				 },
-				{
-						name:'SIGSoft',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						email:'',
-						join:false
-				},
-				{
-						name:'WebMonkeys',
-						description: "",
-						chairs:'',
-						meetingTime:'',
-						meetingDay:'',
-						meetingLoc:'',
-						site:'',
-						members:[],
-						join:false
-				}
-		]
+		sigs: [] // TODO: Call Ish's groups-service
 	})
 });
 
 app.get('/sigs', function (req, res) {
   res.render('sigs', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	});
 });
 
@@ -559,8 +273,6 @@ app.get('/quotes', function (req, res) {
 			} else {
 				res.render('quotes', {
 					authenticated: false,
-					nav_un_auth: nav_un_auth,
-					nav_auth: nav_auth,
 					quotes: body
 				});
 			}
@@ -570,24 +282,18 @@ app.get('/quotes', function (req, res) {
 app.get('/sponsors/new_job_post', function (req, res) {
   res.render('new_job_post', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	});
 });
 
 app.get('/sponsors/recruiter_login', function(req, res) {
 	res.render('recruiter_login', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	})
 });
 
 app.get('/sponsors/resume_book', function (req, res) {
   res.render('resume_book', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth,
 		job: sponsorsScope.job,
 		degree: sponsorsScope.degree,
 		grad: sponsorsScope.grad,
@@ -598,8 +304,6 @@ app.get('/sponsors/resume_book', function (req, res) {
 app.get('/sponsors', function (req, res) {
   res.render('sponsors', {
 		authenticated: false,
-		nav_un_auth: nav_un_auth,
-		nav_auth: nav_auth
 	});
 });
 
