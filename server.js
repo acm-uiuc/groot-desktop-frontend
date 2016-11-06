@@ -9,6 +9,9 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
+var session = require('client-session'); // ADDED
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -16,10 +19,88 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
 
-app.post('/login', function(req, res) {
-    console.log(req.body.netid, req.body.password);
-    res.status(501).send("Error:\nThis page will be implemented soon!");
+/* This might need to be modified depending on how other stuff works and pages
+ *****************************************************************************/
+
+// npm install client-sessions
+app.use(session({
+	cookieName: 'session',
+	secret: 'THE_TOKEN_GOES_HERE',
+	duration: 30*60*1000,
+	activeDuration: 5*60*1000,
+	httpOnly: true, // prevents browers JS from accessing cookies
+	secure: true, // cookie can only be used over HTTPS
+	ephemeral: true // Deletes cookie when browser closes.
+}));
+
+// Handle Sessions Accross differnt pages using express
+app.use(function(req, res, next) {
+ 	if (req.session && req.session.user) {
+    	User.findOne({ 
+    		email: req.session.user.email 
+    	}, function(err, user) {
+	      	if (user) {
+			    req.user = user;
+			    // delete the password from the session
+			    delete req.user.password;
+			    //refresh the session value 
+			    req.session.user = user;
+			    res.locals.user = user;
+	     	}
+	      	// finishing processing the middleware and run the route
+	      	next();
+	    });
+  	} else {
+    	next();
+  	}
 });
+
+//TODO Add more POST endpoints for all our form interactions
+app.post('/login', function(req, res){
+  User.findOne({ email: req.body.netid }, function(err, user) {
+  	//console.log(req.body.netid, req.body.password)
+    // If user is not logged in give error message
+    if (!user) {
+      res.render('login', { 
+      	error: 'Invalid email or password.' 
+      });
+    } else {
+      // if user email is correct check password
+      if (req.body.password === user.password) {
+      	// set cookie with user info
+      	req.session.user = user;
+      	// if user password is correct send user to homepage
+        res.redirect('/home'); 
+      } else {
+      	// if password is not correct render login
+        res.render('login', { 
+        	error: 'Invalid email or password.' 
+        });
+      }
+    }
+  });
+});
+
+// reset session when user logs out
+app.get('/logout', function(req, res) {
+  req.session.reset();
+  res.redirect('/');
+});
+
+// Check is user is logged in, if yes redirect them
+function requireLogin(req, res, next) {
+  if (!req.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+};
+
+/*********************************************************************/
+
+
+
+
 
 app.post('/authenticate', function(req, res) {
     request.post({
