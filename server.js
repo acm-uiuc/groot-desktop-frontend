@@ -126,83 +126,100 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/about', function(req, res) {
-	res.render('about', {
-		authenticated: false,
-		groups:[
-      {
-        name: 'Top4',
-        contacts: [
-          {
-            title: 'Chair',
-            name: 'Naren Dasan',
-            email: 'acm@illinois.edu'
-          },{
-            title: 'Vice Chair',
-            name: 'Sathvika Ashokkumar',
-            email: 'vice-chair@acm.illinois.edu'
-          },{
-            title: 'Treasurer',
-            name: 'Tommy Yu',
-            email: 'treasurer@acm.illinois.edu'
-          },{
-            title: 'Secretary',
-            name: 'Alec Kochevar-Cureton',
-            email: 'secretary@acm.illinois.edu'
-          }
-        ]
-      }, {
-        name: 'Admin',
-        contacts: [
-          {
-            email: 'admin@acm.illinois.edu'
-          }
-        ]
-      }, {
-        name: 'Corporate',
-        contacts: [
-              {
-                  name: 'Amanda Sopkin'
-              },{
-                  name: 'Sujay Khandekar'
-              },{
-                  name: 'Tyler Kim'
-              },{
-                  email: 'corporate@acm.illinois.edu'
-              }
-          ]
-      },{
-          name: 'Projects',
-          contacts: [
-              {
-                  name: 'Kevin Wang',
-                  title: 'Co-Chair'
-              },{
-                  email: 'projects@acm.illinois.edu'
-              }
-          ]
-      },{
-          name: 'Social',
-          contacts: [
-              {
-                  name: 'Laura Licari',
-                  title: 'Chair'
-              },{
-                  email: 'social@acm.illinois.edu'
-              }
-          ]
-      },{
-          name: 'Banks of the Boneyard',
-          contacts: [
-              {
-                  name: 'Connie Fan',
-                  title: 'Editor'
-              },{
-                  email: 'boneyard@acm.illinois.edu'
-              }
-          ]
-        }
-    ]
-	})
+	var groupsData = request({
+		url: "http://localhost:9001/groups/committees",
+		method: "GET"
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			// Sends the 404 page
+			response.sendFile(path.join(__dirname, '404.html'));
+		}
+		/* TODO:
+		 *
+		 * So I got the data to come in using the requests module.
+		 * It's pulling data off of the groot-groups-service. Just need
+		 * somebody else to throw it on EJS accordingly :)
+		 */
+		res.render('about', body);
+	});
+	// res.render('about', {
+	// 	authenticated: false,
+	// 	groups:[
+ //      {
+ //        name: 'Top4',
+ //        contacts: [
+ //          {
+ //            title: 'Chair',
+ //            name: 'Naren Dasan',
+ //            email: 'acm@illinois.edu'
+ //          },{
+ //            title: 'Vice Chair',
+ //            name: 'Sathvika Ashokkumar',
+ //            email: 'vice-chair@acm.illinois.edu'
+ //          },{
+ //            title: 'Treasurer',
+ //            name: 'Tommy Yu',
+ //            email: 'treasurer@acm.illinois.edu'
+ //          },{
+ //            title: 'Secretary',
+ //            name: 'Alec Kochevar-Cureton',
+ //            email: 'secretary@acm.illinois.edu'
+ //          }
+ //        ]
+ //      }, {
+ //        name: 'Admin',
+ //        contacts: [
+ //          {
+ //            email: 'admin@acm.illinois.edu'
+ //          }
+ //        ]
+ //      }, {
+ //        name: 'Corporate',
+ //        contacts: [
+ //              {
+ //                  name: 'Amanda Sopkin'
+ //              },{
+ //                  name: 'Sujay Khandekar'
+ //              },{
+ //                  name: 'Tyler Kim'
+ //              },{
+ //                  email: 'corporate@acm.illinois.edu'
+ //              }
+ //          ]
+ //      },{
+ //          name: 'Projects',
+ //          contacts: [
+ //              {
+ //                  name: 'Kevin Wang',
+ //                  title: 'Co-Chair'
+ //              },{
+ //                  email: 'projects@acm.illinois.edu'
+ //              }
+ //          ]
+ //      },{
+ //          name: 'Social',
+ //          contacts: [
+ //              {
+ //                  name: 'Laura Licari',
+ //                  title: 'Chair'
+ //              },{
+ //                  email: 'social@acm.illinois.edu'
+ //              }
+ //          ]
+ //      },{
+ //          name: 'Banks of the Boneyard',
+ //          contacts: [
+ //              {
+ //                  name: 'Connie Fan',
+ //                  title: 'Editor'
+ //              },{
+ //                  email: 'boneyard@acm.illinois.edu'
+ //              }
+ //          ]
+ //        }
+ //    ]
+	// })
 });
 
 app.get('/conference', function(req, res) {
