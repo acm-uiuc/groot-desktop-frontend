@@ -2,7 +2,6 @@
  * Created by SujayKhandekar on 10/3/15.
  */
 
-
 const PORT = process.env.PORT || 5000;
 
 // Requires
@@ -10,16 +9,14 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
 
-//TODO Add more POST endpoints for all our form interactions
 app.post('/login', function(req, res){
-	// Login
 	console.log(req.body.netid, req.body.password)
 });
 
@@ -308,10 +305,10 @@ app.get('/sponsors', function (req, res) {
 	});
 });
 
-// Serve files from public
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
-//Start server
-app.listen(PORT);
-console.log('GROOT_DESKTOP is live on port ' + PORT + "!");
+//Start server and logs port as a callback
+app.listen(PORT, function() {
+	console.log('GROOT_DESKTOP is live on port ' + PORT + "!");	
+});
