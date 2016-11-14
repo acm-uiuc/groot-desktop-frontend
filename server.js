@@ -37,14 +37,14 @@ app.use(session({
 // Handle Sessions Accross differnt pages using express
 app.use(function(req, res, next) {
  	if (req.session && req.session.user) {
-    	User.findOne({ 
-    		email: req.session.user.email 
+    	User.findOne({
+    		email: req.session.user.email
     	}, function(err, user) {
 	      	if (user) {
 			    req.user = user;
 			    // delete the password from the session
 			    delete req.user.password;
-			    //refresh the session value 
+			    //refresh the session value
 			    req.session.user = user;
 			    res.locals.user = user;
 	     	}
@@ -62,8 +62,8 @@ app.post('/login', function(req, res){
   	//console.log(req.body.netid, req.body.password)
     // If user is not logged in give error message
     if (!user) {
-      res.render('login', { 
-      	error: 'Invalid email or password.' 
+      res.render('login', {
+      	error: 'Invalid email or password.'
       });
     } else {
       // if user email is correct check password
@@ -71,11 +71,11 @@ app.post('/login', function(req, res){
       	// set cookie with user info
       	req.session.user = user;
       	// if user password is correct send user to homepage
-        res.redirect('/home'); 
+        res.redirect('/home');
       } else {
       	// if password is not correct render login
-        res.render('login', { 
-        	error: 'Invalid email or password.' 
+        res.render('login', {
+        	error: 'Invalid email or password.'
         });
       }
     }
@@ -104,17 +104,17 @@ function requireLogin(req, res, next) {
 
 
 app.post('/authenticate', function(req, res) {
-    request.post({
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        url: 'http://localhost:8000/session',
-        body: JSON.stringify(req.body),
-    }, function(error, response, body) {
-        console.log(body);
-        res.send(body);
-    });
+	request.post({
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			url: 'http://localhost:8000/session',
+			body: JSON.stringify(req.body),
+		}, function(error, response, body){
+			console.log(body);
+			res.send(body);
+	});
 });
 
 var sponsorsScope = {
