@@ -14,6 +14,7 @@
     "client-sessions": "^0.7.0",
     "ejs": "^2.5.2",
     "express": "4.13.x",
+    "express-fileupload": "0.0.5",
     "forever": "0.15.x",
     "request": "^2.75.0"
   },

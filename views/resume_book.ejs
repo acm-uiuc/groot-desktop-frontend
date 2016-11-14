@@ -7,34 +7,34 @@
       The ACM resume book is a packet of resumes provided to interested companies who contact ACM. To be included please fill in the information below.
       If you have any questions<a href="mailto:corporate@acm.illinois.edu">email us</a>.
     </p>
-    <form action="resume" method="post">
+    <form ref="uploadForm" id="uploadForm" action="/resume" method="post" encType="multipart/form-data" >
       <div class="field-group required">
         <label for="first_name" class="field-label">First Name</label>
         <div class="field">
-          <input id="first_name" type="text" name="first_name" maxlength="32" ng-model="student.firstName"/>
+          <input id="first_name" type="text" name="first_name" maxlength="32"/>
         </div>
       </div>
       <div class="field-group required">
         <label for="last_name" class="field-label">Last Name</label>
         <div class="field">
-          <input id="last_name" type="text" name="last_name" maxlength="32" ng-model="student.lastName"/>
+          <input id="last_name" type="text" name="last_name" maxlength="32" />
         </div>
       </div>
       <div class="field-group required">
         <label for="netid" class="field-label">NetID</label>
         <div class="field">
-          <input id="netid" type="text" name="netid" maxlength="15" ng-model="student.netid"/>
+          <input id="netid" type="text" name="netid" maxlength="15"/>
         </div>
       </div>
       <div class="field-group required">
         <label for="netid" class="field-label">Prefered Email</label>
         <div class="field">
-          <input id="email" type="text" name="email" ng-model="student.email"/>
+          <input id="email" type="text" name="email"/>
         </div>
       </div>
       <div class="field-group required">
         <label for="year" class="field-label">Graduation</label>
-        <select id="grad_year" name="gradYear" ng-model="student.gradYear">
+        <select id="grad_year" name="gradYear" ">
           <% for (var option of grad.years) { %>
             <option value= <%= option.date %> > <%= option.date %> </option>
           <% } %>
@@ -42,7 +42,7 @@
       </div>
       <div class="field-group required">
         <label for="degreeType" class="field-label">Degree</label>
-        <select id="degree_type" name="degreeType" ng-model="student.degreeType">
+        <select id="degree_type" name="degreeType">
           <% for (var option of degree.types) { %>
             <option value= <%= option.name %> > <%= option.name %> </option>
           <% } %>
@@ -50,7 +50,7 @@
       </div>
       <div class="field-group required">
         <label for="jobType" class="field-label">Seeking</label>
-        <select id="job_type" name="jobType" ng-model="student.jobType">
+        <select id="job_type" name="jobType">
           <% for (var option of job.types) { %>
             <option value= <%= option.name %> > <%= option.name %> </option>
           <% } %>
@@ -58,12 +58,12 @@
       </div>
       <div class="field-group required">
         <label for="jobType" class="field-label">Resume</label>
-        <input type="file" onchange="angular.element(this).scope().pdfUpload(this)" file-model="resume" name="resume" class="upload"/>
+        <input type="file" file-model="resume" name="uploadResume" class="upload"/>
       </div><br/>
       <div class="control-group">
         <p>By submitting this form you verify that all the information above is correct and give ACM@UIUC permission to distribute your resume to all interested parties.</p>
         <div class="controls">
-          <button type="submit" ng-click="uploadResume()" class="button">Submit</button>
+          <button type="submit" class="button">Submit</button>
         </div>
       </div>
     </form>

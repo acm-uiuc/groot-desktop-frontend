@@ -6,10 +6,11 @@ const PORT = process.env.PORT || 5000;
 
 // Requires
 var express = require('express');
+var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
-var session = require('client-session'); // ADDED
+var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
@@ -109,20 +110,6 @@ app.post('/authenticate', function(req, res) {
             'Accept': 'application/json'
         },
         url: 'http://localhost:8000/session',
-        body: JSON.stringify(req.body),
-    }, function(error, response, body) {
-        console.log(body);
-        res.send(body);
-    });
-});
-
-app.post('/resume', function(req, res) {
-    request.post({
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        url: 'http://localhost:8000/resume',
         body: JSON.stringify(req.body),
     }, function(error, response, body) {
         console.log(body);
