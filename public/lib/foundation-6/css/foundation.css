@@ -153,6 +153,20 @@ sub {
 img {
   border: 0; }
 
+.sponsor{
+    height: auto;
+    width: auto;
+    max-width: 500px;
+    max-height: 300px;
+    display: inline-block;
+    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-right: 20px;
+    padding-left: 20px;
+    text-align: center;
+
+}
+
 /**
  * Correct overflow not hidden in IE 9/10/11.
  */

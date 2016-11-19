@@ -159,6 +159,17 @@ app.get('/sponsors/resume_filter', function(req, res) {
 	})
 });
 
+app.get('/sponsors/sponsors_list', function(req, res) {
+	res.render('sponsors_list', {
+		authenticated: false,
+		nav_un_auth: nav_un_auth,
+		nav_auth: nav_auth,
+		degree: sponsorsScope.degree,
+		job: sponsorsScope.job
+	})
+});
+
+
 
 app.get('/about', function(req, res) {
 	res.render('about', {
