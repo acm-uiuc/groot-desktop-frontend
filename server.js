@@ -33,26 +33,29 @@ app.use(session({
 }));
 
 // Handle Sessions Accross differnt pages using express
-app.use(function(req, res, next) {
-	if (req.session && req.session.user) {
-		User.findOne({ 
-			email: req.session.user.email 
-		}, function(err, user) {
-			if (user) {
-				req.user = user;
-				// delete the password from the session
-				delete req.user.password;
-				//refresh the session value 
-				req.session.user = user;
-				res.locals.user = user;
-			}
-			// finishing processing the middleware and run the route
-			next();
-		});
-	} else {
-		next();
-	}
-});
+
+
+//not sure if this is necessary
+// app.use(function(req, res, next) {
+// 	if (req.session && req.session.user) {
+// 		User.findOne({ 
+// 			email: req.session.user.email 
+// 		}, function(err, user) {
+// 			if (user) {
+// 				req.user = user;
+// 				// delete the password from the session
+// 				delete req.user.password;
+// 				//refresh the session value 
+// 				req.session.user = user;
+// 				res.locals.user = user;
+// 			}
+// 			// finishing processing the middleware and run the route
+// 			next();
+// 		});
+// 	} else {
+// 		next();
+// 	}
+// });
 
 //TODO Add more POST endpoints for all our form interactions
 app.post('/login', function(req, res){
@@ -109,28 +112,7 @@ app.post('/login', function(req, res){
 	}
 
 	request(options, callback);
-  /*User.findOne({ email: req.body.netid }, function(err, user) {
-	//console.log(req.body.netid, req.body.password)
-	// If user is not logged in give error message
-	if (!user) {
-	  res.render('login', { 
-		error: 'Invalid email or password.' 
-	  });
-	} else {
-	  // if user email is correct check password
-	  if (req.body.password === user.password) {
-		// set cookie with user info
-		req.session.user = user;
-		// if user password is correct send user to homepage
-		res.redirect('/home'); 
-	  } else {
-		// if password is not correct render login
-		res.render('login', { 
-			error: 'Invalid email or password.' 
-		});
-	  }
-	}
-  });*/
+
 
 
 });
