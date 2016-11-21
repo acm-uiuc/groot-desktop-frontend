@@ -50,3 +50,6 @@ fabric.properties
 
 npm-debug.log
 .DS_Store
+
+# compiled files
+public/css
