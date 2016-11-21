@@ -7,8 +7,8 @@
 @button-color: #333333;
 @form-text-color:#464646;
 @font-face {
-    font-family: 'InconsolataReg';
-    src: url('../fonts/Inconsolata-Regular.ttf') format('truetype');
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
 }
 
 
@@ -22,7 +22,7 @@
             MIXINS
 **********************************/
 .monospace-font() {
-    font-family: "InconsolataReg";
+    font-family: "Roboto";
 }
 .serif-font() {
     font-family: 'Lato', sans-serif;
@@ -51,7 +51,7 @@
 
 body {
     color: @font-color;
-    font-family: "InconsolataReg";
+    font-family: "Roboto-Regular";
 }
 
 h1 {
@@ -82,6 +82,12 @@ h5 {
 p {
     .serif-font();
 }
+
+p1{
+  .serif-font();
+  padding-bottom: 0.5em;
+}
+
 
 a {
     color: @font-color;
