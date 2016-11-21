@@ -288,6 +288,13 @@ app.get('/sponsors', function(req, res) {
     });
 });
 
+app.get('/sponsors/sponsors_list', function(req, res) {
+    res.render('sponsor_list', {
+     		authenticated: false,
+ 	})
+ });
+
+
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
