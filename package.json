@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The Official ACM@UIUC Website",
   "scripts": {
-    "start": "mkdir -p public/css && lessc public/less/main.less > public/css/main.css && node server.js"
+    "start": "mkdirp public/css && lessc public/less/main.less > public/css/main.css && node server.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.3.0",
-    "less": "^2.7.1"
+    "less": "^2.7.1",
+    "mkdirp": "^0.5.1"
   }
 }
