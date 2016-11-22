@@ -9,6 +9,22 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
+var session = require('client-sessions'); // ADDED
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+var request = require('request');
+
+app.set('views', path.resolve(__dirname) + '/views');
+app.set('view engine', 'ejs');
+
+
+/*
+<<<<<<< HEAD
+=======
+var session = require('client-sessions'); // ADDED
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+>>>>>>> sessions
 var request = require('request');
 
 var session = require('express-session');
@@ -30,10 +46,131 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
 
-app.post('/login', function(req, res) {
-    console.log(req.body.netid, req.body.password);
-    res.status(501).send("Error:\nThis page will be implemented soon!");
+*/
+
+// <<<<<<< HEAD
+// app.post('/login', function(req, res) {
+//     console.log(req.body.netid, req.body.password);
+//     res.status(501).send("Error:\nThis page will be implemented soon!");
+// =======
+
+/* This might need to be modified depending on how other stuff works and pages
+ *****************************************************************************/
+
+// npm install client-sessions
+app.use(session({
+	cookieName: 'session',
+	secret: 'THE_TOKEN_GOES_HERE',//apparently this doesn't matter, used for hashing??
+	duration: 30*60*1000,
+	activeDuration: 5*60*1000,
+	httpOnly: true, // prevents browers JS from accessing cookies
+	secure: true, // cookie can only be used over HTTPS
+	ephemeral: true // Deletes cookie when browser closes.
+}));
+
+// Handle Sessions Accross differnt pages using express
+
+
+//not sure if this is necessary
+// app.use(function(req, res, next) {
+// 	if (req.session && req.session.user) {
+// 		User.findOne({ 
+// 			email: req.session.user.email 
+// 		}, function(err, user) {
+// 			if (user) {
+// 				req.user = user;
+// 				// delete the password from the session
+// 				delete req.user.password;
+// 				//refresh the session value 
+// 				req.session.user = user;
+// 				res.locals.user = user;
+// 			}
+// 			// finishing processing the middleware and run the route
+// 			next();
+// 		});
+// 	} else {
+// 		next();
+// 	}
+// });
+
+//TODO Add more POST endpoints for all our form interactions
+app.post('/login', function(req, res){
+	var netid = req.body.netid, pass = req.body.password;
+	var options = {
+		url: "http://localhost:8000/session?username="+netid,
+		method:"POST",
+		json: true,
+		body: {
+			"username" : netid,
+			"password" : pass,
+			"validation-factors" : {
+				"validationFactors" : [{
+					"name" : "remote_address",
+					"value" : "127.0.0.1"
+				}]
+			}
+		}
+	};
+
+	function callback(error, response, body)
+	{
+		if(!body || !body["token"])
+		{
+			// res.status(422).end();//the token could not be validated
+			res.render('login', { 
+				error: 'Invalid email or password.' 
+			});
+
+		}
+		else
+		{
+			console.log("error: " + error);
+			console.log("Response: " + response);
+			console.log("Body: " + body);
+			// if(error)
+			// 	console.log("Error: " + error);
+			// if(body["reason"])
+			// 	console.log("ISSUE: " + body["reason"]);
+			// else
+			//	res.json(body).end();
+
+			// set cookie with user info
+			req.session.netid = netid;
+			req.session.token = body["token"];
+			console.log("token: " + body["token"]);
+			// if user password is correct send user to homepage
+			// res.redirect('home'); 
+
+			res.render('home', {
+				authenticated: true,
+			});
+		}
+	}
+
+	request(options, callback);
+
+
+
 });
+
+// reset session when user logs out
+app.get('/logout', function(req, res) {
+  req.session.reset();
+  res.redirect('/');
+// >>>>>>> sessions
+});
+
+// Check is user is logged in, if yes redirect them
+function requireLogin(req, res, next) {
+  if (!req.user) {
+	res.redirect('/login');
+  } else {
+	next();
+  }
+};
+
+/*********************************************************************/
+
 
 app.post('/authenticate', function(req, res) {
     request.post({
@@ -197,9 +334,16 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/intranet', function(req, res) {
-    res.render('intranet', {
-        authenticated: false,
-    });
+    if(req.session.token)
+    {
+        res.render('intranet', {
+            authenticated: true,
+        });
+    }
+    else
+        res.render('intranet', {
+            authenticated: false,
+        })
 });
 
 app.post('/join', function(req, res) {
