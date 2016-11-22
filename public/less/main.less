@@ -6,10 +6,6 @@
 @background-color: white;
 @button-color: #333333;
 @form-text-color:#464646;
-@font-face {
-    font-family: 'InconsolataReg';
-    src: url('../fonts/Inconsolata-Regular.ttf') format('truetype');
-}
 
 
 /*********************************
@@ -22,7 +18,7 @@
             MIXINS
 **********************************/
 .monospace-font() {
-    font-family: "InconsolataReg";
+    font-family: "Roboto", sans-serif;
 }
 .serif-font() {
     font-family: 'Lato', sans-serif;
@@ -45,13 +41,11 @@
 @import "elements/dashed_ul.less";
 @import "elements/structure.less";
 
-@import url(https://fonts.googleapis.com/css?family=Lato:300);
-
 
 
 body {
     color: @font-color;
-    font-family: "InconsolataReg";
+    font-family: "Roboto";
 }
 
 h1 {
@@ -82,6 +76,12 @@ h5 {
 p {
     .serif-font();
 }
+
+p1{
+  .serif-font();
+  padding-bottom: 0.5em;
+}
+
 
 a {
     color: @font-color;
@@ -114,4 +114,18 @@ a:hover {
 
 .content{
     margin-bottom: 100px;
+}
+
+.sponsor{
+    height: auto;
+    width: auto;
+    max-width: 500px;
+    max-height: 300px;
+    display: inline-block;
+    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-right: 50px;
+    padding-left: 20px;
+    text-align: center;
+
 }

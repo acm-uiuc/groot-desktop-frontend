@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "The Official ACM@UIUC Website",
   "scripts": {
-    "start": "node server.js"
+    "start": "mkdir -p public/css && lessc public/less/main.less > public/css/main.css && node server.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,6 @@
     "ejs": "^2.5.2",
     "express": "4.13.x",
     "forever": "0.15.x",
-    "less": "^2.7.1",
     "request": "^2.75.0"
   },
   "devDependencies": {
@@ -24,6 +23,7 @@
     "eslint-plugin-angular": "^1.4.1",
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.3.0"
+    "eslint-plugin-react": "^6.3.0",
+    "less": "^2.7.1"
   }
 }

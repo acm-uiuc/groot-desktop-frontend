@@ -36,16 +36,6 @@ ajv@^4.7.0:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
 
-angular-ui-router@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.3.1.tgz#914678eeeb4545defc786cf12d0d1994246a3e8a"
-  dependencies:
-    angular "^1.0.8"
-
-angular@^1.0.8:
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.8.tgz#925a5392b8c212d09572dc446db7e01264e094cb"
-
 ansi-escapes@^1.1.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
