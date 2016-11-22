@@ -18,41 +18,7 @@ app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
 
 
-/*
-<<<<<<< HEAD
-=======
-var session = require('client-sessions'); // ADDED
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
->>>>>>> sessions
-var request = require('request');
 
-var session = require('express-session');
-// app.use(express.cookieParser());
-// app.use(express.session());
-// app.use(app.router);
-app.use(session({
-	cookieName: 'session',
-	secret: 'THE_TOKEN_GOES_HERE',//apparently this doesn't matter, used for hashing??
-	duration: 30*60*1000,
-	activeDuration: 5*60*1000,
-	httpOnly: true, // prevents browers JS from accessing cookies
-	secure: true, // cookie can only be used over HTTPS
-	ephemeral: true // Deletes cookie when browser closes.
-}));
-
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.set('views', path.resolve(__dirname) + '/views');
-app.set('view engine', 'ejs');
-
-*/
-
-// <<<<<<< HEAD
-// app.post('/login', function(req, res) {
-//     console.log(req.body.netid, req.body.password);
-//     res.status(501).send("Error:\nThis page will be implemented soon!");
-// =======
 
 /* This might need to be modified depending on how other stuff works and pages
  *****************************************************************************/
