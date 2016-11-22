@@ -106,9 +106,10 @@ app.post('/login', function(req, res){
 			console.log("token: " + body["token"]);
 			// if user password is correct send user to homepage
 			// res.redirect('home'); 
-
-			res.render('home', {
-				authenticated: true,
+            console.log("session:" + req.session);
+			res.render('intranet', {
+                authenticated: true,
+                session: req.session
 			});
 		}
 	}
