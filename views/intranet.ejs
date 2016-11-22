@@ -1,8 +1,9 @@
 <%- include('_partials/header') -%>
 
 <!-- http get on http://localhost:9001/groups/committees/Admin?isMember=<NETID> and http://localhost:9001/groups/committees/top4?isMember=<NETID> to find out if user is admin, check response json for "isValid":"true" -->
-
+<%=session.user%>
 <% console.log(JSON.stringify(session)) %>
+
 
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-9 large-9 columns">
