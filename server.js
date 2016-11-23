@@ -67,7 +67,10 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
     if(!req.session.netid)
     {
         req.session.auth = false;
+        req.session.isAdmin = false;
+
     }
+    next();
 });
 
 
@@ -94,34 +97,25 @@ app.post('/login', function(req, res){
 	{
 		if(!body || !body["token"])
 		{
-			// res.status(422).end();//the token could not be validated
 			res.render('login', {
                 authenticated: false,
 				error: 'Invalid email or password.'
 			});
-
 		}
 		else
 		{
-			console.log("error: " + error);
-			console.log("Response: " + response);
-			console.log("Body: " + body);
-			// if(error)
-			// 	console.log("Error: " + error);
-			// if(body["reason"])
-			// 	console.log("ISSUE: " + body["reason"]);
-			// else
-			//	res.json(body).end();
+			if(error)
+				console.log("Error: " + error);
+			if(body["reason"])
+				console.log("ISSUE: " + body["reason"]);
+            console.log(body);
 
 			// set cookie with user info
 			req.session.netid = netid;
 			req.session.token = body["token"];
             req.session.auth = true;
 			console.log("token: " + body["token"]);
-			// if user password is correct send user to homepage
-			// res.redirect('home');
             console.log("session:" + req.session);
-			// res.redirect("/intranet");
 			res.render('intranet', {
                 authenticated: req.session.auth,
                 session: req.session
@@ -248,6 +242,7 @@ app.get('/login', function(req, res) {
     {
         res.render('intranet', {
             authenticated: req.session.auth,
+            session: req.session
         });
     }
     else
@@ -377,7 +372,7 @@ app.get('/join', function(req, res) {
 
 app.get('/sigs', function(req, res) {
     res.render('sigs', {
-        authenticated: false,
+        authenticated: req.session.auth,
     });
 });
 
@@ -391,7 +386,7 @@ app.get('/quotes', function(req, res) {
             res.status(500).send("Error " + error.code);
         } else {
             res.render('quotes', {
-                authenticated: false,
+                authenticated: req.session.auth,
                 quotes: body
             });
         }
