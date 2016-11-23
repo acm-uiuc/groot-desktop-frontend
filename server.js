@@ -40,14 +40,14 @@ app.use(session({
 //not sure if this is necessary
 // app.use(function(req, res, next) {
 // 	if (req.session && req.session.user) {
-// 		User.findOne({ 
-// 			email: req.session.user.email 
+// 		User.findOne({
+// 			email: req.session.user.email
 // 		}, function(err, user) {
 // 			if (user) {
 // 				req.user = user;
 // 				// delete the password from the session
 // 				delete req.user.password;
-// 				//refresh the session value 
+// 				//refresh the session value
 // 				req.session.user = user;
 // 				res.locals.user = user;
 // 			}
@@ -83,8 +83,8 @@ app.post('/login', function(req, res){
 		if(!body || !body["token"])
 		{
 			// res.status(422).end();//the token could not be validated
-			res.render('login', { 
-				error: 'Invalid email or password.' 
+			res.render('login', {
+				error: 'Invalid email or password.'
 			});
 
 		}
@@ -105,8 +105,9 @@ app.post('/login', function(req, res){
 			req.session.token = body["token"];
 			console.log("token: " + body["token"]);
 			// if user password is correct send user to homepage
-			// res.redirect('home'); 
+			// res.redirect('home');
             console.log("session:" + req.session);
+			// res.redirect("/intranet");
 			res.render('intranet', {
                 authenticated: true,
                 session: req.session
@@ -308,7 +309,7 @@ app.get('/intranet', function(req, res) {
         });
     }
     else
-        res.render('intranet', {
+        res.render('login', {
             authenticated: false,
         })
 });
