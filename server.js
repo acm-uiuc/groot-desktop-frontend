@@ -59,6 +59,18 @@ app.use(session({
 // 	}
 // });
 
+//my understanding of this code: is middleware, so it gets called in between when express recieves the request and 
+// when it routes it to the code below
+// do we need to do anything like this?  yes
+
+app.use(function(req, res, next){//mainly for the inital load, setting initial values for the session
+    if(!req.session.netid)
+    {
+        req.session.auth = false;
+    }
+});
+
+
 //TODO Add more POST endpoints for all our form interactions
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
@@ -72,7 +84,7 @@ app.post('/login', function(req, res){
 			"validation-factors" : {
 				"validationFactors" : [{
 					"name" : "remote_address",
-					"value" : "127.0.0.1"
+					"value" : "127.0.0.1"//something to address later, possible issue with crowd
 				}]
 			}
 		}
@@ -84,6 +96,7 @@ app.post('/login', function(req, res){
 		{
 			// res.status(422).end();//the token could not be validated
 			res.render('login', {
+                authenticated: false,
 				error: 'Invalid email or password.'
 			});
 
@@ -103,39 +116,26 @@ app.post('/login', function(req, res){
 			// set cookie with user info
 			req.session.netid = netid;
 			req.session.token = body["token"];
+            req.session.auth = true;
 			console.log("token: " + body["token"]);
 			// if user password is correct send user to homepage
 			// res.redirect('home');
             console.log("session:" + req.session);
 			// res.redirect("/intranet");
 			res.render('intranet', {
-                authenticated: true,
+                authenticated: req.session.auth,
                 session: req.session
 			});
 		}
 	}
-
 	request(options, callback);
-
-
-
 });
 
 // reset session when user logs out
 app.get('/logout', function(req, res) {
   req.session.reset();
   res.redirect('/');
-// >>>>>>> sessions
 });
-
-// Check is user is logged in, if yes redirect them
-function requireLogin(req, res, next) {
-  if (!req.user) {
-	res.redirect('/login');
-  } else {
-	next();
-  }
-};
 
 /*********************************************************************/
 
@@ -235,14 +235,26 @@ if (m > 6) {
 
 app.get('/', function(req, res) {
     res.render('home', {
-        authenticated: false,
+        authenticated: req.session.auth,
     });
 });
 
 app.get('/login', function(req, res) {
-    res.render('login', {
-        authenticated: false,
-    });
+    console.log("req: ");
+    console.log("netid: " + req.session.netid);
+    console.log("token: " + req.session.token);
+
+    if(req.session.auth)
+    {
+        res.render('intranet', {
+            authenticated: req.session.auth,
+        });
+    }
+    else
+        res.render('login', {
+            authenticated: req.session.auth,
+    })
+
 });
 
 app.get('/about', function(req, res) {
@@ -267,7 +279,7 @@ app.get('/about', function(req, res) {
 
 app.get('/conference', function(req, res) {
     res.render('conference', {
-        authenticated: false,
+        authenticated: req.session.auth,
         editions: [
             { year: '2016', path: '/conference/2016' },
             { year: '2015', path: '/conference/2015' },
@@ -297,21 +309,21 @@ app.get('/conference', function(req, res) {
 
 app.get('/events', function(req, res) {
     res.render('events', {
-        authenticated: false,
+        authenticated: req.session.auth,
     });
 });
 
 app.get('/intranet', function(req, res) {
-    if(req.session.token)
+    if(req.session.auth)
     {
         res.render('intranet', {
-            authenticated: true,
+            authenticated: req.session.auth,
         });
     }
     else
         res.render('login', {
-            authenticated: false,
-        })
+            authenticated: req.session.auth,
+    })
 });
 
 app.post('/join', function(req, res) {
@@ -410,7 +422,7 @@ app.get('/sponsors/resume_book', function(req, res) {
 
 app.get('/sponsors/resume_filter', function(req, res) {
     res.render('resume_filter', {
-     		authenticated: false,
+     	authenticated: false,
         job: sponsorsScope.job,
         degree: sponsorsScope.degree,
         grad: sponsorsScope.grad,
