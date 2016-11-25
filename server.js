@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000;
 
 // Requires
 var express = require('express');
+var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
@@ -22,31 +23,17 @@ app.post('/login', function(req, res) {
 });
 
 app.post('/authenticate', function(req, res) {
-    request.post({
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        url: 'http://localhost:8000/session',
-        body: JSON.stringify(req.body),
-    }, function(error, response, body) {
-        console.log(body);
-        res.send(body);
-    });
-});
-
-app.post('/resume', function(req, res) {
-    request.post({
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        url: 'http://localhost:8000/resume',
-        body: JSON.stringify(req.body),
-    }, function(error, response, body) {
-        console.log(body);
-        res.send(body);
-    });
+	request.post({
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			url: 'http://localhost:8000/session',
+			body: JSON.stringify(req.body),
+		}, function(error, response, body){
+			console.log(body);
+			res.send(body);
+	});
 });
 
 var sponsorsScope = {
