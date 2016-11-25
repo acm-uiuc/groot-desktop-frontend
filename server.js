@@ -53,7 +53,7 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
 	var options = {
-		url: "http://localhost:8000/session?username="+netid,
+		url: `${SERVICES_URL}/session?username=${netid}`,
 		method:"POST",
 		json: true,
 		body: {
