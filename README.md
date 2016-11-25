@@ -5,9 +5,10 @@ This is the repo for the frontend/website for groot. It's built desktop first an
 ## Local Set Up
 
 1. Clone it!
-2. run `npm install` or `yarn`
-3. run `npm start`
-4. Navigate to [localhost:5000](localhost:5000)
+2. Rename `example.env` to `.env` for environmental variables
+3. run `npm install` or `yarn`
+4. run `npm start`
+5. Navigate to [localhost:5000](localhost:5000)
 
 > If you want to set this up in a docker instance, either use port 5000 or set the **PORT** environment variable
 
