@@ -4,6 +4,11 @@
   <div class="row col-centered small-12 medium-4 large-4 login-form">
     <h3>Login</h3>
     <p>Your username is your NetID. Your password is your Campus Active Directory password.<br/>You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!</p>
+    <% if (locals.error) { %>
+    <p style="color:red;">Error: <%=error %></p>
+    <% }%>
+
+    <p>
     <form method="post" action="/login">
       <div class="field-group required">
         <label for="netid" class="field-label">Netid

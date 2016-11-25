@@ -26,7 +26,7 @@ app.set('view engine', 'ejs');
 // npm install client-sessions
 app.use(session({
 	cookieName: 'session',
-	secret: 'THE_TOKEN_GOES_HERE',//apparently this doesn't matter, used for hashing??
+	secret: 'THE_TOKEN_GOES_HERE',//used for hashing
 	duration: 30*60*1000,
 	activeDuration: 5*60*1000,
 	httpOnly: true, // prevents browers JS from accessing cookies
@@ -34,34 +34,7 @@ app.use(session({
 	ephemeral: true // Deletes cookie when browser closes.
 }));
 
-// Handle Sessions Accross differnt pages using express
-
-
-//not sure if this is necessary
-// app.use(function(req, res, next) {
-// 	if (req.session && req.session.user) {
-// 		User.findOne({
-// 			email: req.session.user.email
-// 		}, function(err, user) {
-// 			if (user) {
-// 				req.user = user;
-// 				// delete the password from the session
-// 				delete req.user.password;
-// 				//refresh the session value
-// 				req.session.user = user;
-// 				res.locals.user = user;
-// 			}
-// 			// finishing processing the middleware and run the route
-// 			next();
-// 		});
-// 	} else {
-// 		next();
-// 	}
-// });
-
-//my understanding of this code: is middleware, so it gets called in between when express recieves the request and 
-// when it routes it to the code below
-// do we need to do anything like this?  yes
+// Handle Sessions Accross different pages using express
 
 app.use(function(req, res, next){//mainly for the inital load, setting initial values for the session
 	if(!req.session.netid)
@@ -71,6 +44,14 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 	}
 	next();
 });
+
+/*
+	Listing of session variables:
+		session.auth: if a user is authenticated
+		session.isAdmin: if a user is an Admin/elevated privs
+		session.netid
+		session.token
+*/
 
 
 //TODO Add more POST endpoints for all our form interactions
@@ -108,21 +89,43 @@ app.post('/login', function(req, res){
 			if(body["reason"])
 				console.log("ISSUE: " + body["reason"]);
 			console.log(body);
-
-			// set cookie with user info
 			req.session.netid = netid;
 			req.session.token = body["token"];
 			req.session.auth = true;
 			console.log("token: " + body["token"]);
 			console.log("session:" + req.session);
-			res.render('intranet', {
-				authenticated: req.session.auth,
-				session: req.session
-			});
+
+			checkIfAdmin(req, res, netid, renderIntranetPage)
+
 		}
 	}
 	request(options, callback);
 });
+
+
+function renderIntranetPage(req, res)
+{
+	res.redirect('intranet');
+}
+
+
+function checkIfAdmin(req, res, netid, nextSteps)
+{
+	var options = {
+		url: "http://localhost:9001/groups/committees/admin?isMember=" + netid,
+		method:"GET"
+	};
+
+	function callback(error, response, body)
+	{
+		// if(error || !body)
+			// console.log("Error: " + error);
+		if(body && JSON.parse(body).isValid)
+			req.session.isAdmin = JSON.parse(body).isValid;
+		nextSteps(req, res);
+	}
+	request(options, callback);
+}
 
 // reset session when user logs out
 app.get('/logout', function(req, res) {
@@ -239,16 +242,14 @@ app.get('/login', function(req, res) {
 
 	if(req.session.auth)
 	{
-		res.render('intranet', {
-			authenticated: req.session.auth,
-			session: req.session
-		});
+		res.redirect('intranet');
 	}
 	else
+	{
 		res.render('login', {
 			authenticated: req.session.auth,
-	})
-
+		})
+	}
 });
 
 app.get('/about', function(req, res) {
@@ -312,12 +313,11 @@ app.get('/intranet', function(req, res) {
 	{
 		res.render('intranet', {
 			authenticated: req.session.auth,
+			session:req.session
 		});
 	}
 	else
-		res.render('login', {
-			authenticated: req.session.auth,
-	})
+		res.redirect('login');
 });
 
 app.post('/join', function(req, res) {

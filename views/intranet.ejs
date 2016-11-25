@@ -1,8 +1,6 @@
 <%- include('_partials/header') -%>
 
 <!-- http get on http://localhost:9001/groups/committees/Admin?isMember=<NETID> and http://localhost:9001/groups/committees/top4?isMember=<NETID> to find out if user is admin, check response json for "isValid":"true" -->
-<!-- <%//=session.user%> -->
-<!-- <%=session.auth %> -->
 
 
 <div id="home-container" class="row">
@@ -13,9 +11,9 @@
 
         <h5>Hello, <%=session.netid%></p>
         <% if (session.isAdmin) { %>
-        <p> You are an admin</p>
+        <p>You are an admin</p>
         <% } else { %>
-        <p>you are not an admin</p>
+        <p>You are not an admin</p>
         <% } %>
       </div>
     </div>
