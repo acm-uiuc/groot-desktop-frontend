@@ -311,7 +311,6 @@ app.get('/intranet', function(req, res) {
 });
 
 app.post('/join', function(req, res) {
-<<<<<<< HEAD
     // creates JSON object of the inputted data
     // sends data to groups-user-service
     var userData = {
