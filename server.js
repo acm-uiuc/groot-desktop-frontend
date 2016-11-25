@@ -3,6 +3,7 @@
  */
 
 const PORT = process.env.PORT || 5000;
+const SERVICES_URL = 'http://localhost:8000'
 
 // Requires
 var express = require('express');
@@ -34,7 +35,7 @@ app.use(session({
 	ephemeral: true // Deletes cookie when browser closes.
 }));
 
-// Handle Sessions Accross differnt pages using express
+// Handle Sessions Across differnt pages using express
 app.use(function(req, res, next) {
  	if (req.session && req.session.user) {
     	User.findOne({
@@ -109,7 +110,7 @@ app.post('/authenticate', function(req, res) {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json'
 			},
-			url: 'http://localhost:8000/session',
+			url: `${SERVICES_URL}/session`,
 			body: JSON.stringify(req.body),
 		}, function(error, response, body){
 			console.log(body);
@@ -196,7 +197,7 @@ app.get('/login', function(req, res) {
 
 app.get('/about', function(req, res) {
     var groupsData = request({
-        url: "http://localhost:9001/groups/committees",
+        url: `${SERVICES_URL}/groups/committees`,
         method: "GET"
     }, function(err, response, body) {
         if (err) {
@@ -204,13 +205,10 @@ app.get('/about', function(req, res) {
             // Sends the 404 page
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
-        /* TODO:
-         *
-         * So I got the data to come in using the requests module.
-         * It's pulling data off of the groot-groups-service. Just need
-         * somebody else to throw it on EJS accordingly :)
-         */
-        res.render('about', body);
+        res.render('about', {
+            authenticated: false,
+            committees: JSON.parse(body),
+        });
     });
 });
 
@@ -266,7 +264,7 @@ app.post('/join', function(req, res) {
         uin: req.body.uin
     };
     request({
-        url: "http://localhost:8001/newUser",
+        url: `${SERVICES_URL}/newUser`,
         method: "POST",
         body: userData,
         json: true
@@ -285,7 +283,7 @@ app.get('/join', function(req, res) {
     // Going to grab SIG data from the micro-service
     request({
         /* URL to grab SIG data from groot-groups-service */
-        url: "http://localhost:9001/groups/sigs",
+        url: `${SERVICES_URL}/groups/sigs`,
         method: "GET",
     }, function(err, response, body) {
         if (err) {
@@ -306,14 +304,30 @@ app.get('/join', function(req, res) {
 });
 
 app.get('/sigs', function(req, res) {
-    res.render('sigs', {
-        authenticated: false,
+    request({
+        /* URL to grab SIG data from groot-groups-service */
+        url: `${SERVICES_URL}/groups/sigs`,
+        method: "GET",
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error " + err);
+            return;
+        }
+        sigs = JSON.parse(body);
+        sigs_a = sigs.slice(0, sigs.length / 2);
+        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
+        res.render('sigs', {
+            authenticated: false,
+            sig_col_a: sigs_a,
+            sig_col_b: sigs_b,
+        });
     });
 });
 
 app.get('/quotes', function(req, res) {
     request.get({
-        url: "http://localhost:8000/quotes"
+        url: `${SERVICES_URL}/quotes`
     }, function(error, response, body) {
         if (error) {
             // TODO: ender error page
