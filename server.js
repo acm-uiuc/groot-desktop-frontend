@@ -121,8 +121,35 @@ function checkIfAdmin(req, res, netid, nextSteps)
 		// if(error || !body)
 			// console.log("Error: " + error);
 		if(body && JSON.parse(body).isValid)
+		{
 			req.session.isAdmin = JSON.parse(body).isValid;
+			nextSteps(req, res);
+		
+		}
+		else
+			checkIfTop4(req, res, netid, nextSteps)
+
+	}
+	request(options, callback);
+}
+
+function checkIfTop4(req, res, netid, nextSteps)
+{
+	var options = {
+		url: "http://localhost:9001/groups/committees/Top4?isMember=" + netid,
+		method:"GET"
+	};
+
+	function callback(error, response, body)
+	{
+		// if(error || !body)
+			// console.log("Error: " + error);
+		if(body && JSON.parse(body).isValid)
+		{
+			req.session.isAdmin = JSON.parse(body).isValid;
+		}		
 		nextSteps(req, res);
+
 	}
 	request(options, callback);
 }
