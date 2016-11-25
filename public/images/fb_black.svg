@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="153px"
+   height="294px"
+   viewBox="0 0 153 294"
+   version="1.1"
+   id="svg3454"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="fb_black.svg">
+  <metadata
+     id="metadata3466">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Fill 75</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1376"
+     inkscape:window-height="1651"
+     id="namedview3464"
+     showgrid="false"
+     inkscape:zoom="0.80272109"
+     inkscape:cx="76.5"
+     inkscape:cy="147"
+     inkscape:window-x="1450"
+     inkscape:window-y="95"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="Page-1" />
+  <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title3456">Fill 75</title>
+  <desc
+     id="desc3458">Created with Sketch.</desc>
+  <defs
+     id="defs3460" />
+  <g
+     id="Page-1"
+     stroke="none"
+     stroke-width="1"
+     fill="none"
+     fill-rule="evenodd"
+     sketch:type="MSPage">
+    <path
+       d="M99.09,293.667 L99.09,159.719 L144.052,159.719 L150.783,107.516 L99.09,107.516 L99.09,74.188 C99.09,59.074 103.286,48.774 124.96,48.774 L152.604,48.761 L152.604,2.072 C147.822,1.437 131.413,0.015 112.323,0.015 C72.467,0.015 45.183,24.342 45.183,69.019 L45.183,107.516 L0.106,107.516 L0.106,159.719 L45.183,159.719 L45.183,293.667 L99.09,293.667"
+       id="Fill-75"
+       fill="#FFFFFF"
+       sketch:type="MSShapeGroup"
+       style="fill:#333333;fill-opacity:1" />
+  </g>
+</svg>
