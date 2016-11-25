@@ -35,6 +35,7 @@
 @import "partials/sponsor.less";
 @import "partials/resume.less";
 @import "partials/conference.less";
+@import "partials/join.less";
 
 @import "elements/form.less";
 @import "elements/button.less";
@@ -42,10 +43,14 @@
 @import "elements/structure.less";
 
 
+html {
+    height: 100%;
+}
 
 body {
     color: @font-color;
     font-family: "Roboto";
+    height: 100%;
 }
 
 h1 {
@@ -96,6 +101,11 @@ a:hover {
 }
 
 @media only screen and (min-width: 40.063em) {
+}
+
+.viewbox {
+    min-height: 100%;
+    margin-bottom: -75px; 
 }
 
 .main-view {
