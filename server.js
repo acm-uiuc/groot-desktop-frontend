@@ -3,6 +3,7 @@
  */
 
 const PORT = process.env.PORT || 5000;
+const SERVICES_URL = 'http://localhost:8000'
 
 // Requires
 var path = require("path");
@@ -20,8 +21,6 @@ var request = require('request');
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
-
-
 // npm install client-sessions
 app.use(session({
 	cookieName: 'session',
@@ -57,7 +56,7 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
 	var options = {
-		url: "http://localhost:8000/session?username="+netid,
+		url: `${SERVICES_URL}/session?username=${netid}`,
 		method:"POST",
 		json: true,
 		body: {
@@ -111,7 +110,7 @@ function renderIntranetPage(req, res)
 function checkIfAdmin(req, res, netid, nextSteps)
 {
 	var options = {
-		url: "http://localhost:9001/groups/committees/admin?isMember=" + netid,
+		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
 		method:"GET"
 	};
 
@@ -135,7 +134,7 @@ function checkIfAdmin(req, res, netid, nextSteps)
 function checkIfTop4(req, res, netid, nextSteps)
 {
 	var options = {
-		url: "http://localhost:9001/groups/committees/Top4?isMember=" + netid,
+		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
 		method:"GET"
 	};
 
@@ -250,23 +249,20 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/about', function(req, res) {
-	var groupsData = request({
-		url: "http://localhost:9001/groups/committees",
-		method: "GET"
-	}, function(err, response, body) {
-		if (err) {
-			console.log(err);
-			// Sends the 404 page
-			res.status(404).send("Error:\nThis page will be implemented soon!");
-		}
-		/* TODO:
-		 *
-		 * So I got the data to come in using the requests module.
-		 * It's pulling data off of the groot-groups-service. Just need
-		 * somebody else to throw it on EJS accordingly :)
-		 */
-		res.render('about', body);
-	});
+    var groupsData = request({
+        url: `${SERVICES_URL}/groups/committees`,
+        method: "GET"
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            // Sends the 404 page
+            res.status(404).send("Error:\nThis page will be implemented soon!");
+        }
+        res.render('about', {
+            authenticated: false,
+            committees: JSON.parse(body),
+        });
+    });
 });
 
 app.get('/conference', function(req, res) {
@@ -318,75 +314,86 @@ app.get('/intranet', function(req, res) {
 });
 
 app.post('/join', function(req, res) {
-	// creates JSON object of the inputted data
-	// sends data to groups-user-service
-	var userData = {
-		first_name: req.body.first_name,
-		last_name: req.body.last_name,
-		netid: req.body.netid,
-		uin: req.body.uin
-	};
-	request({
-		url: "http://localhost:8001/newUser",
-		method: "POST",
-		body: userData,
-		json: true
-	}, function(err, response, body) {
-		if(err) {
-			console.log(err);
-			res.status(520).send("Error: Please go yell at ACM to fix their shit!");
-			return;
-		}
-		console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
-		res.redirect('/');
-	});
+    // creates JSON object of the inputted data
+    // sends data to groups-user-service
+    var userData = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        netid: req.body.netid,
+        uin: req.body.uin
+    };
+    request({
+        url: `${SERVICES_URL}/newUser`,
+        method: "POST",
+        body: userData,
+        json: true
+    }, function(err, response, body) {
+        if(err) {
+            console.log(err);
+            res.status(520).send("Error: Please go yell at ACM to fix their shit!");
+            return;
+        }
+        console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
+        res.redirect('/');
+    });
 });
 
 app.get('/join', function(req, res) {
-	// Going to grab SIG data from the micro-service
-	request({
-		/* URL to grab SIG data from groot-groups-service */
-		url: "http://localhost:9001/groups/sigs",
-		method: "GET",
-	}, function(err, response, body) {
-		if (err) {
-			console.log(err);
-			res.status(500).send("Error " + err);
-			return;
-		}
-		res.render('join', {
-			authenticated: false,
-			/*
-			   Following 2 lines crash... Not sure what they're for
-			   nav_un_auth: nav_un_auth,
-			   nav_auth: nav_auth,
-			   */
-			sigs: JSON.parse(body)
-		});
-	});
+    // Going to grab SIG data from the micro-service
+    request({
+        /* URL to grab SIG data from groot-groups-service */
+        url: `${SERVICES_URL}/groups/sigs`,
+        method: "GET",
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error " + err);
+            return;
+        }
+        res.render('join', {
+            authenticated: false,
+            sigs: JSON.parse(body)
+        });
+    });
 });
 
 app.get('/sigs', function(req, res) {
-	res.render('sigs', {
-		authenticated: req.session.auth,
-	});
+    request({
+        /* URL to grab SIG data from groot-groups-service */
+        url: `${SERVICES_URL}/groups/sigs`,
+        method: "GET",
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error " + err);
+            return;
+        }
+        sigs = JSON.parse(body);
+        sigs_a = sigs.slice(0, sigs.length / 2);
+        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
+        res.render('sigs', {
+            authenticated: req.session.auth,
+            sig_col_a: sigs_a,
+            sig_col_b: sigs_b,
+        });
+    });
 });
 
 app.get('/quotes', function(req, res) {
-	request.get({
-		url: "http://localhost:8000/quotes"
-	}, function(error, response, body) {
-		if (error) {
-			// TODO: ender error page
-			// alert("status");
-			res.status(500).send("Error " + error.code);
-		} else {
-			res.render('quotes', {
-				authenticated: req.session.auth,
-				quotes: body
-			});
-		}
-	});
+    request.get({
+        url: `${SERVICES_URL}/quotes`
+    }, function(error, response, body) {
+        if (error) {
+            // TODO: ender error page
+            // alert("status");
+            res.status(500).send("Error " + error.code);
+        } else {
+            res.render('quotes', {
+                authenticated: req.session.auth,
+                quotes: body
+            });
+        }
+    });
 });
 
 app.get('/sponsors/new_job_post', function(req, res) {
@@ -432,7 +439,7 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
 			authenticated: false,
 	})
- });
+});
 
 
 app.use(express.static(__dirname + '/public'));

@@ -1,7 +1,75 @@
 <%- include('_partials/header') -%>
 
-<div class="row">
-  <h1> SIGs Page </h1>
+<div class="main sigs-container row">
+    <div class="row">
+    	<h1>Special Interest Groups</h1>
+    </div>
+    <div class="row">
+    	<div class="small-12 medium-6 large-6 columns">
+      		<% for( var s of sig_col_a) { %>
+      			<div class="group-info" >
+          			<h4> <%= s.name %> </h4>
+      				<div class="contact-info">
+      					<p>
+        		  			<span>
+        		  				<%= s.description %>
+        		  			</span>
+        		  			<br/>
+        		  			<span>
+        		  				<b> <%= s.meetingDay %> </b> <i> <%= s.meetingTime %> </i> - <%= s.meetingLoc %>
+        		  			</span>
+        		  			<br/>
+        		  			<span>
+            	  				<i> Chair(s) </i> -
+            	  				<b> <%= s.chairs %> </b>
+          					</span>
+          					<br/>
+
+          					<span>
+            					<a href= <%= s.site %> > <%= s.site %> </a>
+          					</span>
+          					<br/>
+          					<span>
+            					<a href= <%='mailto:' + s.email %> > <%= s.email %> </a>
+          					</span>
+      					</p>
+    				</div>
+				</div>
+			<% } %>	
+		</div>
+	 	<div class="small-12 medium-6 large-6 columns">
+      		<% for( var s of sig_col_b) { %>
+      			<div class="group-info" >
+          			<h4> <%= s.name %> </h4>
+      				<div class="contact-info">
+      					<p>
+	        		  		<span>
+	        		  			<%= s.description %>
+	        		  		</span>
+	        		  		<br/>
+	        		  		<span>
+	        		  			<b> <%= s.meetingDay %> </b> <i> <%= s.meetingTime %> </i> - <%= s.meetingLoc %>
+	 		       		  	</span>
+	        			  	<br/>
+	        			  	<span>
+	            		  		<i> Chair(s) </i> -
+	            		  		<b> <%= s.chairs %> </b>
+	          				</span>
+	          				<br/>
+
+	          				<span>
+	            				 <a href= <%= s.site %> > <%= s.site %> </a>
+	          				</span>
+	          				<br/>
+	          				<span>
+	            				 <a href= <%='mailto:' + s.email %> > <%= s.email %> </a>
+	          				</span>
+      					</p>
+    				</div>
+				</div>
+			<% } %>	
+		</div>
+	</div>				
 </div>
 
 <%- include('_partials/footer') -%>

@@ -1,6 +1,8 @@
 // Variable to store your files
 var resumeBase64String;
 
+const SERVICES_URL = "http://localhost:8000";
+
 // Add events
 $('#resume').on('change', readResumeAsString);
 
@@ -23,11 +25,11 @@ function send_resume(e) {
     serialized_data["resume"] = resumeBase64String;
 
     $.ajax({
-        url: "https://c339d9ca.ngrok.io/resumes", // TODO change to Groot API GATEWAY
+        url: `${SERVICES_URL}/resumes`, // TODO change to Groot API GATEWAY
         type: "POST",
         dataType: "json",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
         data: serialized_data,
