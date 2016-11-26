@@ -6,10 +6,13 @@ const PORT = process.env.PORT || 5000;
 const SERVICES_URL = 'http://localhost:8000'
 
 // Requires
+var path = require("path");
+require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
+
+
 var express = require('express');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
-var path = require('path');
 var bodyParser = require('body-parser');
 var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
@@ -21,7 +24,7 @@ app.set('view engine', 'ejs');
 // npm install client-sessions
 app.use(session({
 	cookieName: 'session',
-	secret: 'THE_TOKEN_GOES_HERE',//used for hashing
+	secret: process.env.SESSION_TOKEN,//used for hashing
 	duration: 30*60*1000,
 	activeDuration: 5*60*1000,
 	httpOnly: true, // prevents browers JS from accessing cookies
