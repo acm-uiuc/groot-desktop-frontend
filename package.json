@@ -11,9 +11,14 @@
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "client-sessions": "^0.7.0",
+    "dotenv": "^2.0.0",
     "ejs": "^2.5.2",
     "express": "4.13.x",
+    "express-fileupload": "0.0.5",
     "forever": "0.15.x",
+    "graceful-fs": "^4.1.10",
+    "path": "^0.12.7",
     "request": "^2.75.0"
   },
   "devDependencies": {

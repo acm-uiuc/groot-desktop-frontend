@@ -1,6 +1,6 @@
 <%- include('_partials/header') -%>
 
-<div class="content">
+<div class="container main about">
   <div class="row">
     <h1>About ACM@UIUC</h1>
   </div>
@@ -47,23 +47,42 @@
   <div class="row">
     <h3>Contacts</h3>
     <div class="small-12 medium-6 large-6 columns">
-      <% for( var g of groups) { %>
-        <div class="group-info" >
-          <h4> <%= g.name %> </h4>
-          <%for (var c of g.contacts) { %>
-            <div class="contact-info">
+      <% for( var c of committees) { %>
+          <% if ( c.name == 'Top4' ||  c.name == 'Events') { %>
+            <div class="group-info">
+               <h4> <%= c.name %> </h4>
+               <% for( var r of c.roles) { %>
+               <div class="contact-info">
+                  <p>
+                  <span>
+                      <i> <%= r.name %></i> -
+                      <b> <%= r.holder %> </b>
+                  </span>
+                  <br/>
+                  <span>
+                      <a href= <%='mailto:' + r.email %> > <%= r.email %> </a>
+                  </span>
+                  </p>
+               </div>
+               <% } %>
+            </div>
+          <% } else { %>
+              <div class="group-info" >
+                  <h4> <%= c.name %> </h4>
+              <div class="contact-info">
               <p>
-                <span>
-                  <b> <%= c.name %> </b>
-                  <i> <%= c.title %> </i>
-                </span>
-                <span>
-                  <a href= <%='mailto:' + c.email %> > <%= c.email %> </a>
-                </span>
+                  <span>
+                      <i> Chair </i> -
+                      <b> <%= c.chairs %> </b>
+                  </span>
+                  <br/>
+                  <span>
+                      <a href= <%='mailto:' + c.email %> > <%= c.email %> </a>
+                  </span>
               </p>
             </div>
-          <% } %>
         </div>
+        <% } %>
       <% } %>
     </div>
     <div class="small-12 medium-6 large-6 columns">
