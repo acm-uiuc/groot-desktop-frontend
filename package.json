@@ -1,12 +1,10 @@
 {
-  "name": "groot_desktop_frontend",
+  "name": "acm-groot",
   "version": "0.0.1",
   "description": "The Official ACM@UIUC Website",
-  "author": "Groot Development Team <acm@illinois.edu>",
   "scripts": {
     "start": "mkdirp public/css && lessc public/less/main.less > public/css/main.css && node server.js"
   },
-  "license": "NCSA",
   "repository": {
     "type": "git",
     "url": "https://github.com/acm-uiuc/groot-desktop-frontend.git"
