@@ -410,7 +410,7 @@ app.get('/sigs', function(req, res) {
 
 app.get('/quotes', function(req, res) {
     request.get({
-        url: `${SERVICES_URL}/quotes`
+        url: `${SERVICES_URL}/quotes`,
         headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
