@@ -10,6 +10,8 @@
 
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = 'http://localhost:8000'
+const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING"
+
 
 // Requires
 var path = require("path");
@@ -65,6 +67,9 @@ app.post('/login', function(req, res){
 		url: `${SERVICES_URL}/session?username=${netid}`,
 		method:"POST",
 		json: true,
+		headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
 		body: {
 			"username" : netid,
 			"password" : pass,
@@ -117,6 +122,9 @@ function checkIfAdmin(req, res, netid, nextSteps)
 {
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
+		headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
 		method:"GET"
 	};
 
@@ -141,6 +149,9 @@ function checkIfTop4(req, res, netid, nextSteps)
 {
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
+		headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
 		method:"GET"
 	};
 
@@ -257,6 +268,9 @@ app.get('/login', function(req, res) {
 app.get('/about', function(req, res) {
     var groupsData = request({
         url: `${SERVICES_URL}/groups/committees`,
+        headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET"
     }, function(err, response, body) {
         if (err) {
@@ -331,6 +345,9 @@ app.post('/join', function(req, res) {
     request({
         url: `${SERVICES_URL}/newUser`,
         method: "POST",
+        headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
         body: userData,
         json: true
     }, function(err, response, body) {
@@ -349,6 +366,9 @@ app.get('/join', function(req, res) {
     request({
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
+        headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET",
     }, function(err, response, body) {
         if (err) {
@@ -367,6 +387,9 @@ app.get('/sigs', function(req, res) {
     request({
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
+        headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET",
     }, function(err, response, body) {
         if (err) {
@@ -388,6 +411,10 @@ app.get('/sigs', function(req, res) {
 app.get('/quotes', function(req, res) {
     request.get({
         url: `${SERVICES_URL}/quotes`
+        headers: {
+			"authorization": GROOT_ACCESS_TOKEN
+		},
+		method: "GET",
     }, function(error, response, body) {
         if (error) {
             // TODO: ender error page
