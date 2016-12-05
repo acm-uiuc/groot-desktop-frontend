@@ -265,7 +265,7 @@ app.get('/about', function(req, res) {
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
         res.render('about', {
-            authenticated: false,
+            authenticated: req.session.auth,
             committees: JSON.parse(body),
         });
     });
