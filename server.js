@@ -68,7 +68,7 @@ app.post('/login', function(req, res){
 		method:"POST",
 		json: true,
 		headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		body: {
 			"username" : netid,
@@ -123,7 +123,7 @@ function checkIfAdmin(req, res, netid, nextSteps)
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
 		headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method:"GET"
 	};
@@ -150,7 +150,7 @@ function checkIfTop4(req, res, netid, nextSteps)
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
 		headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method:"GET"
 	};
@@ -269,7 +269,7 @@ app.get('/about', function(req, res) {
     var groupsData = request({
         url: `${SERVICES_URL}/groups/committees`,
         headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET"
     }, function(err, response, body) {
@@ -346,7 +346,7 @@ app.post('/join', function(req, res) {
         url: `${SERVICES_URL}/newUser`,
         method: "POST",
         headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
         body: userData,
         json: true
@@ -367,7 +367,7 @@ app.get('/join', function(req, res) {
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
         headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET",
     }, function(err, response, body) {
@@ -388,7 +388,7 @@ app.get('/sigs', function(req, res) {
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
         headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET",
     }, function(err, response, body) {
@@ -412,7 +412,7 @@ app.get('/quotes', function(req, res) {
     request.get({
         url: `${SERVICES_URL}/quotes`
         headers: {
-			"authorization": GROOT_ACCESS_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method: "GET",
     }, function(error, response, body) {
