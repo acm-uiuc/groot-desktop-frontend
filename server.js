@@ -59,6 +59,7 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 
 
 //TODO Add more POST endpoints for all our form interactions
+
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
 	var options = {
@@ -423,6 +424,35 @@ app.get('/sponsors/resume_book', function(req, res) {
 		student: sponsorsScope.student
 	});
 });
+
+app.post('/sponsors/resume_book', function(req, res) {
+    console.log(req.body);
+    request({
+        /* URL to grab SIG data from groot-groups-service */
+        url: `${SERVICES_URL}/resumes`,
+        method: "GET",
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error " + err);
+            return;
+        }
+        sigs = JSON.parse(body);
+        sigs_a = sigs.slice(0, sigs.length / 2);
+        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
+        res.render('sigs', {
+            authenticated: req.session.auth,
+            sig_col_a: sigs_a,
+            sig_col_b: sigs_b,
+        });
+    });
+});
+
+// app.post('/sponsors/resume_book', function(req, res){
+// 	var submission = req.body;
+// 	console.log(submission); 
+// });
+
 
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
