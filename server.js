@@ -426,25 +426,18 @@ app.get('/sponsors/resume_book', function(req, res) {
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
-    console.log(req.body);
+	console.log(req.body);
     request({
-        /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/resumes`,
-        method: "GET",
+        method: "POST",
+        body: req.body,
+        json: true
     }, function(err, response, body) {
         if (err) {
             console.log(err);
             res.status(500).send("Error " + err);
             return;
         }
-        sigs = JSON.parse(body);
-        sigs_a = sigs.slice(0, sigs.length / 2);
-        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
-        res.render('sigs', {
-            authenticated: req.session.auth,
-            sig_col_a: sigs_a,
-            sig_col_b: sigs_b,
-        });
     });
 });
 
