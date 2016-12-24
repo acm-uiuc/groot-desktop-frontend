@@ -426,18 +426,26 @@ app.get('/sponsors/resume_book', function(req, res) {
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
-	console.log(req.body);
     request({
         url: `${SERVICES_URL}/resumes`,
         method: "POST",
-        body: req.body,
-        json: true
+        json: true,
+        body: req.body
     }, function(err, response, body) {
+        console.log(body);
         if (err) {
             console.log(err);
             res.status(500).send("Error " + err);
             return;
         }
+        /*sigs = JSON.parse(body);
+        sigs_a = sigs.slice(0, sigs.length / 2);
+        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
+        res.render('sigs', {
+            authenticated: req.session.auth,
+            sig_col_a: sigs_a,
+            sig_col_b: sigs_b,
+        });*/
     });
 });
 
