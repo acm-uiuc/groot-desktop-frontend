@@ -71,7 +71,7 @@ app.post('/login', function(req, res){
 			"validation-factors" : {
 				"validationFactors" : [{
 					"name" : "remote_address",
-					"value" : "127.0.0.1"//something to address later, possible issue with crowd
+					"value" : "127.0.0.1"
 				}]
 			}
 		}
