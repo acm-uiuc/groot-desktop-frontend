@@ -59,6 +59,7 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 
 
 //TODO Add more POST endpoints for all our form interactions
+
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
 	var options = {
@@ -424,6 +425,33 @@ app.get('/sponsors/resume_book', function(req, res) {
 	});
 });
 
+app.post('/sponsors/resume_book', function(req, res) {
+    request({
+        url: `${SERVICES_URL}/resumes`,
+        method: "POST",
+        json: true,
+        body: req.body
+    }, function(err, response, body) {
+        if (err) {
+            console.log(err);
+            res.status(500).send("Error " + err);
+            return;
+        }
+        if (!body){
+        	console.log("resume submission failed");
+        	res.render('login', {
+				authenticated: req.session.auth,
+				error: 'Submission Failed'
+			});
+        } else {
+        	console.log("resume submitted");
+        	res.render('home', {
+				authenticated: req.session.auth,
+			});
+        }
+    });
+});
+
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
 		authenticated:  req.session.auth,
@@ -443,7 +471,7 @@ app.get('/sponsors', function(req, res) {
 
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
-			authenticated:  req.session.auth,
+		authenticated:  req.session.auth,
 	})
 });
 
