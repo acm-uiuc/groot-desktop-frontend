@@ -265,7 +265,7 @@ app.get('/about', function(req, res) {
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
         res.render('about', {
-            authenticated: false,
+            authenticated: req.session.auth,
             committees: JSON.parse(body),
         });
     });
@@ -404,19 +404,19 @@ app.get('/quotes', function(req, res) {
 
 app.get('/sponsors/new_job_post', function(req, res) {
 	res.render('new_job_post', {
-		authenticated: false,
+		authenticated:  req.session.auth,
 	});
 });
 
 app.get('/sponsors/recruiter_login', function(req, res) {
 	res.render('recruiter_login', {
-		authenticated: false,
+		authenticated:  req.session.auth,
 	});
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
 	res.render('resume_book', {
-		authenticated: false,
+		authenticated:  req.session.auth,
 		job: sponsorsScope.job,
 		degree: sponsorsScope.degree,
 		grad: sponsorsScope.grad,
@@ -426,7 +426,7 @@ app.get('/sponsors/resume_book', function(req, res) {
 
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
-		authenticated: false,
+		authenticated:  req.session.auth,
 		job: sponsorsScope.job,
 		degree: sponsorsScope.degree,
 		grad: sponsorsScope.grad,
@@ -437,13 +437,13 @@ app.get('/sponsors/resume_filter', function(req, res) {
 
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
-		authenticated: false,
+		authenticated:  req.session.auth,
 	});
 });
 
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
-			authenticated: false,
+			authenticated:  req.session.auth,
 	})
 });
 
