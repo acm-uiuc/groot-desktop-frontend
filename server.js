@@ -8,16 +8,9 @@
 * this license in a file with the distribution.
 **/
 
-const PORT = process.env.PORT || 5000;
-const SERVICES_URL = 'http://localhost:8000'
-const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING"
-
-
 // Requires
 var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
-
-
 var express = require('express');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
@@ -26,6 +19,13 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+
+
+const PORT = process.env.PORT || 5000;
+console.log(PORT);
+const SERVICES_URL = 'http://localhost:8000'
+const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+console.log(GROOT_ACCESS_TOKEN);
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
