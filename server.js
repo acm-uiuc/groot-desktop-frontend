@@ -456,6 +456,9 @@ app.post('/sponsors/resume_book', function(req, res) {
     request({
         url: `${SERVICES_URL}/resumes`,
         method: "POST",
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         json: true,
         body: req.body
     }, function(err, response, body) {
