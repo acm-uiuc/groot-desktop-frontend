@@ -432,28 +432,25 @@ app.post('/sponsors/resume_book', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        console.log(body);
         if (err) {
             console.log(err);
             res.status(500).send("Error " + err);
             return;
         }
-        /*sigs = JSON.parse(body);
-        sigs_a = sigs.slice(0, sigs.length / 2);
-        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
-        res.render('sigs', {
-            authenticated: req.session.auth,
-            sig_col_a: sigs_a,
-            sig_col_b: sigs_b,
-        });*/
+        if (!body){
+        	console.log("resume submission failed");
+        	res.render('login', {
+				authenticated: req.session.auth,
+				error: 'Submission Failed'
+			});
+        } else {
+        	console.log("resume submitted");
+        	res.render('home', {
+				authenticated: req.session.auth,
+			});
+        }
     });
 });
-
-// app.post('/sponsors/resume_book', function(req, res){
-// 	var submission = req.body;
-// 	console.log(submission); 
-// });
-
 
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
@@ -474,7 +471,7 @@ app.get('/sponsors', function(req, res) {
 
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
-			authenticated:  req.session.auth,
+		authenticated:  req.session.auth,
 	})
 });
 
