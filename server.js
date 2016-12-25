@@ -8,14 +8,9 @@
 * this license in a file with the distribution.
 **/
 
-const PORT = process.env.PORT || 5000;
-const SERVICES_URL = 'http://localhost:8000'
-
 // Requires
 var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
-
-
 var express = require('express');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
@@ -24,6 +19,13 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+
+
+const PORT = process.env.PORT || 5000;
+console.log(PORT);
+const SERVICES_URL = 'http://localhost:8000'
+const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+console.log(GROOT_ACCESS_TOKEN);
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -66,6 +68,9 @@ app.post('/login', function(req, res){
 		url: `${SERVICES_URL}/session?username=${netid}`,
 		method:"POST",
 		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
 		body: {
 			"username" : netid,
 			"password" : pass,
@@ -118,6 +123,9 @@ function checkIfAdmin(req, res, netid, nextSteps)
 {
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
 		method:"GET"
 	};
 
@@ -142,6 +150,9 @@ function checkIfTop4(req, res, netid, nextSteps)
 {
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
 		method:"GET"
 	};
 
@@ -258,6 +269,9 @@ app.get('/login', function(req, res) {
 app.get('/about', function(req, res) {
     var groupsData = request({
         url: `${SERVICES_URL}/groups/committees`,
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET"
     }, function(err, response, body) {
         if (err) {
@@ -332,6 +346,9 @@ app.post('/join', function(req, res) {
     request({
         url: `${SERVICES_URL}/newUser`,
         method: "POST",
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         body: userData,
         json: true
     }, function(err, response, body) {
@@ -350,6 +367,9 @@ app.get('/join', function(req, res) {
     request({
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET",
     }, function(err, response, body) {
         if (err) {
@@ -368,6 +388,9 @@ app.get('/sigs', function(req, res) {
     request({
         /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         method: "GET",
     }, function(err, response, body) {
         if (err) {
@@ -388,7 +411,11 @@ app.get('/sigs', function(req, res) {
 
 app.get('/quotes', function(req, res) {
     request.get({
-        url: `${SERVICES_URL}/quotes`
+        url: `${SERVICES_URL}/quotes`,
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		method: "GET",
     }, function(error, response, body) {
         if (error) {
             // TODO: ender error page
@@ -429,6 +456,9 @@ app.post('/sponsors/resume_book', function(req, res) {
     request({
         url: `${SERVICES_URL}/resumes`,
         method: "POST",
+        headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
         json: true,
         body: req.body
     }, function(err, response, body) {
