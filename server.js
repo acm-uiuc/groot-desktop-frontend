@@ -22,10 +22,8 @@ var request = require('request');
 
 
 const PORT = process.env.PORT || 5000;
-console.log(PORT);
-const SERVICES_URL = 'http://localhost:8000'
+const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
-console.log(GROOT_ACCESS_TOKEN);
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
