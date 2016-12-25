@@ -49,21 +49,4 @@ function send_resume(e) {
         }
     }
     xhr.send(JSON.stringify(serialized_data));
-
-    // $.ajax({
-    //     url: window.location.pathname,
-    //     type: "POST",
-    //     dataType: "json",
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     data: serialized_data,
-    //     success: function(data) {
-    //         console.log(data);
-    //         // TODO show something after successful upload
-    //     },
-    //     error: function(res, err) {
-    //         console.log(res);
-    //     }
-    // });
 }
