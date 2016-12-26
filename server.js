@@ -452,7 +452,7 @@ app.get('/sponsors/resume_book', function(req, res) {
 
 app.post('/sponsors/resume_book', function(req, res) {
     request({
-        url: `${SERVICES_URL}/resumes`,
+        url: `${SERVICES_URL}/students`,
         method: "POST",
         headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -460,22 +460,14 @@ app.post('/sponsors/resume_book', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (err) {
-            console.log(err);
-            res.status(500).send("Error " + err);
+		if (reponse.statusCode == 200) {
+			console.log(body); // Contains the user's info.
+			res.render('home', {
+				authenticated: req.session.auth,
+			});
+		} else {
+            res.status(500).send("Error " + body.Text);
             return;
-        }
-        if (!body){
-        	console.log("resume submission failed");
-        	res.render('login', {
-				authenticated: req.session.auth,
-				error: 'Submission Failed'
-			});
-        } else {
-        	console.log("resume submitted");
-        	res.render('home', {
-				authenticated: req.session.auth,
-			});
         }
     });
 });
