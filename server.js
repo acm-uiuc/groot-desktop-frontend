@@ -434,20 +434,41 @@ app.get('/sponsors/new_job_post', function(req, res) {
 	});
 });
 
+app.post('/sponsors/new_job_post', function(req, res) {
+    request({
+        url: `${SERVICES_URL}/jobs`,
+        method: "POST",
+        headers: {
+            "Authorization": GROOT_ACCESS_TOKEN
+        },
+        json: true,
+        body: req.body
+    }, function(err, response, body) {
+        if (response.statusCode == 200) {
+            res.render('home', {
+                authenticated: req.session.auth,
+            });
+        } else {
+            res.status(500).send("Error " + body.Text);
+            return;
+        }
+    });
+});
+
 app.get('/sponsors/recruiter_login', function(req, res) {
-	res.render('recruiter_login', {
-		authenticated:  req.session.auth,
-	});
+    res.render('recruiter_login', {
+        authenticated:  req.session.auth,
+    });
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
-	res.render('resume_book', {
-		authenticated:  req.session.auth,
-		job: sponsorsScope.job,
-		degree: sponsorsScope.degree,
-		grad: sponsorsScope.grad,
-		student: sponsorsScope.student
-	});
+    res.render('resume_book', {
+        authenticated:  req.session.auth,
+        job: sponsorsScope.job,
+        degree: sponsorsScope.degree,
+        grad: sponsorsScope.grad,
+        student: sponsorsScope.student
+    });
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
@@ -455,17 +476,16 @@ app.post('/sponsors/resume_book', function(req, res) {
         url: `${SERVICES_URL}/students`,
         method: "POST",
         headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		},
+            "Authorization": GROOT_ACCESS_TOKEN
+        },
         json: true,
         body: req.body
     }, function(err, response, body) {
-		if (reponse.statusCode == 200) {
-			console.log(body); // Contains the user's info.
-			res.render('home', {
-				authenticated: req.session.auth,
-			});
-		} else {
+        if (response.statusCode == 200) {
+            res.render('home', {
+                authenticated: req.session.auth,
+            });
+        } else {
             res.status(500).send("Error " + body.Text);
             return;
         }
