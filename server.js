@@ -24,6 +24,7 @@ var request = require('request');
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const GROOT_RECRUITER_TOKEN = process.env.GROOT_RECRUITER_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -434,48 +435,60 @@ app.get('/sponsors/new_job_post', function(req, res) {
 	});
 });
 
+app.post('/sponsors/new_job_post', function(req, res) {
+    request({
+        url: `${SERVICES_URL}/jobs`,
+        method: "POST",
+        headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        json: true,
+        body: req.body
+    }, function(err, response, body) {
+        if (response.statusCode == 200) {
+            res.render('home', {
+                authenticated: req.session.auth,
+            });
+        } else {
+            res.status(500).send("Error " + body.Text);
+            return;
+        }
+    });
+});
+
 app.get('/sponsors/recruiter_login', function(req, res) {
-	res.render('recruiter_login', {
-		authenticated:  req.session.auth,
-	});
+    res.render('recruiter_login', {
+        authenticated:  req.session.auth,
+    });
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
-	res.render('resume_book', {
-		authenticated:  req.session.auth,
-		job: sponsorsScope.job,
-		degree: sponsorsScope.degree,
-		grad: sponsorsScope.grad,
-		student: sponsorsScope.student
-	});
+    res.render('resume_book', {
+        authenticated:  req.session.auth,
+        job: sponsorsScope.job,
+        degree: sponsorsScope.degree,
+        grad: sponsorsScope.grad,
+        student: sponsorsScope.student
+    });
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
     request({
-        url: `${SERVICES_URL}/resumes`,
+        url: `${SERVICES_URL}/students`,
         method: "POST",
         headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		},
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (err) {
-            console.log(err);
-            res.status(500).send("Error " + err);
-            return;
-        }
-        if (!body){
-        	console.log("resume submission failed");
-        	res.render('login', {
-				authenticated: req.session.auth,
-				error: 'Submission Failed'
-			});
+        if (response.statusCode == 200) {
+            res.render('home', {
+                authenticated: req.session.auth,
+            });
         } else {
-        	console.log("resume submitted");
-        	res.render('home', {
-				authenticated: req.session.auth,
-			});
+            res.status(500).send("Error " + body.Text);
+            return;
         }
     });
 });

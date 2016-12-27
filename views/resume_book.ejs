@@ -47,7 +47,7 @@ this license in a file with the distribution.
                     <label for="year" class="field-label">Graduation</label>
                     <select id="grad_year" name="gradYear">
           <% for (var option of grad.years) { %>
-            <option value= <%= option.date %> > <%= option.date %> </option>
+            <option value= '<%= option.date %>' > <%= option.date %> </option>
           <% } %>
         </select>
                 </div>
@@ -55,7 +55,7 @@ this license in a file with the distribution.
                     <label for="degreeType" class="field-label">Degree</label>
                     <select id="degree_type" name="degreeType">
           <% for (var option of degree.types) { %>
-            <option value= <%= option.name %> > <%= option.name %> </option>
+            <option value= '<%= option.name %>' > <%= option.name %> </option>
           <% } %>
         </select>
                 </div>
@@ -63,7 +63,7 @@ this license in a file with the distribution.
                     <label for="jobType" class="field-label">Seeking</label>
                     <select id="job_type" name="jobType">
           <% for (var option of job.types) { %>
-            <option value= <%= option.name %> > <%= option.name %> </option>
+            <option value= '<%= option.name %>' > <%= option.name %> </option>
           <% } %>
         </select>
                 </div>
