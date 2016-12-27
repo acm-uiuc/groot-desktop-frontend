@@ -54,6 +54,7 @@ app.use(function(req, res, next){//mainly for the inital load, setting initial v
 	Listing of session variables:
 		session.auth: if a user is authenticated
 		session.isAdmin: if a user is an Admin/elevated privs
+		session.isCorporate: if a user is a Corporate member
 		session.netid
 		session.token
 */
@@ -104,22 +105,19 @@ app.post('/login', function(req, res){
 			console.log("token: " + body["token"]);
 			console.log("session:" + req.session);
 
-			checkIfAdmin(req, res, netid, renderIntranetPage)
-
+			res.redirect('intranet');
 		}
 	}
 	request(options, callback);
 });
 
-
-function renderIntranetPage(req, res)
+function checkIfAdmin(req, res, nextSteps)
 {
-	res.redirect('intranet');
-}
+	var netid = req.session.netid;
+	if (!netid) {
+		res.redirect('/login');
+	}
 
-
-function checkIfAdmin(req, res, netid, nextSteps)
-{
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
 		headers: {
@@ -128,25 +126,49 @@ function checkIfAdmin(req, res, netid, nextSteps)
 		method:"GET"
 	};
 
-	function callback(error, response, body)
-	{
-		// if(error || !body)
-			// console.log("Error: " + error);
-		if(body && JSON.parse(body).isValid)
-		{
+	function callback(error, response, body) {
+		if(body) {
 			req.session.isAdmin = JSON.parse(body).isValid;
-			nextSteps(req, res);
-		
-		}
-		else
-			checkIfTop4(req, res, netid, nextSteps)
-
+			checkIfCorporate(req, res, nextSteps);
+        }
 	}
 	request(options, callback);
 }
 
-function checkIfTop4(req, res, netid, nextSteps)
+function checkIfCorporate(req, res, nextSteps)
 {
+	var netid = req.session.netid;
+	if (!netid) {
+		res.redirect('/login');
+	}
+
+    var options = {
+        url: `${SERVICES_URL}/groups/committees/corporate?isMember=${netid}`,
+        headers: {
+            "Authorization": GROOT_ACCESS_TOKEN
+        },
+        method:"GET"
+    };
+
+    function callback(error, response, body) {
+		if (!body){
+			res.status(500).send("Error verifying corporate status.");
+		} else {
+			req.session.isCorporate = JSON.parse(body).isValid;
+		}
+
+		nextSteps(req, res);
+    }
+	request(options, callback);
+}
+
+function checkIfTop4(req, res, nextSteps)
+{
+	var netid = req.session.netid;
+	if (!netid) {
+		res.redirect('/login');
+	}
+
 	var options = {
 		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
 		headers: {
@@ -274,7 +296,6 @@ app.get('/about', function(req, res) {
         method: "GET"
     }, function(err, response, body) {
         if (err) {
-            console.log(err);
             // Sends the 404 page
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
@@ -322,15 +343,17 @@ app.get('/events', function(req, res) {
 });
 
 app.get('/intranet', function(req, res) {
-	if(req.session.auth)
-	{
-		res.render('intranet', {
-			authenticated: req.session.auth,
-			session:req.session
-		});
-	}
-	else
-		res.redirect('login');
+	checkIfAdmin(req, res, function() {	
+		if(req.session.auth && req.session.isAdmin) {
+			res.render('intranet', {
+				authenticated: req.session.auth,
+				session: req.session
+			});
+		}
+		else {
+			res.redirect('login');
+		}
+	});
 });
 
 app.post('/join', function(req, res) {
@@ -456,6 +479,70 @@ app.post('/sponsors/new_job_post', function(req, res) {
     });
 });
 
+app.get('/sponsors/corporate_manager', function(req, res) {
+    checkIfCorporate(req, res, function() {
+		if (!req.session.isCorporate) {
+			res.redirect('/login');
+		}
+
+		request({
+			url: `${SERVICES_URL}/jobs`,
+			method: "GET",
+			json: true,
+			headers: {
+            	"Authorization": GROOT_ACCESS_TOKEN
+        	},
+			body: {
+				graduationStart: "test"
+				// "graduationEnd": req.params.gradYearEnd,
+				// "netid": req.params.netid,
+				// "level": req.params.level,
+				// "seeking": req.params.jobType,
+				// "approved_resumes": req.params.approved_resumes
+			}
+		}, function(error, response, body) {
+			if (response && response.statusCode != 200) {
+				console.log(body);
+				res.status(500).send("Error: " + response.statusMessage);
+			} else {
+				var render_opts = {
+				    job: sponsorsScope.job,
+				    degree: sponsorsScope.degree,
+				    grad: sponsorsScope.grad,
+				    student: sponsorsScope.student,
+					resumes: JSON.parse(body)
+				};
+				res.render('corporate_manager', render_opts);
+			}
+		});
+	});
+    // if(req.query !== {}) {
+    //     request({
+    //         url: `${SERVICES_URL}/students`,
+    //         method: "GET",
+    //         json: true,
+    //         body: {
+    //             "graduationStart": req.params.gradYearStart,
+    //             "graduationEnd": req.params.gradYearEnd,
+    //             "netid": req.params.netid,
+    //             "level": req.params.level,
+    //             "seeking": req.params.jobType,
+    //         }
+    //     }, function(error, response, body) {
+    //         if(error) {
+    //             res.status(500).send("Error " + error.code);
+    //         } else if (response.code != 200){
+    //             res.status(500).send("Error " + response.statusCode);
+    //         } else {
+    //             render_opts.resumes = body;
+    //             res.render('corporate_manager', render_opts);
+    //         }
+    //     });
+    // } else {
+    //     res.render('corporate_manager', render_opts);
+    // }
+});
+
 app.get('/sponsors/recruiter_login', function(req, res) {
     res.render('recruiter_login', {
         authenticated:  req.session.auth,
@@ -501,7 +588,7 @@ app.get('/sponsors/resume_filter', function(req, res) {
 		grad: sponsorsScope.grad,
 		student: sponsorsScope.student,
 	})
- });
+});
 
 
 app.get('/sponsors', function(req, res) {
@@ -513,14 +600,14 @@ app.get('/sponsors', function(req, res) {
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
 		authenticated:  req.session.auth,
-	})
+	});
 });
 
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
-//Start server and logs port as a callback
+// //Start server and logs port as a callback
 app.listen(PORT, function() {
 	console.log('GROOT_DESKTOP is live on port ' + PORT + "!");
 });
