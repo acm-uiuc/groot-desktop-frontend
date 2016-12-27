@@ -24,6 +24,7 @@ var request = require('request');
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const GROOT_RECRUITER_TOKEN = process.env.GROOT_RECRUITER_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -439,7 +440,7 @@ app.post('/sponsors/new_job_post', function(req, res) {
         url: `${SERVICES_URL}/jobs`,
         method: "POST",
         headers: {
-            "Authorization": GROOT_ACCESS_TOKEN
+            "Authorization": GROOT_RECRUITER_TOKEN
         },
         json: true,
         body: req.body
@@ -476,7 +477,7 @@ app.post('/sponsors/resume_book', function(req, res) {
         url: `${SERVICES_URL}/students`,
         method: "POST",
         headers: {
-            "Authorization": GROOT_ACCESS_TOKEN
+            "Authorization": GROOT_RECRUITER_TOKEN
         },
         json: true,
         body: req.body
