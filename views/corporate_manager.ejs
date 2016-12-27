@@ -1,0 +1,116 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+<div id="resume-container">
+  <div class="row">
+    <h2>Corporate Manager</h2>
+    <h3>Resume Manager </h3>
+    <table>
+      <tr>
+        <th> Action </th> <th> Preview </th> <th> Data </th>
+      </tr>
+      <% for (var resume of resumes) { %>
+      <tr>
+        <td><!-- Action - Approve/Delete--> </td>
+        <td><%= resume.resume_url %></td>
+        <td><%= resume.first_name %> <br>
+            <%= resume.last_name %> <br>
+            <%= (new Date(resume.graduation_date)).toDateString() %> <br>
+            <%= resume.degree_type %> <br>
+            <%= resume.job_type %></td>
+      </tr>
+      <% } %>
+    </table>
+    <div class="controls">
+        <button type="button" class="button" onclick="">Save Resumes</button>
+    </div>
+    <h3>Job Post Manager</h3>
+    <table>
+      <tr>
+        <th> Action </th> <th> Preview </th> <th> Data </th>
+      <% for (var jobpost of jobpost) { %>
+      <tr>
+        <td><!-- Action - Approve/Delete--> </td>
+        <td><%= job.job_id %></td>
+        <td><%= job.job_title, %> <br>
+            <%= job.organization %> <br>
+            <%= job.contact_name %> <br>
+            <%= job.contact_email %> <br>
+            <%= job.contact_phone %> <br>
+            <%= job.job_type %> <br>
+            <%= job.description %> </td>
+      </tr>
+      <% } %>
+    </table>
+    <div class="controls">
+        <button type="button" class="button" onclick="">Save Jobs</button>
+    </div>
+
+    <h3>Account Manager</h3>
+    <form ref="" id="">
+      <div class="field-group required">
+        <label for="company_name" class="field-albe"> Compan Name </label>
+        <div class="field">
+          <input id="company_name" type="text" name="companyName" maxlength="16" />
+      </div>
+      <div class="field-group required">
+          <label for="first_name" class="field-label">First Name</label>
+          <div class="field">
+              <input id="first_name" type="text" name="firstName" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="last_name" class="field-label">Last Name</label>
+          <div class="field">
+              <input id="last_name" type="text" name="lastName" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="netid" class="field-label">Contact Email</label>
+          <div class="field">
+              <input id="email" type="text" name="email" />
+          </div>
+      </div>
+      <!-- to do:  expiration/action/sponsorship level -->
+      <div class="controls">
+          <button type="button" class="button" onclick="">Create Account</button>
+      </div>
+    </form>
+    <table>
+      <!-- LIST OF ACCOUNTS HERE -->
+      <tr>
+          <th>Company </th> <th>Level </th> <th>Username </th> <th>Email </th>
+          <!-- todo: <th>Expires </th> -->
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%- include('_partials/footer') -%>
