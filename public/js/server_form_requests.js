@@ -52,5 +52,16 @@ function send_job(e) {
     post(serialized_data);
 }
 
+function recruiter_login(e) {
+    var form_metadata = $('#recruiterLogin').serializeArray();
+
+    var serialized_data = {};
+    form_metadata.forEach(function (form_input) {
+        serialized_data[form_input.name] = form_input.value;
+    });
+    
+    post(serialized_data);
+}
+
 // Add events
 $('#resume').on('change', readResumeAsString);
