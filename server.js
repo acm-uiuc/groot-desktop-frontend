@@ -111,12 +111,10 @@ app.post('/login', function(req, res){
 	request(options, callback);
 });
 
-
 function renderIntranetPage(req, res)
 {
 	res.redirect('intranet');
 }
-
 
 function checkIfAdmin(req, res, netid, nextSteps)
 {
@@ -331,6 +329,30 @@ app.get('/intranet', function(req, res) {
 	}
 	else
 		res.redirect('login');
+});
+
+app.get('/intranet/userApproval', function(req, res){
+	if(req.session.auth && req.session.isAdmin)
+	{
+		res.render('userApproval', {
+			authenticated: req.session.auth,
+			session:req.session
+		});
+	}
+	else
+		res.redirect('/login');
+});
+
+app.post('/intranet/userApproval', function(req, res){
+	if(req.session.auth && req.session.isAdmin)
+	{
+		// get the token from the user
+		// make a request to the users service 
+
+		// POST `/user/paid`
+		// `{"token":token, "netid":netid}`
+
+	}
 });
 
 app.post('/join', function(req, res) {
