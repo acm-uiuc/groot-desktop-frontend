@@ -378,6 +378,30 @@ app.get('/intranet', function(req, res) {
 	}
 });
 
+app.get('/intranet/userApproval', function(req, res){
+	if(req.session.auth && req.session.isAdmin)
+	{
+		res.render('userApproval', {
+			authenticated: req.session.auth,
+			session:req.session
+		});
+	}
+	else
+		res.redirect('/login');
+});
+
+app.post('/intranet/userApproval', function(req, res){
+	if(req.session.auth && req.session.isAdmin)
+	{
+		// get the token from the user
+		// make a request to the users service 
+
+		// POST `/user/paid`
+		// `{"token":token, "netid":netid}`
+
+	}
+});
+
 app.post('/join', function(req, res) {
     // creates JSON object of the inputted data
     // sends data to groups-user-service
