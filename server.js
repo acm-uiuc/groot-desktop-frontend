@@ -361,83 +361,72 @@ app.get('/intranet', function(req, res) {
 });
 
 app.get('/intranet/userApproval', function(req, res){
-	console.log("GET intranet/userApproval");
-	if(req.session.auth && req.session.isAdmin)
-	{
-		console.log("hello");
-		console.log(`${SERVICES_URL}/users/pre`);
-		request({
-			url: `${SERVICES_URL}/users/pre`,
-			method: "POST",
-			headers: {
-				"Authorization": GROOT_ACCESS_TOKEN
-			},
-			body: {
-				"token" : req.session.token,
-			},
-			json: true
-		}, function(err, response, body) {
-			if(err) {
-				console.log(err);
-				res.status(520).send("Error");
-				return;
-			}
-			// console.log(body);
-			res.render('userApproval', {
-				authenticated: req.session.auth,
-				session:req.session,
-				premembers: body,
-
-			});
-		});
+	if(!isAuthenticated(req)) {
+		res.redirect('login');
 	}
-	else
-		res.redirect('/login');
+
+	request({
+		url: `${SERVICES_URL}/users/pre`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		body: {
+			"token" : req.session.token,
+		},
+		json: true
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			res.status(500).send("Error");
+			return;
+		}
+		// console.log(body);
+		res.render('userApproval', {
+			authenticated: true,
+			session:req.session,
+			premembers: body,
+	});
+
 });
 
 app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
+	if(!isAuthenticated(req)) {
+		res.redirect('login');
+	}
+
 	//{"approvedUserNetID" : netid}
 	console.log("GET /intranet/userApproval/" + req.params["approvedUserNetID"] + "\n\n");
-	if(req.session.auth && req.session.isAdmin)
-	{
-		// get the token from the user
-		// make a request to the users service 
+	// get the token from the user
+	// make a request to the users service 
 
-		// POST `/user/paid`
-		// `{"token":token, "netid":netid}`
-		console.log("request");
+	// POST `/user/paid`
+	// `{"token":token, "netid":netid}`
+	console.log("request");
 
-		request({
-			url: `${SERVICES_URL}/user/paid`,
-			method: "POST",
-			headers: {
-				"Authorization": GROOT_ACCESS_TOKEN
-			},
-			body: {
-				"token" : req.session.token,
-				"netid" : req.params["approvedUserNetID"],
-			},
-			json: true
-		}, function(err, response, body) {
-			if(err) {
-				console.log(err);
-				res.status(500).send("Error");
-				return;
-			}
-			console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
-			res.redirect('/intranet/userApproval');
-			// res.render('intranet', {
-			// 	authenticated: req.session.auth,
-			// 	session: req.session,
-			// 	approvedUser: req.params["approvedUserNetID"]
-			// });
-
-		});
-		console.log("request done==============================")
-	}
-	else
+	request({
+		url: `${SERVICES_URL}/user/paid`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		body: {
+			"token" : req.session.token,
+			"netid" : req.params["approvedUserNetID"],
+		},
+		json: true
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			res.status(500).send("Error");
+			return;
+		}
+		console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
 		res.redirect('/intranet/userApproval');
 
+
+	});
+	console.log("request done==============================");
 });
 
 app.post('/join', function(req, res) {
@@ -455,17 +444,16 @@ app.post('/join', function(req, res) {
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
-		body: userData,
-		json: true
-	}, function(err, response, body) {
-		if(err) {
-			console.log(err);
-			res.status(520).send("Error");
-			return;
-		}
-		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);
-		res.redirect('/');
-	});
+        body: userData,
+        json: true
+    }, function(err, response, body) {
+        if(err) {
+            console.log(err);
+			res.status(500).send("Error");
+            return;
+        }
+		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);        res.redirect('/');
+    });
 });
 
 app.get('/join', function(req, res) {
