@@ -359,6 +359,75 @@ app.get('/intranet', function(req, res) {
 	});
 });
 
+app.get('/intranet/userApproval', function(req, res){
+	if(!isAuthenticated(req)) {
+		res.redirect('login');
+	}
+
+	request({
+		url: `${SERVICES_URL}/users/pre`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		body: {
+			"token" : req.session.token,
+		},
+		json: true
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			res.status(500).send("Error");
+			return;
+		}
+		// console.log(body);
+		res.render('userApproval', {
+			authenticated: true,
+			session:req.session,
+			premembers: body,
+	});
+
+});
+
+app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
+	if(!isAuthenticated(req)) {
+		res.redirect('login');
+	}
+
+	//{"approvedUserNetID" : netid}
+	console.log("GET /intranet/userApproval/" + req.params["approvedUserNetID"] + "\n\n");
+	// get the token from the user
+	// make a request to the users service 
+
+	// POST `/user/paid`
+	// `{"token":token, "netid":netid}`
+	console.log("request");
+
+	request({
+		url: `${SERVICES_URL}/user/paid`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		body: {
+			"token" : req.session.token,
+			"netid" : req.params["approvedUserNetID"],
+		},
+		json: true
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			res.status(500).send("Error");
+			return;
+		}
+		console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
+		res.redirect('/intranet/userApproval');
+
+
+	});
+	console.log("request done==============================");
+});
+
 app.post('/join', function(req, res) {
     var userData = {
         first_name: req.body.first_name,
@@ -377,11 +446,10 @@ app.post('/join', function(req, res) {
     }, function(err, response, body) {
         if(err) {
             console.log(err);
-            res.status(520).send("Error: Please go yell at ACM to fix their shit!");
+			res.status(500).send("Error");
             return;
         }
-        console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
-        res.redirect('/');
+		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);        res.redirect('/');
     });
 });
 
