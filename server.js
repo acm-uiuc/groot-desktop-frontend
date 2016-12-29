@@ -39,28 +39,27 @@ app.use(session({
 	ephemeral: true // Deletes cookie when browser closes.
 }));
 
-// Handle Sessions Accross different pages using express
-
-app.use(function(req, res, next){//mainly for the inital load, setting initial values for the session
-	if(!req.session.netid)
-	{
-		req.session.auth = false;
-		req.session.isAdmin = false;
-	}
-	next();
-});
+// Handle Sessions across different pages using express
 
 /*
 	Listing of session variables:
-		session.auth: if a user is authenticated
-		session.isAdmin: if a user is an Admin/elevated privs
-		session.isCorporate: if a user is a Corporate member
+		roles object has two main roles: student and recruiter
+		student is broken down into: admin, top4, corporate.
+
 		session.netid
 		session.token
 */
-
-
-//TODO Add more POST endpoints for all our form interactions
+app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
+	if(!req.session.roles) {
+		req.session.roles = {};
+		req.session.roles.isAdmin = false;
+		req.session.roles.isTop4 = false;
+		req.session.roles.isCorporate = false;
+		req.session.roles.isStudent = false;
+		req.session.roles.isRecruiter = false;
+	}
+	next();
+});
 
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
@@ -98,25 +97,51 @@ app.post('/login', function(req, res){
 				console.log("Error: " + error);
 			if(body["reason"])
 				console.log("ISSUE: " + body["reason"]);
-			console.log(body);
 			req.session.netid = netid;
+			req.session.username = netid;
 			req.session.token = body["token"];
-			req.session.auth = true;
-			console.log("token: " + body["token"]);
-			console.log("session:" + req.session);
+			req.session.roles.isStudent = true;
 
-			res.redirect('intranet');
+			res.redirect('/intranet');
 		}
 	}
 	request(options, callback);
 });
+
+app.post('/sponsors/recruiter_login', function(req, res) {
+    request({
+		url: `${SERVICES_URL}/recruiters/login`,
+		method: "POST",
+		headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        json: true,
+		body: req.body
+	}, function(err, response, body) {
+		if (response && response.statusCode == 200) {
+			req.session.recruiter = body.data;
+			req.session.username = body.data.first_name;
+			req.session.roles.isRecruiter = true;
+
+			res.redirect('/intranet');
+		} else {
+			res.render('recruiter_login', {
+				authenticated: false,
+				error: body.error
+			});
+		}
+	});
+});
+
+function isAuthenticated(req) {
+	return req.session.roles.isStudent || req.session.roles.isRecruiter;
+}
 
 function checkIfAdmin(req, res, nextSteps)
 {
 	var netid = req.session.netid;
 	if (!netid) {
 		nextSteps(req, res);
-		return;
 	}
 
 	var options = {
@@ -129,7 +154,7 @@ function checkIfAdmin(req, res, nextSteps)
 
 	function callback(error, response, body) {
 		if(body) {
-			req.session.isAdmin = JSON.parse(body).isValid;
+			req.session.roles.isAdmin = JSON.parse(body).isValid;
 			nextSteps(req, res);
         }
 	}
@@ -140,9 +165,8 @@ function checkIfAdmin(req, res, nextSteps)
 function checkIfCorporate(req, res, nextSteps)
 {
 	var netid = req.session.netid;
-	if (netid == undefined) {
-		checkIfAdmin(req, res, nextSteps);
-		return;
+	if (!netid) {
+		nextSteps(req, res);
 	}
 
     var options = {
@@ -157,8 +181,8 @@ function checkIfCorporate(req, res, nextSteps)
 		if (!body){
 			res.status(500).send("Error verifying corporate status.");
 		} else {
-			req.session.isCorporate = JSON.parse(body).isValid;
-			checkIfAdmin(req, res, nextSteps);
+			req.session.roles.isCorporate = JSON.parse(body).isValid;
+			nextSteps(req, res);
 		}
     }
 
@@ -169,7 +193,7 @@ function checkIfTop4(req, res, nextSteps)
 {
 	var netid = req.session.netid;
 	if (!netid) {
-		res.redirect('/login');
+		nextSteps(req, res);
 	}
 
 	var options = {
@@ -186,7 +210,7 @@ function checkIfTop4(req, res, nextSteps)
 			// console.log("Error: " + error);
 		if(body && JSON.parse(body).isValid)
 		{
-			req.session.isAdmin = JSON.parse(body).isValid;
+			req.session.roles.isTop4 = JSON.parse(body).isValid;
 		}		
 		nextSteps(req, res);
 
@@ -269,16 +293,16 @@ if (m > 6) {
 
 app.get('/', function(req, res) {
 	res.render('home', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/login', function(req, res) {
-	if (req.session.auth) {
+	if (isAuthenticated(req)) {
 		res.redirect('intranet');
 	} else {
 		res.render('login', {
-			authenticated: req.session.auth,
+			authenticated: false,
 		});
 	}
 });
@@ -296,7 +320,7 @@ app.get('/about', function(req, res) {
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
         res.render('about', {
-            authenticated: req.session.auth,
+            authenticated: isAuthenticated(req),
             committees: JSON.parse(body),
         });
     });
@@ -304,7 +328,7 @@ app.get('/about', function(req, res) {
 
 app.get('/conference', function(req, res) {
 	res.render('conference', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 		editions: [
 			{ year: '2016', path: '/conference/2016' },
 			{ year: '2015', path: '/conference/2015' },
@@ -334,27 +358,24 @@ app.get('/conference', function(req, res) {
 
 app.get('/events', function(req, res) {
 	res.render('events', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/intranet', function(req, res) {
-	// Inherently checks corporate or admin (and gets redirected after recruiter login)
-	if (req.session.isRecruiter) { // TODO figure out why auth gets set to false on a redirect
-		req.session.auth = true;
-	}
+	checkIfAdmin(req, res, function(){});
+	checkIfCorporate(req, res, function(){});
+	checkIfTop4(req, res, function(){});
 
-	checkIfCorporate(req, res, function() {
-		if(req.session.auth) {
-			res.render('intranet', {
-				authenticated: req.session.auth,
-				session: req.session
-			});
-		}
-		else {
-			res.redirect('login');
-		}
-	});
+	if(isAuthenticated(req)) {
+		res.render('intranet', {
+			authenticated: true,
+			session: req.session
+		});
+	}
+	else {
+		res.redirect('login');
+	}
 });
 
 app.post('/join', function(req, res) {
@@ -425,7 +446,7 @@ app.get('/sigs', function(req, res) {
         sigs_a = sigs.slice(0, sigs.length / 2);
         sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
         res.render('sigs', {
-            authenticated: req.session.auth,
+            authenticated: isAuthenticated(req),
             sig_col_a: sigs_a,
             sig_col_b: sigs_b,
         });
@@ -446,7 +467,7 @@ app.get('/quotes', function(req, res) {
             res.status(500).send("Error " + error.code);
         } else {
             res.render('quotes', {
-                authenticated: req.session.auth,
+                authenticated: isAuthenticated(req),
                 quotes: body
             });
         }
@@ -455,7 +476,7 @@ app.get('/quotes', function(req, res) {
 
 app.get('/sponsors/new_job_post', function(req, res) {
 	res.render('new_job_post', {
-		authenticated:  req.session.auth,
+		authenticated:  isAuthenticated(req),
 	});
 });
 
@@ -471,7 +492,7 @@ app.post('/sponsors/new_job_post', function(req, res) {
     }, function(err, response, body) {
         if (response.statusCode == 200) {
             res.render('home', {
-                authenticated: req.session.auth,
+                authenticated: isAuthenticated(req),
             });
         } else {
             res.status(500).send("Error " + body.Text);
@@ -482,7 +503,7 @@ app.post('/sponsors/new_job_post', function(req, res) {
 
 app.get('/sponsors/corporate_manager', function(req, res) {
     checkIfCorporate(req, res, function() {
-		if (!req.session.isCorporate) {
+		if (!req.session.roles.isCorporate) {
 			res.redirect('/login');
 		}
 
@@ -520,51 +541,23 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 });
 
 app.get('/sponsors/recruiter_login', function(req, res) {
-	if (req.session.isRecruiter && req.session.recruiterID !== undefined) {
-		req.session.auth = true;
-	}
-
-	if(req.session.auth) {
+	if(isAuthenticated(req)) {
 		res.redirect('/intranet');
 	} else {
 		res.render('recruiter_login', {
-        	authenticated:  req.session.auth,
+        	authenticated: false,
     	});
 	}
 });
 
-app.post('/sponsors/recruiter_login', function(req, res) {
-    request({
-		url: `${SERVICES_URL}/recruiters/login`,
-		method: "POST",
-		headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
-        },
-        json: true,
-		body: req.body
-	}, function(err, response, body) {
-		if (response && response.statusCode == 200) {
-			req.session.auth = true;
-			req.session.isRecruiter = true;
-			req.session.recruiterID = body.data.id;
-
-			res.redirect('/intranet');
-		} else {
-			res.render('recruiter_login', {
-				authenticated: false,
-				error: body.error
-			});
-		}
-	});
-});
-
 app.get('/sponsors/resume_book', function(req, res) {
     res.render('resume_book', {
-        authenticated:  req.session.auth,
+		authenticated: isAuthenticated(req),
         job: sponsorsScope.job,
         degree: sponsorsScope.degree,
         grad: sponsorsScope.grad,
-        student: sponsorsScope.student
+        student: sponsorsScope.student,
+		error: null
     });
 });
 
@@ -580,18 +573,24 @@ app.post('/sponsors/resume_book', function(req, res) {
     }, function(err, response, body) {
         if (response.statusCode == 200) {
             res.render('home', {
-                authenticated: req.session.auth,
+                authenticated: isAuthenticated(req),
             });
         } else {
-            res.status(500).send("Error " + body.error);
-            return;
+            res.render('resume_book', {
+				authenticated: isAuthenticated(req),
+        		job: sponsorsScope.job,
+        		degree: sponsorsScope.degree,
+        		grad: sponsorsScope.grad,
+        		student: sponsorsScope.student,
+				error: body.error
+			});
         }
     });
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
-		authenticated:  req.session.auth,
+		authenticated:  isAuthenticated(req),
 		job: sponsorsScope.job,
 		degree: sponsorsScope.degree,
 		grad: sponsorsScope.grad,
@@ -602,13 +601,13 @@ app.get('/sponsors/resume_filter', function(req, res) {
 
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
-		authenticated:  req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
-		authenticated:  req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
