@@ -14,29 +14,29 @@ this license in a file with the distribution.
   <div class="row">
     <h2>ACM@UIUC Resume Book </h2>
     <p>You can filter the resumes by categories below. <br> If you have any trouble accessing resume, please contact us at <a href="mailto:corporate@acm.illinois.edu">corporate@acm.illinois.edu</a></p>
-      <form>
+      <form method="post" action="/sponsors/resume_filter">
         <div class="field-group">
           <label for="name" class="field-label">Name </label>
           <div class="field">
-            <input id="name" type="text" name="name" maxlength="20" />
+            <input id="name" type="text" name="name" maxlength="20" value="<%= defaults.name %>" />
           </div>
         </div>
         <div class="field-group">
           <label for="netid" class="field-label">NetID</label>
           <div class="field">
-            <input id="netid" type="text" name="netid" maxlength="15"/>
+            <input id="netid" type="text" name="netid" maxlength="15" value="<%= defaults.netid %>"/>
           </div>
         </div>
         <div class="field-group">
           <label for="gradYear" class="field-label">Graduating:</label>
           <select id="grad_year" name="gradYearStart">
             <% for (var option of grad.years) { %>
-              <option value= <%= option.date %> > <%= option.date %> </option>
+              <option value= "<%= option.date %>" <%= option.date === defaults.gradYearStart ? "selected" : "" %> > <%= option.date %> </option>
             <% } %>
           </select>
           </select> to   <select id="grad_year" name="gradYearEnd">
             <% for (var option of grad.years) { %>
-              <option value= <%= option.date %> > <%= option.date %> </option>
+              <option value="<%= option.date %>" <%= (option.date === defaults.gradYearEnd || (option.date === grad.years[grad.years.length - 1].date && !defaults.gradYearEnd)) ? "selected" : "" %> %> > <%= option.date %> </option>
             <% } %>
           </select>
         </div>
@@ -44,7 +44,7 @@ this license in a file with the distribution.
           <label for="degreeType" class="field-label">Level</label>
           <select id="degree_type" name="degreeType">
             <% for (var option of degree.types) { %>
-              <option value= <%= option.name %> > <%= option.name %> </option>
+              <option value="<%= option.name %>" <%= option.name === defaults.degreeType ? "selected" : "" %> > <%= option.name %> </option>
             <% } %>
           </select>
         </div>
@@ -52,13 +52,13 @@ this license in a file with the distribution.
           <label for="jobType" class="field-label">Seeking</label>
           <select id="job_type" name="jobType" >
             <% for (var option of job.types) { %>
-              <option value= <%= option.name %> > <%= option.name %> </option>
+              <option value="<%= option.name %>" <%= option.name === defaults.jobType ? "selected" : "" %> > <%= option.name %> </option>
             <% } %>
           </select>
         </div>
         <div class="control-group">
         <div class="controls">
-          <button type="submit" ng-click="Search()" class="button">Search</button>
+          <button type="submit" class="button">Search</button>
         </div>
       </div>
       </form>
@@ -73,7 +73,7 @@ this license in a file with the distribution.
         <% for (var resume of resumes) { %>
           <tr>
             <td><%= resume.first_name %> <%= resume.last_name %></td>
-            <td><%= (new Date(resume.graduation_date)).toDateString() %></td>
+            <td><%= resume.graduation_date %></td>
             <td><%= resume.degree_type %></td>
             <td><%= resume.job_type %></td>
             <td><%= resume.resume_url %></td>

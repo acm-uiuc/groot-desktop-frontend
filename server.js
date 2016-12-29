@@ -20,6 +20,7 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+var moment = require('moment');
 
 
 const PORT = process.env.PORT || 5000;
@@ -712,42 +713,55 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-  var render_opts = {
-    authenticated: false,
-    job: sponsorsScope.job,
-    degree: sponsorsScope.degree,
-    grad: sponsorsScope.grad,
-    student: sponsorsScope.student,
-    resumes: []
-  }
-  if(req.query !== {}) {
-    request({
-      url: `${SERVICES_URL}/students`,
-      method: "GET",
-      json: true,
-      body: {
-        "graduationStart": req.params.gradYearStart,
-        "graduationEnd": req.params.gradYearStart,
-        "netid": req.params.netid,
-        "degree_type": req.params.level,
-        "job_type": req.params.jobType,
-      }
-    }, function(error, response, body) {
-          if(error){
-            res.status(500).send("Error " + error.code);
+  res.render('resume_filter', {
+      authenticated:  req.session.auth,
+      job: sponsorsScope.job,
+      degree: sponsorsScope.degree,
+      grad: sponsorsScope.grad,
+      student: sponsorsScope.student,
+      resumes: [],
+      defaults: {}
+  });
+});
+
+app.post('/sponsors/resume_filter', function(req, res) {
+  request({
+    url: `${SERVICES_URL}/students`,
+    method: "GET",
+    json: true,
+    headers: {
+        "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    body: {
+      "name": req.body.name,
+      "graduationStart": req.body.gradYearStart,
+      "graduationEnd": req.body.gradYearStart,
+      "netid": req.body.netid,
+      "degree_type": req.body.degreeType,
+      "job_type": req.body.jobType,
+    }
+  }, function(error, response, body) {
+        if(error){
+          res.status(500).send("Error " + error.code);
+        }
+        else if(body.error) {
+          res.status(500).send("Error: " + body.error)
+        }
+        else{
+          for( var resume of body.data ){
+            resume.graduation_date = moment(resume.graduation_date).format("MMMM Y")
           }
-          else if (response.code != 404){
-            res.render('resume_filter', render_opts)
-          }
-          else{
-            render_opts.resumes = body;
-            res.render('resume_filter', render_opts);
-          }
-    });
-  }
-  else{
-    res.render('resume_filter', render_opts);    
-  }
+          res.render('resume_filter', {
+              authenticated:  req.session.auth,
+              job: sponsorsScope.job,
+              degree: sponsorsScope.degree,
+              grad: sponsorsScope.grad,
+              student: sponsorsScope.student,
+              resumes: body.data,
+              defaults: req.body
+          });
+        }
+  });
 });
 
 app.get('/sponsors', function(req, res) {
