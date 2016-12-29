@@ -712,13 +712,42 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-	res.render('resume_filter', {
-		authenticated:  isAuthenticated(req),
-		job: sponsorsScope.job,
-		degree: sponsorsScope.degree,
-		grad: sponsorsScope.grad,
-		student: sponsorsScope.student,
-	})
+  var render_opts = {
+    authenticated: false,
+    job: sponsorsScope.job,
+    degree: sponsorsScope.degree,
+    grad: sponsorsScope.grad,
+    student: sponsorsScope.student,
+    resumes: []
+  }
+  if(req.query !== {}) {
+    request({
+      url: `${SERVICES_URL}/students`,
+      method: "GET",
+      json: true,
+      body: {
+        "graduationStart": req.params.gradYearStart,
+        "graduationEnd": req.params.gradYearStart,
+        "netid": req.params.netid,
+        "degree_type": req.params.level,
+        "job_type": req.params.jobType,
+      }
+    }, function(error, response, body) {
+          if(error){
+            res.status(500).send("Error " + error.code);
+          }
+          else if (response.code != 404){
+            res.render('resume_filter', render_opts)
+          }
+          else{
+            render_opts.resumes = body;
+            res.render('resume_filter', render_opts);
+          }
+    });
+  }
+  else{
+    res.render('resume_filter', render_opts);    
+  }
 });
 
 app.get('/sponsors', function(req, res) {

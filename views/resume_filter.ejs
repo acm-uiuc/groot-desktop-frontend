@@ -29,22 +29,23 @@ this license in a file with the distribution.
         </div>
         <div class="field-group">
           <label for="gradYear" class="field-label">Graduating:</label>
-          <select id="grad_year" name="gradYear">
-          <% for (var option of grad.years) { %>
-            <option value= <%= option.date %> > <%= option.date %> </option>
-          <% } %>
-        </select> to   <select id="grad_year" name="gradYear">
-          <% for (var option of grad.years) { %>
-            <option value= <%= option.date %> > <%= option.date %> </option>
-          <% } %>
-        </select>
+          <select id="grad_year" name="gradYearStart">
+            <% for (var option of grad.years) { %>
+              <option value= <%= option.date %> > <%= option.date %> </option>
+            <% } %>
+          </select>
+          </select> to   <select id="grad_year" name="gradYearEnd">
+            <% for (var option of grad.years) { %>
+              <option value= <%= option.date %> > <%= option.date %> </option>
+            <% } %>
+          </select>
         </div>
         <div class="field-group">
           <label for="degreeType" class="field-label">Level</label>
           <select id="degree_type" name="degreeType">
-          <% for (var option of degree.types) { %>
-            <option value= <%= option.name %> > <%= option.name %> </option>
-          <% } %>
+            <% for (var option of degree.types) { %>
+              <option value= <%= option.name %> > <%= option.name %> </option>
+            <% } %>
           </select>
         </div>
         <div class="field-group">
@@ -68,6 +69,16 @@ this license in a file with the distribution.
             <th>Level </th>
             <th>Seeking </th>
             <th>Resume </th>
+        </tr>
+        <% for (var resume of resumes) { %>
+          <tr>
+            <td><%= resume.first_name %> <%= resume.last_name %></td>
+            <td><%= (new Date(resume.graduation_date)).toDateString() %></td>
+            <td><%= resume.degree_type %></td>
+            <td><%= resume.job_type %></td>
+            <td><%= resume.resume_url %></td>
+          </tr>
+        <% } %>
       </table>
   </div>
 </div>
