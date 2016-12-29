@@ -17,47 +17,57 @@ this license in a file with the distribution.
       <tr>
         <th> Action </th> <th> Preview </th> <th> Data </th>
       </tr>
-      <% for (var resume of resumes) { %>
+      <% for (var resume of unapproved_resumes) { %>
       <tr>
-        <td><!-- Action - Approve/Delete--> </td>
-        <td><%= resume.resume_url %></td>
-        <td><%= resume.first_name %> <br>
-            <%= resume.last_name %> <br>
-            <%= (new Date(resume.graduation_date)).toDateString() %> <br>
-            <%= resume.degree_type %> <br>
-            <%= resume.job_type %></td>
+        <td>
+         <a class="button">Approve</a>
+         <a class="button">Delete</a>
+        </td>
+        <td><a href='<%= resume.resume_url || "Resume unavailable" %>'">View resume</a></td>
+        <td>
+            Name: <%= resume.first_name + " " + resume.last_name %> <br>
+            Graduation Date: <%= (new Date(resume.graduation_date)).toDateString() %> <br>
+            Degree Type: <%= resume.degree_type %> <br>
+            Job Type: <%= resume.job_type %>
+        </td>
       </tr>
       <% } %>
     </table>
-    <div class="controls">
+    <!-- <div class="controls">
         <button type="button" class="button" onclick="">Save Resumes</button>
-    </div>
+    </div> -->
     <h3>Job Post Manager</h3>
     <table>
       <tr>
-        <th> Action </th> <th> Preview </th> <th> Data </th>
-      <% for (var jobpost of jobpost) { %>
+        <th> Action </th>
+        <th> Role </th>
+        <th> Contact Information </th>
+        <th> Description </th>
+      </tr>
+    <% for (var job of job_listings) { %>
       <tr>
-        <td><!-- Action - Approve/Delete--> </td>
-        <td><%= job.job_id %></td>
-        <td><%= job.job_title, %> <br>
-            <%= job.organization %> <br>
+        <td>
+         <a class="button">Approve</a>
+         <a class="button">Delete</a>
+        </td>
+        <td><%= job.title + " @ " + job.company %></td>
+        <td>
             <%= job.contact_name %> <br>
             <%= job.contact_email %> <br>
             <%= job.contact_phone %> <br>
-            <%= job.job_type %> <br>
-            <%= job.description %> </td>
+        </td>
+        <td> <%= job.description %> </td>
       </tr>
       <% } %>
     </table>
-    <div class="controls">
+    <!--<div class="controls">
         <button type="button" class="button" onclick="">Save Jobs</button>
-    </div>
+    </div>-->
 
     <h3>Account Manager</h3>
     <form ref="" id="">
       <div class="field-group required">
-        <label for="company_name" class="field-albe"> Compan Name </label>
+        <label for="company_name" class="field-albe">Company Name </label>
         <div class="field">
           <input id="company_name" type="text" name="companyName" maxlength="16" />
       </div>
@@ -84,33 +94,24 @@ this license in a file with the distribution.
           <button type="button" class="button" onclick="">Create Account</button>
       </div>
     </form>
+    <h3>All Recruiters</h3>
     <table>
-      <!-- LIST OF ACCOUNTS HERE -->
       <tr>
-          <th>Company </th> <th>Level </th> <th>Username </th> <th>Email </th>
-          <!-- todo: <th>Expires </th> -->
+          <th>Company </th>
+          <th>Name</th>
+          <th>Email </th>
+          <th>Expires </th>
       </tr>
+      <% for (var recruiter of recruiters) { %>
+      <tr>
+        <td><%= recruiter.company_name %></td>
+        <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
+        <td><%= recruiter.email %></td>
+        <td><%= recruiter.expires_on %></td>
+      </tr>
+      <% } %>
     </table>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <%- include('_partials/footer') -%>

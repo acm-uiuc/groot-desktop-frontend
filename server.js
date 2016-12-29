@@ -51,12 +51,13 @@ app.use(session({
 */
 app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
 	if(!req.session.roles) {
-		req.session.roles = {};
-		req.session.roles.isAdmin = false;
-		req.session.roles.isTop4 = false;
-		req.session.roles.isCorporate = false;
-		req.session.roles.isStudent = false;
-		req.session.roles.isRecruiter = false;
+		req.session.roles = {
+			isAdmin: false,
+			isTop4: false,
+			isCorporate: false,
+			isStudent: false,
+			isRecruiter: false
+		};
 	}
 	next();
 });
@@ -504,7 +505,7 @@ app.post('/sponsors/new_job_post', function(req, res) {
 app.get('/sponsors/corporate_manager', function(req, res) {
     checkIfCorporate(req, res, function() {
 		if (!req.session.roles.isCorporate) {
-			res.redirect('/login');
+			res.redirect('/intranet');
 		}
 
 		request({
@@ -513,28 +514,51 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 			json: true,
 			headers: {
             	"Authorization": GROOT_ACCESS_TOKEN
-        	},
-			body: {
-				graduationStart: req.params.graduationStart,
-				graduationEnd: req.params.gradYearEnd,
-				netid: req.params.netid,
-				level: req.params.level,
-				seeking: req.params.jobType,
-				approved_resumes: req.params.approved_resumes
-			}
+        	}
 		}, function(error, response, body) {
 			if (response && response.statusCode != 200) {
-				console.log(body);
-				res.status(500).send("Error: " + response.statusMessage);
+				res.status(500).send("Error: " + body.error);
 			} else {
-				var render_opts = {
-				    job: sponsorsScope.job,
-				    degree: sponsorsScope.degree,
-				    grad: sponsorsScope.grad,
-				    student: sponsorsScope.student,
-					resumes: JSON.parse(body)
-				};
-				res.render('corporate_manager', render_opts);
+				request({
+					url: `${SERVICES_URL}/students`,
+					method: "GET",
+					json: true,
+					headers: {
+						"Authorization": GROOT_ACCESS_TOKEN
+					},
+					body: {
+						approved_resumes: false
+					}
+				}, function(s_error, s_response, s_body) {
+					if (s_response && s_response.statusCode != 200) {
+						res.status(500).send("Error: " + s_body.error);
+					} else {
+						request({
+							url: `${SERVICES_URL}/recruiters`,
+							method: "GET",
+							json: true,
+							headers: {
+								"Authorization": GROOT_ACCESS_TOKEN
+							},
+						}, function(r_error, r_response, r_body) {
+							if (r_response && r_response.statusCode != 200) {
+								res.status(500).send("Error: " + r_body.error);
+							} else {
+								var render_opts = {
+									job: sponsorsScope.job,
+									degree: sponsorsScope.degree,
+									grad: sponsorsScope.grad,
+									student: sponsorsScope.student,
+									unapproved_resumes: s_body.data,
+									job_listings: body.data,
+									recruiters: r_body.data,
+									authenticated: isAuthenticated(req)
+								};
+								res.render('corporate_manager', render_opts);
+							}
+						});
+					}
+				});
 			}
 		});
 	});
@@ -545,8 +569,8 @@ app.get('/sponsors/recruiter_login', function(req, res) {
 		res.redirect('/intranet');
 	} else {
 		res.render('recruiter_login', {
-        	authenticated: false,
-    	});
+			authenticated: false,
+		});
 	}
 });
 
@@ -598,7 +622,6 @@ app.get('/sponsors/resume_filter', function(req, res) {
 	})
 });
 
-
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
 		authenticated: isAuthenticated(req),
@@ -610,7 +633,6 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 		authenticated: isAuthenticated(req),
 	});
 });
-
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
