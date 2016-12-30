@@ -20,7 +20,7 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
-var moment = require('moment');
+var utils = require('./etc/utils.js');
 
 
 const PORT = process.env.PORT || 5000;
@@ -713,14 +713,34 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-  res.render('resume_filter', {
-      authenticated:  req.session.auth,
-      job: sponsorsScope.job,
-      degree: sponsorsScope.degree,
-      grad: sponsorsScope.grad,
-      student: sponsorsScope.student,
-      resumes: [],
-      defaults: {}
+  request({
+    url: `${SERVICES_URL}/students`,
+    method: "GET",
+    json: true,
+    headers: {
+        "Authorization": GROOT_RECRUITER_TOKEN
+    }
+  }, function(error, response, body) {
+        if(error){
+          res.status(500).send("Error " + error.code);
+        }
+        else if(body.error) {
+          res.status(500).send("Error: " + body.error)
+        }
+        else{
+          for( var resume of body.data ){
+            resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
+          }
+          res.render('resume_filter', {
+              authenticated:  req.session.auth,
+              job: sponsorsScope.job,
+              degree: sponsorsScope.degree,
+              grad: sponsorsScope.grad,
+              student: sponsorsScope.student,
+              resumes: body.data,
+              defaults: {}
+          });
+        }
   });
 });
 
@@ -732,7 +752,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
     headers: {
         "Authorization": GROOT_RECRUITER_TOKEN
     },
-    body: {
+    params: {
       "name": req.body.name,
       "graduationStart": req.body.gradYearStart,
       "graduationEnd": req.body.gradYearStart,
@@ -749,7 +769,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
         }
         else{
           for( var resume of body.data ){
-            resume.graduation_date = moment(resume.graduation_date).format("MMMM Y")
+            resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
           }
           res.render('resume_filter', {
               authenticated:  req.session.auth,

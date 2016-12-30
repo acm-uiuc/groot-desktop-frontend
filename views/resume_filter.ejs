@@ -30,19 +30,22 @@ this license in a file with the distribution.
         <div class="field-group">
           <label for="gradYear" class="field-label">Graduating:</label>
           <select id="grad_year" name="gradYearStart">
+            <option value="" <%= defaults.gradYearStart ? "selected" : "" %>></option>
             <% for (var option of grad.years) { %>
               <option value= "<%= option.date %>" <%= option.date === defaults.gradYearStart ? "selected" : "" %> > <%= option.date %> </option>
             <% } %>
           </select>
           </select> to   <select id="grad_year" name="gradYearEnd">
+            <option value="" <%= defaults.gradYearEnd ? "selected" : "" %>></option>
             <% for (var option of grad.years) { %>
-              <option value="<%= option.date %>" <%= (option.date === defaults.gradYearEnd || (option.date === grad.years[grad.years.length - 1].date && !defaults.gradYearEnd)) ? "selected" : "" %> %> > <%= option.date %> </option>
+              <option value="<%= option.date %>" <%= option.date === defaults.gradYearEnd  ? "selected" : "" %> %> > <%= option.date %> </option>
             <% } %>
           </select>
         </div>
         <div class="field-group">
           <label for="degreeType" class="field-label">Level</label>
           <select id="degree_type" name="degreeType">
+            <option value="" <%= defaults.degreeType ? "selected" : "" %>></option>
             <% for (var option of degree.types) { %>
               <option value="<%= option.name %>" <%= option.name === defaults.degreeType ? "selected" : "" %> > <%= option.name %> </option>
             <% } %>
@@ -51,6 +54,7 @@ this license in a file with the distribution.
         <div class="field-group">
           <label for="jobType" class="field-label">Seeking</label>
           <select id="job_type" name="jobType" >
+            <option value="" <%= defaults.jobType ? "selected" : "" %>></option>
             <% for (var option of job.types) { %>
               <option value="<%= option.name %>" <%= option.name === defaults.jobType ? "selected" : "" %> > <%= option.name %> </option>
             <% } %>
@@ -76,7 +80,7 @@ this license in a file with the distribution.
             <td><%= resume.graduation_date %></td>
             <td><%= resume.degree_type %></td>
             <td><%= resume.job_type %></td>
-            <td><%= resume.resume_url %></td>
+            <td><a href="<%= resume.resume_url %>">Resume</a></td>
           </tr>
         <% } %>
       </table>
