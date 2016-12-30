@@ -544,6 +544,7 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 							if (r_response && r_response.statusCode != 200) {
 								res.status(500).send("Error: " + r_body.error);
 							} else {
+								console.log(body.data);
 								var render_opts = {
 									job: sponsorsScope.job,
 									degree: sponsorsScope.degree,
@@ -561,6 +562,44 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 				});
 			}
 		});
+	});
+});
+
+app.post('/sponsors/corporate_manager', function(req, res) {
+	checkIfCorporate(req, res, function() {
+		if (!req.session.roles.isCorporate) {
+			res.redirect('/intranet');
+		}
+
+		request({
+			url: `${SERVICES_URL}/recruiters`,
+			method: "POST",
+			json: true,
+			headers: {
+            	"Authorization": GROOT_ACCESS_TOKEN
+        	},
+			body: req.body
+		}, function(error, response, body) {
+			if (response && response.statusCode != 200) {
+				res.status(500).send("Error: " + body.error);
+			} else {
+				res.redirect('/sponsors/corporate_manager');
+				// or render with locals from other variables?
+			}
+		});
+	});
+});
+
+app.put('/jobs/:jobId/approve', function(req, res) {
+	request({
+		url: `${SERVICES_URL}/jobs` + req.params.jobId + `/approve`,
+		method: "PUT",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		}
+	}, function(error, response, body) {
+		res.status(response.statusCode);
 	});
 });
 
