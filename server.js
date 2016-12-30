@@ -309,9 +309,9 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/about', function(req, res) {
-    var groupsData = request({
-        url: `${SERVICES_URL}/groups/committees`,
-        headers: {
+	var groupsData = request({
+		url: `${SERVICES_URL}/groups/committees`,
+		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET"
@@ -380,18 +380,43 @@ app.get('/intranet', function(req, res) {
 });
 
 app.get('/intranet/userApproval', function(req, res){
+	console.log("intranet/userApproval");
 	if(req.session.auth && req.session.isAdmin)
 	{
-		res.render('userApproval', {
-			authenticated: req.session.auth,
-			session:req.session
+		console.log("hello");
+		console.log(`${SERVICES_URL}/users/pre`);
+		request({
+			url: `${SERVICES_URL}/users/pre`,
+			method: "POST",
+			headers: {
+				"Authorization": GROOT_ACCESS_TOKEN
+			},
+			body: {
+				"token" : req.session.token,
+			},
+			json: true
+		}, function(err, response, body) {
+			if(err) {
+				console.log(err);
+				res.status(520).send("Error");
+				return;
+			}
+			// console.log(body);
+			res.render('userApproval', {
+				authenticated: req.session.auth,
+				session:req.session,
+				premembers: body
+			});
+			
+
 		});
 	}
 	else
 		res.redirect('/login');
 });
 
-app.post('/intranet/userApproval', function(req, res){
+app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
+	//{"approvedUserNetID" : netid}
 	if(req.session.auth && req.session.isAdmin)
 	{
 		// get the token from the user
@@ -400,64 +425,85 @@ app.post('/intranet/userApproval', function(req, res){
 		// POST `/user/paid`
 		// `{"token":token, "netid":netid}`
 
+		request({
+			url: `${SERVICES_URL}/user/paid`,
+			method: "POST",
+			headers: {
+				"Authorization": GROOT_ACCESS_TOKEN
+			},
+			body: {
+				"token" : req.session.token,
+				"netid" : req.body.approvedUserNetID
+			},
+			json: true
+		}, function(err, response, body) {
+			if(err) {
+				console.log(err);
+				res.status(500).send("Error");
+				return;
+			}
+			console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
+			res.redirect('/');
+		});
+
 	}
 });
 
 app.post('/join', function(req, res) {
-    // creates JSON object of the inputted data
-    // sends data to groups-user-service
-    var userData = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        netid: req.body.netid,
-        uin: req.body.uin
-    };
-    request({
-        url: `${SERVICES_URL}/newUser`,
-        method: "POST",
-        headers: {
+	// creates JSON object of the inputted data
+	// sends data to groups-user-service
+	var userData = {
+		first_name: req.body.first_name,
+		last_name: req.body.last_name,
+		netid: req.body.netid,
+		uin: req.body.uin
+	};
+	request({
+		url: `${SERVICES_URL}/newUser`,
+		method: "POST",
+		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
-        body: userData,
-        json: true
-    }, function(err, response, body) {
-        if(err) {
-            console.log(err);
-            res.status(520).send("Error: Please go yell at ACM to fix their shit!");
-            return;
-        }
-        console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
-        res.redirect('/');
-    });
+		body: userData,
+		json: true
+	}, function(err, response, body) {
+		if(err) {
+			console.log(err);
+			res.status(520).send("Error: Please go yell at ACM to fix their shit!");
+			return;
+		}
+		console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
+		res.redirect('/');
+	});
 });
 
 app.get('/join', function(req, res) {
-    // Going to grab SIG data from the micro-service
-    request({
-        /* URL to grab SIG data from groot-groups-service */
-        url: `${SERVICES_URL}/groups/sigs`,
-        headers: {
+	// Going to grab SIG data from the micro-service
+	request({
+		/* URL to grab SIG data from groot-groups-service */
+		url: `${SERVICES_URL}/groups/sigs`,
+		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
-        method: "GET",
-    }, function(err, response, body) {
-        if (err) {
-            console.log(err);
-            res.status(500).send("Error " + err);
-            return;
-        }
-        res.render('join', {
-            authenticated: false,
-            sigs: JSON.parse(body)
-        });
-    });
+		method: "GET",
+	}, function(err, response, body) {
+		if (err) {
+			console.log(err);
+			res.status(500).send("Error " + err);
+			return;
+		}
+		res.render('join', {
+			authenticated: false,
+			sigs: JSON.parse(body)
+		});
+	});
 });
 
 app.get('/sigs', function(req, res) {
-    request({
-        /* URL to grab SIG data from groot-groups-service */
-        url: `${SERVICES_URL}/groups/sigs`,
-        headers: {
+	request({
+		/* URL to grab SIG data from groot-groups-service */
+		url: `${SERVICES_URL}/groups/sigs`,
+		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET",
@@ -479,9 +525,9 @@ app.get('/sigs', function(req, res) {
 });
 
 app.get('/quotes', function(req, res) {
-    request.get({
-        url: `${SERVICES_URL}/quotes`,
-        headers: {
+	request.get({
+		url: `${SERVICES_URL}/quotes`,
+		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method: "GET",
@@ -673,6 +719,7 @@ app.post('/sponsors/resume_book', function(req, res) {
 			});
         }
     });
+
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {

@@ -38,6 +38,24 @@ this license in a file with the distribution.
 						<td>User</td>
 						<td>Oct. 4, 2012, 6:37 p.m.</td>
 					</tr>
+					<% for (var preuser of premembers) { %>
+					<tr>
+						<td><a href="/intranet/userApproval" class="btn">Paid</a>
+						<td><%=preuser.netid%></td>
+						<td><%=preuser.first_name%></td>
+						<td><%=preuser.last_name%></td>
+						<td><%=new Date(preuser.created_at).toLocaleString() %></td>
+					</tr>
+
+          <% } %>
+
+<!-- 				<tr>
+						<td><a href="/intranet" class="btn">Paid</a>
+						<td>newuser123</td>
+						<td>New</td>
+						<td>User</td>
+						<td>Oct. 4, 2012, 6:37 p.m.</td>
+					</tr>
 					<tr>
 						<td><a href="/intranet" class="btn">Paid</a>
 						<td>newuser123</td>
@@ -58,9 +76,10 @@ this license in a file with the distribution.
 						<td>New</td>
 						<td>User</td>
 						<td>Oct. 4, 2012, 6:37 p.m.</td>
-					</tr>
+					</tr> -->
 			</tbody>
 			</table>
+
 		</div>
 	</div>
 </div>
