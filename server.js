@@ -753,12 +753,12 @@ app.post('/sponsors/resume_filter', function(req, res) {
         "Authorization": GROOT_RECRUITER_TOKEN
     },
     params: {
-      "name": req.body.name,
-      "graduationStart": req.body.gradYearStart,
-      "graduationEnd": req.body.gradYearStart,
-      "netid": req.body.netid,
-      "degree_type": req.body.degreeType,
-      "job_type": req.body.jobType,
+      name: req.body.name,
+      graduationStart: req.body.gradYearStart,
+      graduationEnd: req.body.gradYearStart,
+      netid: req.body.netid,
+      degree_type: req.body.degreeType,
+      job_type: req.body.jobType,
     }
   }, function(error, response, body) {
         if(error){
