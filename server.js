@@ -19,6 +19,7 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+require('request-debug')(request);
 
 
 const PORT = process.env.PORT || 5000;
@@ -328,11 +329,11 @@ app.get('/intranet', function(req, res) {
 		});
 	}
 	else
-		res.redirect('login');
+		res.redirect('/login');
 });
 
 app.get('/intranet/userApproval', function(req, res){
-	console.log("intranet/userApproval");
+	console.log("GET intranet/userApproval");
 	if(req.session.auth && req.session.isAdmin)
 	{
 		console.log("hello");
@@ -357,10 +358,9 @@ app.get('/intranet/userApproval', function(req, res){
 			res.render('userApproval', {
 				authenticated: req.session.auth,
 				session:req.session,
-				premembers: body
-			});
-			
+				premembers: body,
 
+			});
 		});
 	}
 	else
@@ -369,6 +369,7 @@ app.get('/intranet/userApproval', function(req, res){
 
 app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 	//{"approvedUserNetID" : netid}
+	console.log("GET /intranet/userApproval/" + req.params["approvedUserNetID"] + "\n\n");
 	if(req.session.auth && req.session.isAdmin)
 	{
 		// get the token from the user
@@ -376,6 +377,7 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 
 		// POST `/user/paid`
 		// `{"token":token, "netid":netid}`
+		console.log("request");
 
 		request({
 			url: `${SERVICES_URL}/user/paid`,
@@ -385,7 +387,7 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 			},
 			body: {
 				"token" : req.session.token,
-				"netid" : req.body.approvedUserNetID
+				"netid" : req.params["approvedUserNetID"],
 			},
 			json: true
 		}, function(err, response, body) {
@@ -394,11 +396,20 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 				res.status(500).send("Error");
 				return;
 			}
-			console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
-			res.redirect('/');
-		});
+			console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
+			res.redirect('/intranet/userApproval');
+			// res.render('intranet', {
+			// 	authenticated: req.session.auth,
+			// 	session: req.session,
+			// 	approvedUser: req.params["approvedUserNetID"]
+			// });
 
+		});
+		console.log("request done==============================")
 	}
+	else
+		res.redirect('/intranet/userApproval');
+
 });
 
 app.post('/join', function(req, res) {
