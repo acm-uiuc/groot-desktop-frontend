@@ -17,6 +17,10 @@ this license in a file with the distribution.
 	<div id="main-container" class="small-12 medium-9 large-9 columns">
 		<div id="links-top" class="row">
 			<h2>Pre Members</h2>
+			<% if (session.approvedUser) { %>
+			<p><%=approvedUser%> has been successfully added.</p>
+			<%}%>
+
 			<!-- have netid, first name, last name, uin -->
 			<table class="table table-striped">
 				<thead>
@@ -31,23 +35,15 @@ this license in a file with the distribution.
 					<tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td><a href="/intranet" class="btn">Paid</a>
-						<td>newuser123</td>
-						<td>New</td>
-						<td>User</td>
-						<td>Oct. 4, 2012, 6:37 p.m.</td>
-					</tr>
 					<% for (var preuser of premembers) { %>
 					<tr>
-						<td><a href="/intranet/userApproval" class="btn">Paid</a>
+						<td><a href="/intranet/userApproval/<%=preuser.netid%>" class="btn">Paid</a>
 						<td><%=preuser.netid%></td>
 						<td><%=preuser.first_name%></td>
 						<td><%=preuser.last_name%></td>
 						<td><%=new Date(preuser.created_at).toLocaleString() %></td>
 					</tr>
-
-          <% } %>
+					<% } %>
 
 <!-- 				<tr>
 						<td><a href="/intranet" class="btn">Paid</a>
