@@ -14,12 +14,12 @@ this license in a file with the distribution.
     <h2>Corporate Manager</h2>
     <h3>Resume Manager </h3>
     <div id="unapproved-resumes-partial">
-        <%- include('_partials/unapproved_resumes'), { unapproved_resumes: unapproved_resumes } -%>
+        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) -%>
     </div>
 
     <h3>Job Post Manager</h3>
     <div id="unapproved-jobs-partial">
-        <%- include('_partials/unapproved_jobs'), { job_listings: job_listings } -%>
+        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) -%>
     </div>
 
     <h3>Account Manager</h3>
@@ -77,23 +77,42 @@ this license in a file with the distribution.
 
 <script>
   function approveStudent(netid) {
+    $.ajax({
+        url: "/students/" + netid + "/approve",
+        method: "PUT",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+        }
+    });
   }
 
   function approveJob(jobId) {
     $.ajax({
         url: "/jobs/" + jobId + "/approve",
         method: "PUT",
-        success: function(res) {
-            $("#unapproved-jobs-partial").html(res);
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
         }
     });
   }
 
   function deleteStudent(netid) {
-
+      $.ajax({
+        url: "/students/" + netid,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+        }
+    });
   }
 
-  function deleteJob(netid) {
-
+  function deleteJob(jobId) {
+    $.ajax({
+        url: "/jobs/" + jobId,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
+        }
+    });
   }
 </script>
