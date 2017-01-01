@@ -432,10 +432,10 @@ app.post('/join', function(req, res) {
 	}, function(err, response, body) {
 		if(err) {
 			console.log(err);
-			res.status(520).send("Error: Please go yell at ACM to fix their shit!");
+			res.status(520).send("Error");
 			return;
 		}
-		console.log("Successfully added new preUser: " + req.body.first_name + " " + req.body.last_name);
+		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);
 		res.redirect('/');
 	});
 });
