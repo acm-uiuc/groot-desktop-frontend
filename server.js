@@ -12,6 +12,7 @@
 var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 var express = require('express');
+var ejs = require('ejs');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var bodyParser = require('body-parser');
@@ -181,11 +182,11 @@ function checkIfCorporate(req, res, nextSteps)
 
     function callback(error, response, body) {
 		if (!body){
-			res.status(500).send("Error verifying corporate status.");
+			console.log("Error verifying corporate status.");
 		} else {
 			req.session.roles.isCorporate = JSON.parse(body).isValid;
-			nextSteps(req, res);
 		}
+		nextSteps(req, res);
     }
 
 	request(options, callback);
@@ -559,6 +560,8 @@ app.get('/quotes', function(req, res) {
 app.get('/sponsors/new_job_post', function(req, res) {
 	res.render('new_job_post', {
 		authenticated:  isAuthenticated(req),
+		success: null,
+		error: null
 	});
 });
 
@@ -573,12 +576,17 @@ app.post('/sponsors/new_job_post', function(req, res) {
         body: req.body
     }, function(err, response, body) {
         if (response.statusCode == 200) {
-            res.render('home', {
-                authenticated: isAuthenticated(req),
-            });
+			res.render('new_job_post', {
+				authenticated: isAuthenticated(req),
+				success: "You have successfully entered a new job.",
+				error: null
+			});
         } else {
-            res.status(500).send("Error " + body.Text);
-            return;
+            res.render('new_job_post', {
+				authenticated: isAuthenticated(req),
+				success: null,
+				error: "Error with creating your job: " + body.error
+			});
         }
     });
 });
@@ -594,7 +602,7 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 			method: "GET",
 			json: true,
 			headers: {
-            	"Authorization": GROOT_ACCESS_TOKEN
+            	"Authorization": GROOT_RECRUITER_TOKEN
         	}
 		}, function(error, response, body) {
 			if (response && response.statusCode != 200) {
@@ -605,7 +613,7 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 					method: "GET",
 					json: true,
 					headers: {
-						"Authorization": GROOT_ACCESS_TOKEN
+						"Authorization": GROOT_RECRUITER_TOKEN
 					},
 					body: {
 						approved_resumes: false
@@ -619,13 +627,12 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 							method: "GET",
 							json: true,
 							headers: {
-								"Authorization": GROOT_ACCESS_TOKEN
+								"Authorization": GROOT_RECRUITER_TOKEN
 							},
 						}, function(r_error, r_response, r_body) {
 							if (r_response && r_response.statusCode != 200) {
 								res.status(500).send("Error: " + r_body.error);
 							} else {
-								console.log(body.data);
 								var render_opts = {
 									job: sponsorsScope.job,
 									degree: sponsorsScope.degree,
@@ -657,7 +664,7 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 			method: "POST",
 			json: true,
 			headers: {
-            	"Authorization": GROOT_ACCESS_TOKEN
+            	"Authorization": GROOT_RECRUITER_TOKEN
         	},
 			body: req.body
 		}, function(error, response, body) {
@@ -672,15 +679,19 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 });
 
 app.put('/jobs/:jobId/approve', function(req, res) {
+	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
 	request({
-		url: `${SERVICES_URL}/jobs` + req.params.jobId + `/approve`,
+		url: `${SERVICES_URL}/jobs/` + req.params.jobId + `/approve`,
 		method: "PUT",
-		json: true,
 		headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		}
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
 	}, function(error, response, body) {
-		res.status(response.statusCode);
+		res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
 	});
 });
 
