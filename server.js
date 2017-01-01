@@ -609,14 +609,11 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 				res.status(500).send("Error: " + body.error);
 			} else {
 				request({
-					url: `${SERVICES_URL}/students`,
+					url: `${SERVICES_URL}/students?approved_resumes=false`,
 					method: "GET",
 					json: true,
 					headers: {
 						"Authorization": GROOT_RECRUITER_TOKEN
-					},
-					body: {
-						approved_resumes: false
 					}
 				}, function(s_error, s_response, s_body) {
 					if (s_response && s_response.statusCode != 200) {
@@ -672,9 +669,50 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 				res.status(500).send("Error: " + body.error);
 			} else {
 				res.redirect('/sponsors/corporate_manager');
-				// or render with locals from other variables?
 			}
 		});
+	});
+});
+
+app.put('/students/:netid/approve', function(req, res) {
+	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
+	request({
+		url: `${SERVICES_URL}/students/` + req.params.netid + `/approve`,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.delete('/students/:netid', function(req, res) {
+	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
+	request({
+		url: `${SERVICES_URL}/students/` + req.params.netid,
+		method: "DELETE",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
 	});
 });
 
@@ -683,6 +721,23 @@ app.put('/jobs/:jobId/approve', function(req, res) {
 	request({
 		url: `${SERVICES_URL}/jobs/` + req.params.jobId + `/approve`,
 		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+	});
+});
+
+app.delete('/jobs/:jobId', function(req, res) {
+	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
+	request({
+		url: `${SERVICES_URL}/jobs/` + req.params.jobId,
+		method: "DELETE",
 		headers: {
 			"Authorization": GROOT_RECRUITER_TOKEN,
 			"Netid": req.session.netid,
