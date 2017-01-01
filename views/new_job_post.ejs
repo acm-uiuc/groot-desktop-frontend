@@ -12,6 +12,12 @@ this license in a file with the distribution.
 
 <div id="job-container">
   <div class="row">
+    <% if (success) { %>
+      <p class="success"><%- success %></p>
+    <% } else if (error) { %>
+      <p class="error"><%- error %></p>
+    <% } %>
+    
     <h2>Job Posting</h2>
     <p>Looking to hire? Use this simple form to submit your job posting and it will be included in a weekly mailing to ACM members looking for employment. All fields are required. If you have any questions <a href="mailto:corporate@acm.illinois.edu">email us</a>.</p>
     <form ref="uploadForm" method="post" action="/sponsors/new_job_post">

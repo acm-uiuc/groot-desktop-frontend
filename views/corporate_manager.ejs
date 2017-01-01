@@ -13,56 +13,14 @@ this license in a file with the distribution.
   <div class="row">
     <h2>Corporate Manager</h2>
     <h3>Resume Manager </h3>
-    <table>
-      <tr>
-        <th> Action </th> <th> Preview </th> <th> Data </th>
-      </tr>
-      <% for (var resume of unapproved_resumes) { %>
-      <tr>
-        <td>
-         <a class="button" onclick="approveStudent('<%= resume.netid %>')">Approve</a>
-         <a class="button" onclick="deleteStudent('<%= resume.netid %>')">Delete</a>
-        </td>
-        <td><a href='<%= resume.resume_url || "Resume unavailable" %>'">View resume</a></td>
-        <td>
-            Name: <%= resume.first_name + " " + resume.last_name %> <br>
-            Graduation Date: <%= (new Date(resume.graduation_date)).toDateString() %> <br>
-            Degree Type: <%= resume.degree_type %> <br>
-            Job Type: <%= resume.job_type %>
-        </td>
-      </tr>
-      <% } %>
-    </table>
-    <!-- <div class="controls">
-        <button type="button" class="button" onclick="">Save Resumes</button>
-    </div> -->
+    <div id="unapproved-resumes-partial">
+        <%- include('_partials/unapproved_resumes'), { unapproved_resumes: unapproved_resumes } -%>
+    </div>
+
     <h3>Job Post Manager</h3>
-    <table id="job-post-table">
-      <tr>
-        <th> Action </th>
-        <th> Role </th>
-        <th> Contact Information </th>
-        <th> Description </th>
-      </tr>
-    <% for (var job of job_listings) { %>
-      <tr>
-        <td>
-         <a class="button" onclick="approveJob('<%= job.id %>')">Approve</a>
-         <a class="button" onclick="deleteJob('<%= job.id %>')">Delete</a>
-        </td>
-        <td><%= job.title + " @ " + job.company %></td>
-        <td>
-            <%= job.contact_name %> <br>
-            <%= job.contact_email %> <br>
-            <%= job.contact_phone %> <br>
-        </td>
-        <td> <%= job.description %> </td>
-      </tr>
-      <% } %>
-    </table>
-    <!--<div class="controls">
-        <button type="button" class="button" onclick="">Save Jobs</button>
-    </div>-->
+    <div id="unapproved-jobs-partial">
+        <%- include('_partials/unapproved_jobs'), { job_listings: job_listings } -%>
+    </div>
 
     <h3>Account Manager</h3>
     <form ref="uploadForm" method="post" action="/sponsors/corporate_manager">
@@ -117,14 +75,18 @@ this license in a file with the distribution.
 
 <%- include('_partials/footer') -%>
 
-<!-- make request then check 200, then remove the row if successful -->
 <script>
   function approveStudent(netid) {
-    
   }
 
   function approveJob(jobId) {
-    
+    $.ajax({
+        url: "/jobs/" + jobId + "/approve",
+        method: "PUT",
+        success: function(res) {
+            $("#unapproved-jobs-partial").html(res);
+        }
+    });
   }
 
   function deleteStudent(netid) {
