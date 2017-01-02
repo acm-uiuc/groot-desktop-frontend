@@ -386,6 +386,7 @@ app.get('/intranet/userApproval', function(req, res){
 			authenticated: true,
 			session:req.session,
 			premembers: body,
+		});
 	});
 
 });
