@@ -161,6 +161,7 @@ function setAuthentication(req, res, nextSteps) {
 }
 
 function checkIfAdmin(req, res, nextSteps) {
+	var netid = req.session.netid;
 	request({
 		method:"GET",
 		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
@@ -176,6 +177,8 @@ function checkIfAdmin(req, res, nextSteps) {
 }
 
 function checkIfCorporate(req, res, nextSteps) {
+	var netid = req.session.netid;
+
 	request({
 		method:"GET",
 		url: `${SERVICES_URL}/groups/committees/corporate?isMember=${netid}`,
@@ -191,6 +194,8 @@ function checkIfCorporate(req, res, nextSteps) {
 }
 
 function checkIfTop4(req, res, nextSteps) {
+	var netid = req.session.netid;
+
 	request({
 		method:"GET",
 		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
@@ -463,6 +468,7 @@ app.get('/join', function(req, res) {
 		/* URL to grab SIG data from groot-groups-service */
 		url: `${SERVICES_URL}/groups/sigs`,
 		headers: {
+
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method: "GET",
@@ -480,10 +486,9 @@ app.get('/join', function(req, res) {
 });
 
 app.get('/sigs', function(req, res) {
-	request({
-		/* URL to grab SIG data from groot-groups-service */
-		url: `${SERVICES_URL}/groups/sigs`,
-		headers: {
+    request({
+        url: `${SERVICES_URL}/groups/sigs`,
+        headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
         method: "GET",
