@@ -713,56 +713,38 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-  if(req.query.page && req.session.cached_resumes){
-    req.session.resume_page = parseInt(req.query.page)
-    res.render('resume_filter', {
-        authenticated:  req.session.auth,
-        job: sponsorsScope.job,
-        degree: sponsorsScope.degree,
-        grad: sponsorsScope.grad,
-        student: sponsorsScope.student,
-        resumes: utils.getPage(req.session.cached_resumes, req.session.resume_page),
-        defaults: req.session.resume_defaults,
-        curr_page: req.session.resume_page,
-        max_page: utils.maxPage(req.session.cached_resumes)
-    });
-  }
-  else{
-    request({
-      url: `${SERVICES_URL}/students`,
-      method: "GET",
-      json: true,
-      headers: {
-          "Authorization": GROOT_RECRUITER_TOKEN
-      }
-    }, function(error, response, body) {
-          if(error){
-            res.status(500).send("Error " + error.code);
+  request({
+    url: `${SERVICES_URL}/students`,
+    method: "GET",
+    json: true,
+    headers: {
+        "Authorization": GROOT_RECRUITER_TOKEN
+    }
+  }, function(error, response, body) {
+        if(error){
+          res.status(500).send("Error " + error.code);
+        }
+        else if(body.error) {
+          res.status(500).send("Error: " + body.error)
+        }
+        else{
+          for( var resume of body.data ){
+            resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
           }
-          else if(body.error) {
-            res.status(500).send("Error: " + body.error)
-          }
-          else{
-            for( var resume of body.data ){
-              resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
-            }
-            req.session.resume_defaults = req.body
-            req.session.cached_resumes = body.data
-            req.session.resume_page = 0
-            res.render('resume_filter', {
-                authenticated:  req.session.auth,
-                job: sponsorsScope.job,
-                degree: sponsorsScope.degree,
-                grad: sponsorsScope.grad,
-                student: sponsorsScope.student,
-                resumes: utils.getPage(req.session.cached_resumes, 0),
-                defaults: {},
-                curr_page: 0,
-                max_page: utils.maxPage(req.session.cached_resumes)
-            });
-          }
-    });
-  }
+          req.query.page = req.query.page || 0
+          res.render('resume_filter', {
+              authenticated:  req.session.auth,
+              job: sponsorsScope.job,
+              degree: sponsorsScope.degree,
+              grad: sponsorsScope.grad,
+              student: sponsorsScope.student,
+              resumes: utils.getPage(body.data, req.query.page),
+              defaults: {},
+              curr_page: req.query.page,
+              max_page: utils.maxPage(body.data)
+          });
+        }
+  });
 });
 
 app.post('/sponsors/resume_filter', function(req, res) {
@@ -792,19 +774,16 @@ app.post('/sponsors/resume_filter', function(req, res) {
           for( var resume of body.data ){
             resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
           }
-          req.session.resume_defaults = req.body
-          req.session.cached_resumes = body.data
-          req.session.resume_page = 0
           res.render('resume_filter', {
               authenticated:  req.session.auth,
               job: sponsorsScope.job,
               degree: sponsorsScope.degree,
               grad: sponsorsScope.grad,
               student: sponsorsScope.student,
-              resumes: utils.getPage(req.session.cached_resumes, 0),
-              defaults: req.session.resume_defaults,
+              resumes: utils.getPage(body.data, 0),
+              defaults: req.body,
               curr_page: 0,
-              max_page: utils.maxPage(req.session.cached_resumes)
+              max_page: utils.maxPage(body.data)
           });
         }
   });

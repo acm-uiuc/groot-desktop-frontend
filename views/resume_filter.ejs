@@ -89,7 +89,7 @@ this license in a file with the distribution.
         <% if(curr_page - 1 >= 0) { %>
           <a href="/sponsors/resume_filter?page=<%= curr_page - 1 %>"><button class="button">Prev Page</button></a>
         <% } %>
-        <% if(curr_page + 1 < max_page) { %>
+        <% if(curr_page + 1 <= max_page) { %>
           <a href="/sponsors/resume_filter?page=<%= curr_page + 1 %>"><button class="button" style="float: right;">Next Page</button></a>
         <% } %>
       </div>
