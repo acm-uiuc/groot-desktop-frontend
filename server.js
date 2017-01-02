@@ -20,8 +20,8 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
-require('request-debug')(request);
-
+// require('request-debug')(request);
+// for debugging of outbound requests
 
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
@@ -401,15 +401,6 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 		res.redirect('login');
 	}
 
-	//{"approvedUserNetID" : netid}
-	console.log("GET /intranet/userApproval/" + req.params["approvedUserNetID"] + "\n\n");
-	// get the token from the user
-	// make a request to the users service 
-
-	// POST `/user/paid`
-	// `{"token":token, "netid":netid}`
-	console.log("request");
-
 	request({
 		url: `${SERVICES_URL}/user/paid`,
 		method: "POST",
@@ -432,7 +423,6 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 
 
 	});
-	console.log("request done==============================");
 });
 
 app.post('/join', function(req, res) {
