@@ -16,7 +16,7 @@ this license in a file with the distribution.
     <p>You can filter the resumes by categories below. <br> If you have any trouble accessing resume, please contact us at <a href="mailto:corporate@acm.illinois.edu">corporate@acm.illinois.edu</a></p>
       <form method="post" action="/sponsors/resume_filter">
         <div class="field-group">
-          <label for="name" class="field-label">Name </label>
+          <label for="name" class="field-label">First Name </label>
           <div class="field">
             <input id="name" type="text" name="name" maxlength="20" value="<%= defaults.name %>" />
           </div>
@@ -28,19 +28,24 @@ this license in a file with the distribution.
           </div>
         </div>
         <div class="field-group">
-          <label for="gradYear" class="field-label">Graduating:</label>
-          <select id="grad_year" name="gradYearStart">
-            <option value="" <%= defaults.gradYearStart ? "selected" : "" %>></option>
-            <% for (var option of grad.years) { %>
-              <option value= "<%= option.date %>" <%= option.date === defaults.gradYearStart ? "selected" : "" %> > <%= option.date %> </option>
-            <% } %>
-          </select>
-          </select> to   <select id="grad_year" name="gradYearEnd">
-            <option value="" <%= defaults.gradYearEnd ? "selected" : "" %>></option>
-            <% for (var option of grad.years) { %>
-              <option value="<%= option.date %>" <%= option.date === defaults.gradYearEnd  ? "selected" : "" %> %> > <%= option.date %> </option>
-            <% } %>
-          </select>
+          <div class="inline-form" style="float:left; padding-right:1em;">
+            <label for="grad_year_start" class="field-label">Graduating From:</label>
+            <select id="grad_year_start" name="gradYearStart">
+              <option value="" <%= defaults.gradYearStart ? "selected" : "" %>></option>
+              <% for (var option of grad.years) { %>
+                <option value= "<%= option.date %>" <%= option.date === defaults.gradYearStart ? "selected" : "" %> > <%= option.date %> </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="inline-form">
+          <label for="grad_year_end" class="field-label">Until:</label>
+            <select id="grad_year_end" name="gradYearEnd">
+              <option value="" <%= defaults.gradYearEnd ? "selected" : "" %>></option>
+              <% for (var option of grad.years) { %>
+                <option value="<%= option.date %>" <%= option.date === defaults.gradYearEnd  ? "selected" : "" %> %> > <%= option.date %> </option>
+              <% } %>
+            </select>
+          </div>
         </div>
         <div class="field-group">
           <label for="degreeType" class="field-label">Level</label>
@@ -79,14 +84,14 @@ this license in a file with the distribution.
             <td><%= resume.graduation_date %></td>
             <td><%= resume.degree_type %></td>
             <td><%= resume.job_type %></td>
-            <td><a href="<%= resume.resume_url %>">Resume</a></td>
+            <td><a href="<%= resume.resume_url %>" target="_blank">View Resume</a></td>
           </tr>
         <% } %>
       </table>
       <div class="control-group">
       <div class="controls">
         <% if(curr_page - 1 >= 0) { %>
-          <button formaction="/sponsors/resume_filter?page=<%= curr_page - 1 %>" type="submit" class="button">Prev Page</button>
+          <button formaction="/sponsors/resume_filter?page=<%= curr_page - 1 %>" type="submit" class="button">Previous Page</button>
         <% } %>
         <% if(curr_page + 1 < max_page) { %>
           <button formaction="/sponsors/resume_filter?page=<%= curr_page + 1 %>" type="submit" class="button" style="float: right;"style="float: right;">Next Page</button>
