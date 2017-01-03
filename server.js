@@ -396,6 +396,7 @@ app.get('/intranet/userApproval', function(req, res){
 
 });
 
+
 app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 	if(!isAuthenticated(req)) {
 		res.redirect('login');
@@ -420,8 +421,6 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 		}
 		console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
 		res.redirect('/intranet/userApproval');
-
-
 	});
 });
 
@@ -458,7 +457,6 @@ app.get('/join', function(req, res) {
 		/* URL to grab SIG data from groot-groups-service */
 		url: `${SERVICES_URL}/groups/sigs`,
 		headers: {
-
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		method: "GET",
