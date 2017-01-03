@@ -755,7 +755,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
     headers: {
         "Authorization": GROOT_RECRUITER_TOKEN
     },
-    params: {
+    qs: {
       name: req.body.name,
       graduationStart: req.body.gradYearStart,
       graduationEnd: req.body.gradYearStart,
@@ -774,15 +774,16 @@ app.post('/sponsors/resume_filter', function(req, res) {
           for( var resume of body.data ){
             resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
           }
+          req.query.page = req.query.page || 0
           res.render('resume_filter', {
               authenticated:  req.session.auth,
               job: sponsorsScope.job,
               degree: sponsorsScope.degree,
               grad: sponsorsScope.grad,
               student: sponsorsScope.student,
-              resumes: utils.getPage(body.data, 0),
+              resumes: utils.getPage(body.data, req.query.page),
               defaults: req.body,
-              curr_page: 0,
+              curr_page: req.query.page,
               max_page: utils.maxPage(body.data)
           });
         }

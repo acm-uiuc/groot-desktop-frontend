@@ -65,7 +65,6 @@ this license in a file with the distribution.
           <button type="submit" class="button">Search</button>
         </div>
       </div>
-      </form>
       <table>
         <tr>
             <th>Name </th>
@@ -87,13 +86,14 @@ this license in a file with the distribution.
       <div class="control-group">
       <div class="controls">
         <% if(curr_page - 1 >= 0) { %>
-          <a href="/sponsors/resume_filter?page=<%= curr_page - 1 %>"><button class="button">Prev Page</button></a>
+          <button formaction="/sponsors/resume_filter?page=<%= curr_page - 1 %>" type="submit" class="button">Prev Page</button>
         <% } %>
-        <% if(curr_page + 1 <= max_page) { %>
-          <a href="/sponsors/resume_filter?page=<%= curr_page + 1 %>"><button class="button" style="float: right;">Next Page</button></a>
+        <% if(curr_page + 1 < max_page) { %>
+          <button formaction="/sponsors/resume_filter?page=<%= curr_page + 1 %>" type="submit" class="button" style="float: right;"style="float: right;">Next Page</button>
         <% } %>
       </div>
       </div>
+      </form>
   </div>
 </div>
 
