@@ -205,6 +205,22 @@ function checkIfTop4(req, res, nextSteps) {
 	});
 }
 
+function checkIfCorporate(netid, cb)
+{
+    var options = {
+        url: `${SERVICES_URL}/groups/committees/Corporate?isMember=${netid}`,
+        headers: {
+            "Authorization": GROOT_ACCESS_TOKEN
+        },
+        method:"GET"
+    };
+
+    function callback(error, response, body)
+    {
+        cb(JSON.parse(body).isValid);
+    }
+    request(options, callback);
+}
 // reset session when user logs out
 app.get('/logout', function(req, res) {
   req.session.reset();
@@ -713,8 +729,13 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-    if(!req.session.auth || !(req.session.roles.isCorporate || req.session.roles.isRecruiter)) { 
-        res.redirect('/login');
+    if(!req.session.auth) {
+        checkIfCorporate(req.session.netid, function(isCorporate) {
+            if(!isCorporate) {
+                res.redirect('/login');
+                return;
+            }
+        });
     }
     request({
         url: `${SERVICES_URL}/students`,
@@ -751,8 +772,13 @@ app.get('/sponsors/resume_filter', function(req, res) {
 });
 
 app.post('/sponsors/resume_filter', function(req, res) {
-    if(!req.session.auth || !(req.session.roles.isCorporate || req.session.roles.isRecruiter)) { 
-        res.redirect('/login');
+    if(!req.session.auth) {
+        checkIfCorporate(req.session.netid, function(isCorporate) {
+            if(!isCorporate) {
+                res.redirect('/login');
+                return;
+            }
+        });
     }
     request({
         url: `${SERVICES_URL}/students`,
