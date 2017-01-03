@@ -758,7 +758,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
         qs: {
             name: req.body.name,
             graduationStart: req.body.gradYearStart,
-            graduationEnd: req.body.graduationEnd,
+            graduationEnd: req.body.gradYearEnd,
             netid: req.body.netid,
             degree_type: req.body.degreeType,
             job_type: req.body.jobType,

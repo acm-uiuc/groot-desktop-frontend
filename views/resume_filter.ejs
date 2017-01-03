@@ -38,7 +38,7 @@ this license in a file with the distribution.
             </select>
           </div>
           <div class="inline-form">
-          <label for="grad_year_end" class="field-label">Until:</label>
+            <label for="grad_year_end" class="field-label">Until:</label>
             <select id="grad_year_end" name="gradYearEnd">
               <option value="" <%= defaults.gradYearEnd ? "selected" : "" %>></option>
               <% for (var option of grad.years) { %>
@@ -73,6 +73,7 @@ this license in a file with the distribution.
       <table>
         <tr>
             <th>Name </th>
+            <th>NetID </th>
             <th>Graduation </th>
             <th>Level </th>
             <th>Seeking </th>
@@ -81,6 +82,7 @@ this license in a file with the distribution.
         <% for (var resume of resumes) { %>
           <tr>
             <td><%= resume.first_name %> <%= resume.last_name %></td>
+            <td><%= resume.netid %></td>
             <td><%= resume.graduation_date %></td>
             <td><%= resume.degree_type %></td>
             <td><%= resume.job_type %></td>
