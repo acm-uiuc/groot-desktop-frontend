@@ -713,6 +713,9 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
+    if(!req.session.auth || !(req.session.roles.isCorporate || req.session.roles.isRecruiter)) { 
+        res.redirect('/login');
+    }
     request({
         url: `${SERVICES_URL}/students`,
         method: "GET",
@@ -748,6 +751,9 @@ app.get('/sponsors/resume_filter', function(req, res) {
 });
 
 app.post('/sponsors/resume_filter', function(req, res) {
+    if(!req.session.auth || !(req.session.roles.isCorporate || req.session.roles.isRecruiter)) { 
+        res.redirect('/login');
+    }
     request({
         url: `${SERVICES_URL}/students`,
         method: "GET",
