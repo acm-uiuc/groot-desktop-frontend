@@ -188,6 +188,7 @@ function checkIfCorporate(req, res, nextSteps) {
 	}, function(error, response, body) {
 		if(response && response.statusCode == 200) {
 			req.session.roles.isCorporate = (JSON.parse(body).isValid  == 'true');
+
 		}		
 		nextSteps(req, res);
 	});
@@ -425,18 +426,16 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 });
 
 app.post('/join', function(req, res) {
-	// creates JSON object of the inputted data
-	// sends data to groups-user-service
-	var userData = {
-		first_name: req.body.first_name,
-		last_name: req.body.last_name,
-		netid: req.body.netid,
-		uin: req.body.uin
-	};
-	request({
-		url: `${SERVICES_URL}/newUser`,
-		method: "POST",
-		headers: {
+    var userData = {
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        netid: req.body.netid,
+        uin: req.body.uin
+    };
+    request({
+        url: `${SERVICES_URL}/newUser`,
+        method: "POST",
+        headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
         body: userData,
@@ -697,7 +696,11 @@ app.put('/jobs/:jobId/approve', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
 	});
 });
 
@@ -718,7 +721,11 @@ app.delete('/jobs/:jobId', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
 	});
 });
 
