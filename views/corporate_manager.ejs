@@ -1,0 +1,118 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+<div id="resume-container">
+  <div class="row">
+    <h2>Corporate Manager</h2>
+    <h3>Resume Manager </h3>
+    <div id="unapproved-resumes-partial">
+        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) -%>
+    </div>
+
+    <h3>Job Post Manager</h3>
+    <div id="unapproved-jobs-partial">
+        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) -%>
+    </div>
+
+    <h3>Account Manager</h3>
+    <form ref="uploadForm" method="post" action="/sponsors/corporate_manager">
+      <div class="field-group required">
+        <label for="company_name" class="field-albe">Company Name </label>
+        <div class="field">
+          <input id="company_name" type="text" name="company_name" maxlength="16" />
+      </div>
+      <div class="field-group required">
+          <label for="first_name" class="field-label">First Name</label>
+          <div class="field">
+              <input id="first_name" type="text" name="first_name" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="last_name" class="field-label">Last Name</label>
+          <div class="field">
+              <input id="last_name" type="text" name="last_name" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="netid" class="field-label">Contact Email</label>
+          <div class="field">
+              <input id="email" type="text" name="email" />
+          </div>
+      </div>
+      <!-- to do:  expiration/action/sponsorship level -->
+      <div class="controls">
+          <button type="submit" class="button">Create Account</button>
+      </div>
+    </form>
+
+    <h3>All Recruiters</h3>
+    <table>
+      <tr>
+          <th>Company </th>
+          <th>Name</th>
+          <th>Email </th>
+          <th>Expires </th>
+      </tr>
+      <% for (var recruiter of recruiters) { %>
+      <tr>
+        <td><%= recruiter.company_name %></td>
+        <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
+        <td><%= recruiter.email %></td>
+        <td><%= recruiter.expires_on %></td>
+      </tr>
+      <% } %>
+    </table>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
+
+<script>
+  function approveStudent(netid) {
+    $.ajax({
+        url: "/students/" + netid + "/approve",
+        method: "PUT",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+        }
+    });
+  }
+
+  function approveJob(jobId) {
+    $.ajax({
+        url: "/jobs/" + jobId + "/approve",
+        method: "PUT",
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
+        }
+    });
+  }
+
+  function deleteStudent(netid) {
+      $.ajax({
+        url: "/students/" + netid,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+        }
+    });
+  }
+
+  function deleteJob(jobId) {
+    $.ajax({
+        url: "/jobs/" + jobId,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
+        }
+    });
+  }
+</script>

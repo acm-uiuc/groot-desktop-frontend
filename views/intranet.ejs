@@ -1,7 +1,7 @@
 <!--
 Copyright © 2016, ACM@UIUC
 
-This file is part of the Groot Project.  
+This file is part of the Groot Project.
 
 The Groot Project is open source software, released under the University of
 Illinois/NCSA Open Source License.  You should have received a copy of
@@ -10,93 +10,134 @@ this license in a file with the distribution.
 
 <%- include('_partials/header') -%>
 
-<!-- http get on http://localhost:9001/groups/committees/Admin?isMember=<NETID> and http://localhost:9001/groups/committees/top4?isMember=<NETID> to find out if user is admin, check response json for "isValid":"true" -->
-
-
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-9 large-9 columns">
     <div id="links-top" class="row">
       <div id="main-left" class="small-12 medium-12 large-12 columns">
         <h3>Your information</h3>
 
-        <h5>Hello, <%=session.netid%></p>
-        <% if (session.isAdmin) { %>
+        <h5>Hello, <%= session.username %></p>
+        <% if (session.roles.isAdmin) { %>
         <p>You are an admin</p>
+        <% } else if (session.roles.isRecruiter) { %>
+        <p>You are a recruiter at <%= session.recruiter.company_name %></p>
+        <% } else if (session.roles.isCorporate) { %>
+        <p>You're a member of the corporate committee.</p>
         <% } else { %>
-        <p>You are not an admin</p>
+        <p>You are not an admin.</p>
         <% } %>
       </div>
     </div>
 
-    <div id="links-top" class="row">
-      <div id="main-left" class="small-12 medium-4 large-4 columns">
-        <h3>Quote Database</h3>
-        <p>Quote database placeholder text</p><a href="/quotes">
-      <button class="button">View Quotes</button></a>
-      </div>
-      <div id="main-center" class="small-12 medium-4 large-4 columns">
-        <h3>Meme Service</h3>
-        <p>Placeholder text about meme service</p><a href="/memes">
-      <button class="button">Me 2 thanks</button></a>
-      </div>
-    <div id="main-right" class="small-12 medium-4 large-4 columns">
-      <h3>Beats by ACM</h3>
-      <p>Control the Beats music system.</p><a href="https://www-s.acm.illinois.edu/beats/1104/">
-      <button class="button">Go</button></a>
-      </div>
-    </div>
-  <!-- admin only -->
-  <% if (session.isAdmin) { // is not admin %>
-    <div id="links-mid" class="row">
-      <div id="main-left" class="small-12 medium-4 large-4 columns">
+    <% if (session.roles.isAdmin) { %>
+      <div id="links-top" class="row">
+        <div id="main-left" class="small-12 medium-4 large-4 columns">
             <h3>Caffeine</h3>
-            <p>Caffeine vending machine placeholder text</p><a href="/caffeine">
-              <button class="button">Manage</button></a>
+            <p>Caffeine vending machine placeholder text</p>
+            <a href="/caffeine"><button class="button">Manage</button></a>
+        </div>
       </div>
-      <div id="main-center" class="small-12 medium-4 large-4 columns">
-        <h3>Another Service</h3>
-        <p>Placeholder text about service</p><a href="/memes">
-        <button class="button">Go</button></a>
+    <% } %>
+  
+    <% if (session.roles.isCorporate) { %>
+      <div id="links-top" class="row">
+        <div id="main-left" class="small-12 medium-4 large-4 columns">
+          <h3>Corporate Service Manager</h3>
+          <p>Maintain resumes and job posts</p>
+          <a href="/sponsors/corporate_manager"><button class="button">Manage</button></a>
+        </div>
+        <div id="main-center" class="small-12 medium-4 large-4 columns">
+          <h3>Resume Database</h3>
+          <p>View and filter student resumes</p><a href="sponsors/resume_filter">
+          <button class="button">View Resumes</button></a>
+        </div>
+        <div id="main-right" class="small-12 medium-4 large-4 columns">
+          <h3>Create Job Listing</h3>
+          <p>Post a job listing for students</p><a href="sponsors/new_job_post">
+          <button class="button">Post Job Listing</button></a>
+        </div>
       </div>
-      <div id="main-right" class="small-12 medium-4 large-4 columns">
-        <h3>Another Service</h3>
-        <p>Placeholder text about service</p><a href="/memes">
-        <button class="button">Go</button></a>
+    <% } %>
+    
+    <% if (session.roles.isRecruiter) { %>
+      <div id="links-top" class="row">
+        <div id="main-left" class="small-12 medium-4 large-4 columns">
+          <h3>Resume Database</h3>
+          <p>View and filter student resumes</p><a href="sponsors/resume_filter">
+          <button class="button">View Resumes</button></a>
+        </div>
+
+        <div id="main-center" class="small-12 medium-4 large-4 columns">
+          <h3>Create Job Listing</h3>
+          <p>Post a job listing for students</p><a href="sponsors/new_job_post">
+          <button class="button">Post Job Listing</button></a>
+        </div>
+
+        <div id="main-right" class="small-12 medium-4 large-4 columns">
+          <h3>Beats by ACM</h3>
+          <p>Control the Beats music system.</p><a href="https://www-s.acm.illinois.edu/beats/1104/">
+          <button class="button">Go</button></a>
+        </div>
       </div>
-    </div>
-  <% } %>
+    <% } %>
+
+
+    <% if (session.roles.isStudent) { %>
+      <div id="links-top" class="row">
+        <div id="main-left" class="small-12 medium-4 large-4 columns">
+          <h3>Quote Database</h3>
+          <p>Quote database placeholder text</p><a href="/quotes">
+        <button class="button">View Quotes</button></a>
+        </div>
+        <div id="main-center" class="small-12 medium-4 large-4 columns">
+          <h3>Meme Service</h3>
+          <p>Placeholder text about meme service</p><a href="/memes">
+          <button class="button">Me 2 thanks</button></a>
+        </div>
+        <div id="main-right" class="small-12 medium-4 large-4 columns">
+          <h3>Beats by ACM</h3>
+          <p>Control the Beats music system.</p><a href="https://www-s.acm.illinois.edu/beats/1104/">
+          <button class="button">Go</button></a>
+        </div>
+      </div>
+    <% } %>
   </div>
+
   <div id="events-container" class="small-12 medium-3 large-3 columns">
     <div id="events-title" class="row">
       <h2>Important Links</h2>
     </div>
     <div id="events" class="row">
       <div class="event">
-        <h5>Welcome</h5>
+        <h5>Sample Link</h5>
         <ul class="dashed">
-          <li>test</li>
+          <li>Link</li>
         </ul>
       </div>
     </div>
-    <div id="events-title" class="row">
-      <h2>Service Manager</h2>
-    </div>
-    <div id="events" class="row">
-      <div class="event">
-        <h5>Welcome</h5>
-        <ul class="dashed">
-          <li>test</li>
-        </ul>
+    
+    <% if (session.roles.isStudent) { %>
+      <div id="events-title" class="row">
+        <h2>Service Manager</h2>
       </div>
-    </div>
+      <div id="events" class="row">
+        <div class="event">
+          <h5>Welcome</h5>
+          <ul class="dashed">
+            <li>test</li>
+          </ul>
+        </div>
+      </div>
+    <% } %>
+    
     <div id="events-title" class="row">
       <h2>Events</h2>
     </div>
     <div id="events" class="row">
       <div class="event">
-        <h5>Welcome</h5>
+       <h5>Sample Event (from FB)</h5>
         <ul class="dashed">
-          <li>test</li>
+          <li>Details</li>
         </ul>
       </div>
     </div>

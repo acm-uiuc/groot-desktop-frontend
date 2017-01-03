@@ -12,6 +12,7 @@
 var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 var express = require('express');
+var ejs = require('ejs');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var bodyParser = require('body-parser');
@@ -39,27 +40,28 @@ app.use(session({
 	ephemeral: true // Deletes cookie when browser closes.
 }));
 
-// Handle Sessions Accross different pages using express
-
-app.use(function(req, res, next){//mainly for the inital load, setting initial values for the session
-	if(!req.session.netid)
-	{
-		req.session.auth = false;
-		req.session.isAdmin = false;
-	}
-	next();
-});
+// Handle Sessions across different pages using express
 
 /*
 	Listing of session variables:
-		session.auth: if a user is authenticated
-		session.isAdmin: if a user is an Admin/elevated privs
+		roles object has two main roles: student and recruiter
+		student is broken down into: admin, top4, corporate.
+
 		session.netid
 		session.token
 */
-
-
-//TODO Add more POST endpoints for all our form interactions
+app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
+	if(!req.session.roles) {
+		req.session.roles = {
+			isAdmin: false,
+			isTop4: false,
+			isCorporate: false,
+			isStudent: false,
+			isRecruiter: false
+		};
+	}
+	next();
+});
 
 app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
@@ -82,91 +84,124 @@ app.post('/login', function(req, res){
 		}
 	};
 
-	function callback(error, response, body)
-	{
-		if(!body || !body["token"])
-		{
+	function callback(error, response, body) {
+		if(!body || !body["token"]) {
 			res.render('login', {
 				authenticated: false,
 				error: 'Invalid email or password.'
 			});
 		}
-		else
-		{
-			if(error)
+		else {
+			if(error) {
 				console.log("Error: " + error);
-			if(body["reason"])
+			}
+			if(body["reason"]) {
 				console.log("ISSUE: " + body["reason"]);
-			console.log(body);
+			}
+				
 			req.session.netid = netid;
+			req.session.username = netid;
 			req.session.token = body["token"];
-			req.session.auth = true;
-			console.log("token: " + body["token"]);
-			console.log("session:" + req.session);
+			req.session.roles.isStudent = true;
 
-			checkIfAdmin(req, res, netid, renderIntranetPage)
-
+			setAuthentication(req, res, function(req, res) {
+				res.redirect('/intranet');
+			});
 		}
 	}
 	request(options, callback);
 });
 
-
-function renderIntranetPage(req, res)
-{
-	res.redirect('intranet');
-}
-
-
-function checkIfAdmin(req, res, netid, nextSteps)
-{
-	var options = {
-		url: `${SERVICES_URL}/groups/committees/admin?isMember=${netid}`,
+app.post('/sponsors/recruiter_login', function(req, res) {
+    request({
+		url: `${SERVICES_URL}/recruiters/login`,
+		method: "POST",
 		headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		},
-		method:"GET"
-	};
-
-	function callback(error, response, body)
-	{
-		// if(error || !body)
-			// console.log("Error: " + error);
-		if(body && JSON.parse(body).isValid)
-		{
-			req.session.isAdmin = JSON.parse(body).isValid;
-			nextSteps(req, res);
-		
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        json: true,
+		body: req.body
+	}, function(err, response, body) {
+		if (response && response.statusCode == 200) {
+			req.session.recruiter = body.data;
+			req.session.username = body.data.first_name;
+			req.session.roles.isRecruiter = true;
+			
+			setAuthentication(req, res, function(req, res) {
+				res.redirect('/intranet');
+			});
+		} else {
+			res.render('recruiter_login', {
+				authenticated: false,
+				error: body.error
+			});
 		}
-		else
-			checkIfTop4(req, res, netid, nextSteps)
+	});
+});
 
-	}
-	request(options, callback);
+function isAuthenticated(req) {
+	return req.session.roles.isStudent || req.session.roles.isRecruiter;
 }
 
-function checkIfTop4(req, res, netid, nextSteps)
-{
-	var options = {
-		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${netid}`,
+function setAuthentication(req, res, nextSteps) {
+	var netid = req.session.netid;
+	if (!netid) {
+		nextSteps(req, res);
+		return;
+	}
+
+	checkIfAdmin(req, res, function(req, res) {
+		checkIfTop4(req, res, function(req, res) { 
+			checkIfCorporate(req, res, function(req, res) {
+				nextSteps(req, res);
+			});
+		});
+	});
+}
+
+function checkIfAdmin(req, res, nextSteps) {
+	request({
+		method:"GET",
+		url: `${SERVICES_URL}/groups/committees/admin?isMember=${req.session.netid}`,
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
-		},
-		method:"GET"
-	};
-
-	function callback(error, response, body)
-	{
-		// if(error || !body)
-			// console.log("Error: " + error);
-		if(body && JSON.parse(body).isValid)
-		{
-			req.session.isAdmin = JSON.parse(body).isValid;
+		}
+	}, function(error, response, body) {
+		if(response && response.statusCode == 200) {
+			req.session.roles.isAdmin = (JSON.parse(body).isValid  == 'true');
 		}		
 		nextSteps(req, res);
+	});
+}
 
-	}
-	request(options, callback);
+function checkIfCorporate(req, res, nextSteps) {
+	request({
+		method:"GET",
+		url: `${SERVICES_URL}/groups/committees/corporate?isMember=${req.session.netid}`,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		}
+	}, function(error, response, body) {
+		if(response && response.statusCode == 200) {
+			req.session.roles.isCorporate = (JSON.parse(body).isValid  == 'true');
+		}		
+		nextSteps(req, res);
+	});
+}
+
+function checkIfTop4(req, res, nextSteps) {
+	request({
+		method:"GET",
+		url: `${SERVICES_URL}/groups/committees/Top4?isMember=${req.session.netid}`,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		}
+	}, function(error, response, body) {
+		if(response && response.statusCode == 200) {
+			req.session.roles.isTop4 = (JSON.parse(body).isValid  == 'true');
+		}		
+		nextSteps(req, res);
+	});
 }
 
 // reset session when user logs out
@@ -244,24 +279,17 @@ if (m > 6) {
 
 app.get('/', function(req, res) {
 	res.render('home', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/login', function(req, res) {
-	console.log("req: ");
-	console.log("netid: " + req.session.netid);
-	console.log("token: " + req.session.token);
-
-	if(req.session.auth)
-	{
+	if (isAuthenticated(req)) {
 		res.redirect('intranet');
-	}
-	else
-	{
+	} else {
 		res.render('login', {
-			authenticated: req.session.auth,
-		})
+			authenticated: false,
+		});
 	}
 });
 
@@ -274,12 +302,11 @@ app.get('/about', function(req, res) {
         method: "GET"
     }, function(err, response, body) {
         if (err) {
-            console.log(err);
             // Sends the 404 page
             res.status(404).send("Error:\nThis page will be implemented soon!");
         }
         res.render('about', {
-            authenticated: req.session.auth,
+            authenticated: isAuthenticated(req),
             committees: JSON.parse(body),
         });
     });
@@ -287,7 +314,7 @@ app.get('/about', function(req, res) {
 
 app.get('/conference', function(req, res) {
 	res.render('conference', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 		editions: [
 			{ year: '2016', path: '/conference/2016' },
 			{ year: '2015', path: '/conference/2015' },
@@ -317,25 +344,22 @@ app.get('/conference', function(req, res) {
 
 app.get('/events', function(req, res) {
 	res.render('events', {
-		authenticated: req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/intranet', function(req, res) {
-	if(req.session.auth)
-	{
-		res.render('intranet', {
-			authenticated: req.session.auth,
-			session:req.session
-		});
-	}
-	else
+	if(!isAuthenticated(req)) {
 		res.redirect('login');
+	}
+	
+	res.render('intranet', {
+		authenticated: true,
+		session: req.session
+	});
 });
 
 app.post('/join', function(req, res) {
-    // creates JSON object of the inputted data
-    // sends data to groups-user-service
     var userData = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
@@ -364,7 +388,6 @@ app.post('/join', function(req, res) {
 app.get('/join', function(req, res) {
     // Going to grab SIG data from the micro-service
     request({
-        /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
         headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -385,7 +408,6 @@ app.get('/join', function(req, res) {
 
 app.get('/sigs', function(req, res) {
     request({
-        /* URL to grab SIG data from groot-groups-service */
         url: `${SERVICES_URL}/groups/sigs`,
         headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -401,7 +423,7 @@ app.get('/sigs', function(req, res) {
         sigs_a = sigs.slice(0, sigs.length / 2);
         sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
         res.render('sigs', {
-            authenticated: req.session.auth,
+            authenticated: isAuthenticated(req),
             sig_col_a: sigs_a,
             sig_col_b: sigs_b,
         });
@@ -422,7 +444,7 @@ app.get('/quotes', function(req, res) {
             res.status(500).send("Error " + error.code);
         } else {
             res.render('quotes', {
-                authenticated: req.session.auth,
+                authenticated: isAuthenticated(req),
                 quotes: body
             });
         }
@@ -431,7 +453,9 @@ app.get('/quotes', function(req, res) {
 
 app.get('/sponsors/new_job_post', function(req, res) {
 	res.render('new_job_post', {
-		authenticated:  req.session.auth,
+		authenticated:  isAuthenticated(req),
+		success: null,
+		error: null
 	});
 });
 
@@ -446,29 +470,217 @@ app.post('/sponsors/new_job_post', function(req, res) {
         body: req.body
     }, function(err, response, body) {
         if (response.statusCode == 200) {
-            res.render('home', {
-                authenticated: req.session.auth,
-            });
+			res.render('new_job_post', {
+				authenticated: isAuthenticated(req),
+				success: "You have successfully entered a new job.",
+				error: null
+			});
         } else {
-            res.status(500).send("Error " + body.Text);
-            return;
+            res.render('new_job_post', {
+				authenticated: isAuthenticated(req),
+				success: null,
+				error: "Error with creating your job: " + body.error
+			});
         }
     });
 });
 
+app.get('/sponsors/corporate_manager', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/login');
+	}
+
+	request({
+		url: `${SERVICES_URL}/jobs`,
+		method: "GET",
+		json: true,
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN
+		}
+	}, function(error, response, body) {
+		if (response && response.statusCode != 200) {
+			res.status(response.statusCode).send("Error: " + body.error);
+		} else {
+			request({
+				url: `${SERVICES_URL}/students?approved_resumes=false`,
+				method: "GET",
+				json: true,
+				headers: {
+					"Authorization": GROOT_RECRUITER_TOKEN
+				}
+			}, function(s_error, s_response, s_body) {
+				if (s_response && s_response.statusCode != 200) {
+					res.status(s_response.statusCode).send("Error: " + s_body.error);
+				} else {
+					request({
+						url: `${SERVICES_URL}/recruiters`,
+						method: "GET",
+						json: true,
+						headers: {
+							"Authorization": GROOT_RECRUITER_TOKEN
+						},
+					}, function(r_error, r_response, r_body) {
+						if (r_response && r_response.statusCode != 200) {
+							res.status(r_response.statusCode).send("Error: " + r_body.error);
+						} else {
+							res.render('corporate_manager', {
+								job: sponsorsScope.job,
+								degree: sponsorsScope.degree,
+								grad: sponsorsScope.grad,
+								student: sponsorsScope.student,
+								unapproved_resumes: s_body.data,
+								job_listings: body.data,
+								recruiters: r_body.data,
+								authenticated: true
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+});
+
+app.post('/sponsors/corporate_manager', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters`,
+		method: "POST",
+		json: true,
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN
+		},
+		body: req.body
+	}, function(error, response, body) {
+		if (response && response.statusCode != 200) {
+			res.status(response.statusCode).send("Error: " + body.error);
+		} else {
+			res.redirect('/sponsors/corporate_manager');
+		}
+	});
+});
+
+app.put('/students/:netid/approve', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+
+	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
+	request({
+		url: `${SERVICES_URL}/students/` + req.params.netid + `/approve`,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.delete('/students/:netid', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+
+	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
+	request({
+		url: `${SERVICES_URL}/students/` + req.params.netid,
+		method: "DELETE",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.put('/jobs/:jobId/approve', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+	
+	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
+	request({
+		url: `${SERVICES_URL}/jobs/` + req.params.jobId + `/approve`,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.delete('/jobs/:jobId', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+
+	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
+	request({
+		url: `${SERVICES_URL}/jobs/` + req.params.jobId,
+		method: "DELETE",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
 app.get('/sponsors/recruiter_login', function(req, res) {
-    res.render('recruiter_login', {
-        authenticated:  req.session.auth,
-    });
+	if(isAuthenticated(req)) {
+		res.redirect('/intranet');
+	} else {
+		res.render('recruiter_login', {
+			authenticated: false,
+		});
+	}
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
     res.render('resume_book', {
-        authenticated:  req.session.auth,
+		authenticated: isAuthenticated(req),
         job: sponsorsScope.job,
         degree: sponsorsScope.degree,
         grad: sponsorsScope.grad,
-        student: sponsorsScope.student
+        student: sponsorsScope.student,
+		error: null
     });
 });
 
@@ -484,43 +696,47 @@ app.post('/sponsors/resume_book', function(req, res) {
     }, function(err, response, body) {
         if (response.statusCode == 200) {
             res.render('home', {
-                authenticated: req.session.auth,
+                authenticated: isAuthenticated(req),
             });
         } else {
-            res.status(500).send("Error " + body.Text);
-            return;
+            res.render('resume_book', {
+				authenticated: isAuthenticated(req),
+        		job: sponsorsScope.job,
+        		degree: sponsorsScope.degree,
+        		grad: sponsorsScope.grad,
+        		student: sponsorsScope.student,
+				error: body.error
+			});
         }
     });
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
 	res.render('resume_filter', {
-		authenticated:  req.session.auth,
+		authenticated:  isAuthenticated(req),
 		job: sponsorsScope.job,
 		degree: sponsorsScope.degree,
 		grad: sponsorsScope.grad,
 		student: sponsorsScope.student,
 	})
- });
-
+});
 
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
-		authenticated:  req.session.auth,
+		authenticated: isAuthenticated(req),
 	});
 });
 
 app.get('/sponsors/sponsors_list', function(req, res) {
 	res.render('sponsor_list', {
-		authenticated:  req.session.auth,
-	})
+		authenticated: isAuthenticated(req),
+	});
 });
-
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
-//Start server and logs port as a callback
+// //Start server and logs port as a callback
 app.listen(PORT, function() {
 	console.log('GROOT_DESKTOP is live on port ' + PORT + "!");
 });
