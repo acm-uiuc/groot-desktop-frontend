@@ -712,6 +712,7 @@ app.post('/sponsors/resume_book', function(req, res) {
         body: req.body
     }, function(err, response, body) {
         if (response.statusCode == 200) {
+            req.session.is_recruiter = true
             res.render('home', {
                 authenticated: isAuthenticated(req),
             });
@@ -729,9 +730,10 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-    if(!req.session.auth) {
-        checkIfCorporate(req.session.netid, function(isCorporate) {
-            if(!isCorporate) {
+    // Restrict route to recruiters and corporate committee members
+    if(!req.session.is_recruiter) {
+        checkIfCorporate(req.session.netid, function(corp_member) {
+            if(!corp_member) {
                 res.redirect('/login');
                 return;
             }
@@ -772,9 +774,10 @@ app.get('/sponsors/resume_filter', function(req, res) {
 });
 
 app.post('/sponsors/resume_filter', function(req, res) {
-    if(!req.session.auth) {
-        checkIfCorporate(req.session.netid, function(isCorporate) {
-            if(!isCorporate) {
+    // Restrict route to recruiters and corporate committee members
+    if(!req.session.is_recruiter) {
+        checkIfCorporate(req.session.netid, function(corp_member) {
+            if(!corp_member) {
                 res.redirect('/login');
                 return;
             }
