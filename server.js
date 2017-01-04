@@ -20,6 +20,7 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+var utils = require('./etc/utils.js');
 
 
 const PORT = process.env.PORT || 5000;
@@ -712,13 +713,91 @@ app.post('/sponsors/resume_book', function(req, res) {
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
-	res.render('resume_filter', {
-		authenticated:  isAuthenticated(req),
-		job: sponsorsScope.job,
-		degree: sponsorsScope.degree,
-		grad: sponsorsScope.grad,
-		student: sponsorsScope.student,
-	})
+    // Restrict route to recruiters and corporate committee members
+    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+        res.redirect('/sponsors/recruiter_login');
+        return;
+    }
+    request({
+        url: `${SERVICES_URL}/students`,
+        method: "GET",
+        json: true,
+        headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        }
+    }, function(error, response, body) {
+        if(error){
+            res.status(500).send("Error " + error.code);
+        }
+        else if(body.error) {
+            res.status(500).send("Error: " + body.error)
+        }
+        else{
+            for( var resume of body.data ){
+                resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
+            }
+            req.query.page = req.query.page || 0
+            res.render('resume_filter', {
+                authenticated:  req.session.auth,
+                job: sponsorsScope.job,
+                degree: sponsorsScope.degree,
+                grad: sponsorsScope.grad,
+                student: sponsorsScope.student,
+                resumes: utils.getPage(body.data, req.query.page),
+                defaults: {},
+                curr_page: req.query.page,
+                max_page: utils.maxPage(body.data)
+            });
+        }
+    });
+});
+
+app.post('/sponsors/resume_filter', function(req, res) {
+    // Restrict route to recruiters and corporate committee members
+    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+        res.redirect('/sponsors/recruiter_login');
+        return;
+    }
+    request({
+        url: `${SERVICES_URL}/students`,
+        method: "GET",
+        json: true,
+        headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        qs: {
+            name: req.body.name,
+            graduationStart: req.body.gradYearStart,
+            graduationEnd: req.body.gradYearEnd,
+            netid: req.body.netid,
+            degree_type: req.body.degreeType,
+            job_type: req.body.jobType,
+        }
+    }, function(error, response, body) {
+        if(error){
+            res.status(500).send("Error " + error.code);
+        }
+        else if(body.error) {
+            res.status(500).send("Error: " + body.error)
+        }
+        else{
+            for( var resume of body.data ){
+                resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
+            }
+            req.query.page = req.query.page || 0
+            res.render('resume_filter', {
+                authenticated:  req.session.auth,
+                job: sponsorsScope.job,
+                degree: sponsorsScope.degree,
+                grad: sponsorsScope.grad,
+                student: sponsorsScope.student,
+                resumes: utils.getPage(body.data, req.query.page),
+                defaults: req.body,
+                curr_page: req.query.page,
+                max_page: utils.maxPage(body.data)
+            });
+        }
+    });
 });
 
 app.get('/sponsors', function(req, res) {
