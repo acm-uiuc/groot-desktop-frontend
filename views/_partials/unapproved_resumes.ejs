@@ -1,4 +1,5 @@
 <% if (unapproved_resumes.length != 0) { %>
+  <h5>You have <%= unapproved_resumes.length %> unapproved resumes</h5>
   <table>
     <tr>
       <th> Action </th> <th> Preview </th> <th> Data </th>
@@ -26,5 +27,5 @@
     <% } %>
   </table>
 <% } else { %>
-  <p>Hurray! There are no unapproved resumes.</p>
+  <h5>There are no unapproved resumes.</h5>
 <% } %>

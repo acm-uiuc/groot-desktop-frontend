@@ -11,15 +11,21 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="resume-container">
   <div class="row">
+    <% if (error !== undefined && error != null) { %>
+        <p class="error"><%= error %></p>
+    <% } else if (message !== undefined) { %>
+        <p class="success"><%= message %></p>
+    <% } %>
+    
     <h2>Corporate Manager</h2>
     <h3>Resume Manager </h3>
     <div id="unapproved-resumes-partial">
-        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) -%>
+        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) %>
     </div>
 
     <h3>Job Post Manager</h3>
     <div id="unapproved-jobs-partial">
-        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) -%>
+        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) %>
     </div>
 
     <h3>Account Manager</h3>
@@ -54,28 +60,16 @@ this license in a file with the distribution.
     </form>
 
     <h3>All Recruiters</h3>
-    <table>
-      <tr>
-          <th>Company </th>
-          <th>Name</th>
-          <th>Email </th>
-          <th>Expires </th>
-      </tr>
-      <% for (var recruiter of recruiters) { %>
-      <tr>
-        <td><%= recruiter.company_name %></td>
-        <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
-        <td><%= recruiter.email %></td>
-        <td><%= recruiter.expires_on %></td>
-      </tr>
-      <% } %>
-    </table>
+    <div id="recruiters-partial">
+        <%- include('_partials/recruiters', { recruiters: recruiters }) %>
+    </div>
   </div>
 </div>
 
 <%- include('_partials/footer') -%>
 
 <script>
+    // Function calls are invoked from the buttons on each of the partials
   function approveStudent(netid) {
     $.ajax({
         url: "/students/" + netid + "/approve",
@@ -112,6 +106,26 @@ this license in a file with the distribution.
         method: "DELETE",
         success: function(response) {
             $("#unapproved-jobs-partial").html(response);
+        }
+    });
+  }
+
+  function renewRecruiter(recruiterId) {
+      $.ajax({
+        url: "/recruiters/" + recruiterId + "/renew",
+        method: "PUT",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+        }
+    });
+  }
+
+  function deleteRecruiter(recruiterId) {
+      $.ajax({
+        url: "/recruiters/" + recruiterId,
+        method: "DELETE",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
         }
     });
   }

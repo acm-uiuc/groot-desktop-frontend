@@ -1,0 +1,25 @@
+<% if (recruiters.length != 0) { %>
+  <table>
+    <tr>
+        <th>Company</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Expires</th>
+        <th>Action</th>
+    </tr>
+    <% for (var recruiter of recruiters) { %>
+    <tr>
+      <td><%= recruiter.company_name %></td>
+      <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
+      <td><%= recruiter.email %></td>
+      <td><%= recruiter.expires_on %></td>
+      <td>
+          <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
+          <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
+      </td>
+    </tr>
+    <% } %>
+  </table>
+<% } else { %>
+  <h5>You have no recruiter accounts.</h5>
+<% } %>
