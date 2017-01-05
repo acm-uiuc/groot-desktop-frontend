@@ -239,16 +239,7 @@ var sponsorsScope = {
 		gradYear: null,
 		years: [],
 	},
-	student: {
-		firstName: null,
-		lastName: null,
-		netid: null,
-		email: null,
-		gradYear: null,
-		degreeType: null,
-		jobType: null,
-		resume: null,
-	}
+	student: null
 };
 
 var d = new Date();
@@ -753,14 +744,35 @@ app.get('/sponsors/recruiter_login', function(req, res) {
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
-    res.render('resume_book', {
-		authenticated: isAuthenticated(req),
-        job: sponsorsScope.job,
-        degree: sponsorsScope.degree,
-        grad: sponsorsScope.grad,
-        student: sponsorsScope.student,
-		error: null
-    });
+	if (req.session.roles.isStudent) {
+		request({
+			url: `${SERVICES_URL}/students/` + req.session.netid,
+			method: "GET",
+			json: true,
+			body: {}
+		}, function(error, response, body) {
+			// Format graduation date into same format as how it should be displayed
+			body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
+
+			res.render('resume_book', {
+				authenticated: isAuthenticated(req),
+				job: sponsorsScope.job,
+				degree: sponsorsScope.degree,
+				grad: sponsorsScope.grad,
+				student: body.data,
+				error: null
+    		});
+		});
+	} else {
+		res.render('resume_book', {
+			authenticated: isAuthenticated(req),
+			job: sponsorsScope.job,
+			degree: sponsorsScope.degree,
+			grad: sponsorsScope.grad,
+			student: sponsorsScope.student,
+			error: null
+    	});
+	}
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
