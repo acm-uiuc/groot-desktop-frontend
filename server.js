@@ -13,6 +13,7 @@ var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 var express = require('express');
 var ejs = require('ejs');
+var moment = require('moment');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var bodyParser = require('body-parser');
@@ -533,6 +534,14 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 								job_listings: body.data,
 								recruiters: r_body.data,
 								authenticated: true,
+								dates: {
+									"one week ago": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
+									"one month ago": moment().subtract('1', 'months').format("YYYY-MM-DD"),
+									"three months ago": moment().subtract('3', 'months').format("YYYY-MM-DD"),
+									"six months ago": moment().subtract('6', 'months').format("YYYY-MM-DD"),
+									"one year ago": moment().subtract('1', 'years').format("YYYY-MM-DD")
+								},
+								dates_default: "three months ago",
 								error: req.query.error, //obtained from the post request below
 								message: req.query.message //obtained from the post request below
 							});
@@ -541,6 +550,27 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 				}
 			});
 		}
+	});
+});
+
+app.get('/students/:date', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/students`,
+		method: "GET",
+		json: true,
+		qs: {
+			last_updated_at: req.params.date
+		},
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN
+		},
+		body: req.body
+	}, function(error, response, body) {
+		res.status(response.statusCode).send(body);
 	});
 });
 
