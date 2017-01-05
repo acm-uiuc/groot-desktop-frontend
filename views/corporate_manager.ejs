@@ -11,7 +11,7 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="resume-container">
   <div class="row">
-    <% if (error !== undefined && error != null) { %>
+    <% if (error !== undefined) { %>
         <p class="error"><%= error %></p>
     <% } else if (message !== undefined) { %>
         <p class="success"><%= message %></p>
@@ -27,10 +27,10 @@ this license in a file with the distribution.
     <h3>Resume Reminder</h3>
     <form ref="uploadForm" method="post" action="/students/remind">
         <div class="inline-form" style="float:left; padding-right:1em; vertical-align: middle;">
-            <p>Remind students who haven't submitted their resume in:</p>
+            <p>Remind students who haven't updated their resume in:</p>
         </div>
         <div class="inline-form">
-            <select id="identified_students">
+            <select id="identified_students" name="lastUpdatedAt">
             <% Object.keys(dates).forEach(function(key) { %>
                 <option value='"<%= dates[key] %>"' <%= key === dates_default ? "selected" : "" %> ><%= key %></option>
             <% }); %>
@@ -39,7 +39,7 @@ this license in a file with the distribution.
                 Identified Students:
                 <span id="remind_students_number"> </span>
             </h5>
-            <a class="button">Send Reminder</a>
+            <button type="submit" class="button">Send Reminder</button>
         </div>
     </form>
     

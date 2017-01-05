@@ -579,7 +579,11 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 		},
 		body: req.body
 	}, function(error, response, body) {
-		res.redirect('/sponsors/corporate_manager?error=' + body.error + '&message=' + body.message);
+		if (body.error == null) {
+			res.redirect('/sponsors/corporate_manager?message=' + body.message);
+		} else {
+			res.redirect('/sponsors/corporate_manager?error=' + body.error);
+		}
 	});
 });
 
@@ -729,6 +733,32 @@ app.delete('/recruiters/:recruiterId', function(req, res) {
 			res.status(200).send(ejs.render("<%- include('" + absRecruiterPath + "') %>", { recruiters : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.post('/students/remind', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/login');
+	}
+
+	request({
+		url: `${SERVICES_URL}/students/remind`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		body: {
+			last_updated_at: req.body.lastUpdatedAt
+		},
+		json: true
+	}, function(error, response, body) {
+		if (body.error == null) {
+			res.redirect('/sponsors/corporate_manager?message=' + body.message);
+		} else {
+			res.redirect('/sponsors/corporate_manager?error=' + body.error);
 		}
 	});
 });
