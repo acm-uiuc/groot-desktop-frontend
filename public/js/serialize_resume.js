@@ -14,6 +14,19 @@ function post(serialized_data) {
     var url = window.location.pathname;
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+    xhr.onload = function(e) {
+        var response = JSON.parse(xhr.response);
+        if (response['error']) {
+            $('.form-validation-success').hide();
+            $('.form-validation-error').text(response['error']).show();
+        } else {
+            $('.form-validation-error').hide();
+            $('.form-validation-success').text(response['message']).show();
+        }
+        $('body, html').animate({scrollTop: 0}, 'fast');
+    }
+
     xhr.send(JSON.stringify(serialized_data));
 }
 

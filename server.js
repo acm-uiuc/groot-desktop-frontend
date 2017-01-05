@@ -141,6 +141,40 @@ app.post('/sponsors/recruiter_login', function(req, res) {
 	});
 });
 
+app.get('/sponsors/reset_password', function(req, res) {
+	if (isAuthenticated(req)) {
+		res.redirect('intranet');
+	}
+
+	res.render('reset_password', {
+		authenticated: false,
+		error: null,
+		success: null
+	});
+});
+
+app.post('/sponsors/reset_password', function(req, res) {
+	if (isAuthenticated(req)) {
+		res.redirect('intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/reset_password`,
+		method: "POST",
+		headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        json: true,
+		body: req.body
+	}, function(error, response, body) {
+		res.render('reset_password', {
+			authenticated: false,
+			error: body.error,
+			success: body.message
+		});
+	});
+});
+
 function isAuthenticated(req) {
 	return req.session.roles.isStudent || req.session.roles.isRecruiter;
 }
@@ -462,19 +496,11 @@ app.post('/sponsors/new_job_post', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (response.statusCode == 200) {
-			res.render('new_job_post', {
-				authenticated: isAuthenticated(req),
-				success: "You have successfully entered a new job.",
-				error: null
-			});
-        } else {
-            res.render('new_job_post', {
-				authenticated: isAuthenticated(req),
-				success: null,
-				error: "Error with creating your job: " + body.error
-			});
-        }
+		res.render('new_job_post', {
+			authenticated: isAuthenticated(req),
+			success: body.message,
+			error: body.error
+		});
     });
 });
 
@@ -517,10 +543,6 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 							res.status(r_response.statusCode).send("Error: " + r_body.error);
 						} else {
 							res.render('corporate_manager', {
-								job: sponsorsScope.job,
-								degree: sponsorsScope.degree,
-								grad: sponsorsScope.grad,
-								student: sponsorsScope.student,
 								unapproved_resumes: s_body.data,
 								job_listings: body.data,
 								recruiters: r_body.data,
@@ -783,15 +805,17 @@ app.get('/sponsors/resume_book', function(req, res) {
 		}, function(error, response, body) {
 			// Format graduation date into same format as how it should be displayed
 			body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
+			sponsorsScope.student = body.data;
 
 			res.render('resume_book', {
 				authenticated: isAuthenticated(req),
 				job: sponsorsScope.job,
 				degree: sponsorsScope.degree,
 				grad: sponsorsScope.grad,
-				student: body.data,
+				student: sponsorsScope.student,
+				success: null,
 				error: null
-    		});
+			});
 		});
 	} else {
 		res.render('resume_book', {
@@ -800,8 +824,9 @@ app.get('/sponsors/resume_book', function(req, res) {
 			degree: sponsorsScope.degree,
 			grad: sponsorsScope.grad,
 			student: sponsorsScope.student,
+			success: null,
 			error: null
-    	});
+		});
 	}
 });
 
@@ -815,20 +840,8 @@ app.post('/sponsors/resume_book', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (response.statusCode == 200) {
-            res.render('home', {
-                authenticated: isAuthenticated(req),
-            });
-        } else {
-            res.render('resume_book', {
-				authenticated: isAuthenticated(req),
-        		job: sponsorsScope.job,
-        		degree: sponsorsScope.degree,
-        		grad: sponsorsScope.grad,
-        		student: sponsorsScope.student,
-				error: body.error
-			});
-        }
+		// Because the resume needed to be serialized, this should return json instead.
+		res.status(response.statusCode).send(body);
     });
 });
 
@@ -858,7 +871,7 @@ app.get('/sponsors/resume_filter', function(req, res) {
             }
             req.query.page = req.query.page || 0
             res.render('resume_filter', {
-                authenticated:  req.session.auth,
+                authenticated: isAuthenticated(req),
                 job: sponsorsScope.job,
                 degree: sponsorsScope.degree,
                 grad: sponsorsScope.grad,
@@ -906,7 +919,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
             }
             req.query.page = req.query.page || 0
             res.render('resume_filter', {
-                authenticated:  req.session.auth,
+                authenticated: isAuthenticated(req),
                 job: sponsorsScope.job,
                 degree: sponsorsScope.degree,
                 grad: sponsorsScope.grad,
