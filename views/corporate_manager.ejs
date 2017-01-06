@@ -25,7 +25,7 @@ this license in a file with the distribution.
     </div>
 
     <h3>Resume Reminder</h3>
-    <form ref="uploadForm" method="post" action="/students/remind">
+    <form ref="uploadForm" method="post" action="/corporate/students/remind">
         <div class="inline-form" style="float:left; padding-right:1em; vertical-align: middle;">
             <p>Remind students who haven't updated their resume in:</p>
         </div>
@@ -47,42 +47,6 @@ this license in a file with the distribution.
     <div id="unapproved-jobs-partial">
         <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) %>
     </div>
-
-    <h3>Account Manager</h3>
-    <form ref="uploadForm" method="post" action="/sponsors/corporate_manager">
-      <div class="field-group required">
-        <label for="company_name" class="field-albe">Company Name </label>
-        <div class="field">
-          <input id="company_name" type="text" name="company_name" maxlength="16" />
-      </div>
-      <div class="field-group required">
-          <label for="first_name" class="field-label">First Name</label>
-          <div class="field">
-              <input id="first_name" type="text" name="first_name" maxlength="32" />
-          </div>
-      </div>
-      <div class="field-group required">
-          <label for="last_name" class="field-label">Last Name</label>
-          <div class="field">
-              <input id="last_name" type="text" name="last_name" maxlength="32" />
-          </div>
-      </div>
-      <div class="field-group required">
-          <label for="netid" class="field-label">Contact Email</label>
-          <div class="field">
-              <input id="email" type="text" name="email" />
-          </div>
-      </div>
-      <!-- to do:  expiration/action/sponsorship level -->
-      <div class="controls">
-          <button type="submit" class="button">Create Account</button>
-      </div>
-    </form>
-
-    <h3>All Recruiters</h3>
-    <div id="recruiters-partial">
-        <%- include('_partials/recruiters', { recruiters: recruiters }) %>
-    </div>
   </div>
 </div>
 
@@ -92,7 +56,7 @@ this license in a file with the distribution.
     // Function calls are invoked from the buttons on each of the partials
   function approveStudent(netid) {
     $.ajax({
-        url: "/students/" + netid + "/approve",
+        url: "/corporate/students/" + netid + "/approve",
         method: "PUT",
         success: function(response) {
             $("#unapproved-resumes-partial").html(response);
@@ -102,7 +66,7 @@ this license in a file with the distribution.
 
   function approveJob(jobId) {
     $.ajax({
-        url: "/jobs/" + jobId + "/approve",
+        url: "/corporate/jobs/" + jobId + "/approve",
         method: "PUT",
         success: function(response) {
             $("#unapproved-jobs-partial").html(response);
@@ -112,7 +76,7 @@ this license in a file with the distribution.
 
   function deleteStudent(netid) {
       $.ajax({
-        url: "/students/" + netid,
+        url: "/corporate/students/" + netid,
         method: "DELETE",
         success: function(response) {
             $("#unapproved-resumes-partial").html(response);
@@ -122,7 +86,7 @@ this license in a file with the distribution.
 
   function deleteJob(jobId) {
     $.ajax({
-        url: "/jobs/" + jobId,
+        url: "/corporate/jobs/" + jobId,
         method: "DELETE",
         success: function(response) {
             $("#unapproved-jobs-partial").html(response);
@@ -130,29 +94,9 @@ this license in a file with the distribution.
     });
   }
 
-  function renewRecruiter(recruiterId) {
-      $.ajax({
-        url: "/recruiters/" + recruiterId + "/renew",
-        method: "PUT",
-        success: function(response) {
-            $("#recruiters-partial").html(response);
-        }
-    });
-  }
-
-  function deleteRecruiter(recruiterId) {
-      $.ajax({
-        url: "/recruiters/" + recruiterId,
-        method: "DELETE",
-        success: function(response) {
-            $("#recruiters-partial").html(response);
-        }
-    });
-  }
-
   function getIdentifiedStudents(date) {
       $.ajax({
-          url: "/students/" + date,
+          url: "/corporate/students/" + date,
           method: "GET",
           success: function(response) {
               $("#remind_students_number").html(response.data.length);

@@ -119,7 +119,7 @@ app.post('/login', function(req, res){
 	request(options, callback);
 });
 
-app.post('/sponsors/recruiter_login', function(req, res) {
+app.post('/sponsors/login', function(req, res) {
     request({
 		url: `${SERVICES_URL}/recruiters/login`,
 		method: "POST",
@@ -307,7 +307,18 @@ var sponsorsScope = {
 		gradYear: null,
 		years: [],
 	},
-	student: null
+	student: null,
+	recruiter: {
+		types: [{
+			name: 'Sponsor',
+		}, {
+			name: 'Jobfair',
+		}, {
+			name: 'Startup'
+		}, {
+			name: 'Outreach'
+		}],
+	}
 };
 
 var d = new Date();
@@ -572,7 +583,7 @@ app.get('/quotes', function(req, res) {
     });
 });
 
-app.get('/sponsors/new_job_post', function(req, res) {
+app.get('/sponsors/jobs', function(req, res) {
 	res.render('new_job_post', {
 		authenticated:  isAuthenticated(req),
 		success: null,
@@ -580,7 +591,7 @@ app.get('/sponsors/new_job_post', function(req, res) {
 	});
 });
 
-app.post('/sponsors/new_job_post', function(req, res) {
+app.post('/sponsors/jobs', function(req, res) {
     request({
         url: `${SERVICES_URL}/jobs`,
         method: "POST",
@@ -598,7 +609,7 @@ app.post('/sponsors/new_job_post', function(req, res) {
     });
 });
 
-app.get('/sponsors/corporate_manager', function(req, res) {
+app.get('/corporate/manage', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
 	}
@@ -625,34 +636,21 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 				if (s_response && s_response.statusCode != 200) {
 					res.status(s_response.statusCode).send("Error: " + s_body.error);
 				} else {
-					request({
-						url: `${SERVICES_URL}/recruiters`,
-						method: "GET",
-						json: true,
-						headers: {
-							"Authorization": GROOT_RECRUITER_TOKEN
+					res.render('corporate_manager', {
+						unapproved_resumes: s_body.data,
+						job_listings: body.data,
+						authenticated: true,
+						dates: {
+							"one day": moment().subtract('1', 'days').format("YYYY-MM-DD"),
+							"one week": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
+							"one month": moment().subtract('1', 'months').format("YYYY-MM-DD"),
+							"three months": moment().subtract('3', 'months').format("YYYY-MM-DD"),
+							"six months": moment().subtract('6', 'months').format("YYYY-MM-DD"),
+							"one year": moment().subtract('1', 'years').format("YYYY-MM-DD")
 						},
-					}, function(r_error, r_response, r_body) {
-						if (r_response && r_response.statusCode != 200) {
-							res.status(r_response.statusCode).send("Error: " + r_body.error);
-						} else {
-							res.render('corporate_manager', {
-								unapproved_resumes: s_body.data,
-								job_listings: body.data,
-								recruiters: r_body.data,
-								authenticated: true,
-								dates: {
-									"one week ago": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
-									"one month ago": moment().subtract('1', 'months').format("YYYY-MM-DD"),
-									"three months ago": moment().subtract('3', 'months').format("YYYY-MM-DD"),
-									"six months ago": moment().subtract('6', 'months').format("YYYY-MM-DD"),
-									"one year ago": moment().subtract('1', 'years').format("YYYY-MM-DD")
-								},
-								dates_default: "three months ago",
-								error: req.query.error, //obtained from the post request below
-								message: req.query.message //obtained from the post request below
-							});
-						}
+						dates_default: "three months",
+						error: req.query.error, //obtained from the post request below
+						message: req.query.message //obtained from the post request below
 					});
 				}
 			});
@@ -660,7 +658,7 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 	});
 });
 
-app.get('/students/:date', function(req, res) {
+app.get('/corporate/students/:date', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -681,7 +679,36 @@ app.get('/students/:date', function(req, res) {
 	});
 });
 
-app.post('/sponsors/corporate_manager', function(req, res) {
+app.get('/corporate/accounts', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters`,
+		method: "GET",
+		json: true,
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
+		},
+	}, function(error, response, body) {
+		if (response && response.statusCode != 200) {
+			res.status(response.statusCode).send(body.error);
+		} else {
+			res.render('account_manager', {
+				recruiters: body.data,
+				authenticated: true,
+				recruiter: sponsorsScope.recruiter,
+				error: req.query.error,
+				message: req.query.message
+			});
+		}
+	});
+});
+
+app.post('/corporate/accounts', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -691,21 +718,46 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 		method: "POST",
 		json: true,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
 		},
 		body: req.body
 	}, function(error, response, body) {
 		if (body.error == null) {
-			res.redirect('/sponsors/corporate_manager?message=' + body.message);
+			res.redirect('/corporate/accounts?message=' + body.message);
 		} else {
-			res.redirect('/sponsors/corporate_manager?error=' + body.error);
+			res.redirect('/corporate/accounts?error=' + body.error);
 		}
 	});
 });
 
-app.put('/students/:netid/approve', function(req, res) {
+app.get('/corporate/recruiters/:recruiterId/invite', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/invite`,
+		method: "GET",
+		json: true,
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
+		},
+	}, function(error, response, body) {
+		res.render('recruiter_invite', {
+			authenticated: true,
+			email: body.data,
+			recruiter: body.data.recruiter
+		});
+	});
+});
+
+app.put('/corporate/students/:netid/approve', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
 	}
 
 	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
@@ -728,9 +780,9 @@ app.put('/students/:netid/approve', function(req, res) {
 	});
 });
 
-app.delete('/students/:netid', function(req, res) {
+app.delete('/corporate/students/:netid', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 
 	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
@@ -753,9 +805,9 @@ app.delete('/students/:netid', function(req, res) {
 	});
 });
 
-app.put('/jobs/:jobId/approve', function(req, res) {
+app.put('/corporate/jobs/:jobId/approve', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 	
 	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
@@ -778,9 +830,9 @@ app.put('/jobs/:jobId/approve', function(req, res) {
 	});
 });
 
-app.delete('/jobs/:jobId', function(req, res) {
+app.delete('/corporate/jobs/:jobId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 
 	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
@@ -803,9 +855,9 @@ app.delete('/jobs/:jobId', function(req, res) {
 	});
 });
 
-app.put('/recruiters/:recruiterId/renew', function(req, res) {
+app.put('/corporate/recruiters/:recruiterId/renew', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 
 	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
@@ -828,9 +880,9 @@ app.put('/recruiters/:recruiterId/renew', function(req, res) {
 	});
 });
 
-app.delete('/recruiters/:recruiterId', function(req, res) {
+app.delete('/corporate/recruiters/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 
 	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
@@ -853,9 +905,9 @@ app.delete('/recruiters/:recruiterId', function(req, res) {
 	});
 });
 
-app.post('/students/remind', function(req, res) {
+app.post('/corporate/students/remind', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		res.redirect('/intranet');
 	}
 
 	request({
@@ -872,14 +924,14 @@ app.post('/students/remind', function(req, res) {
 		json: true
 	}, function(error, response, body) {
 		if (body.error == null) {
-			res.redirect('/sponsors/corporate_manager?message=' + body.message);
+			res.redirect('/corporate/manage?message=' + body.message);
 		} else {
-			res.redirect('/sponsors/corporate_manager?error=' + body.error);
+			res.redirect('/corporate/manage?error=' + body.error);
 		}
 	});
 });
 
-app.get('/sponsors/recruiter_login', function(req, res) {
+app.get('/sponsors/login', function(req, res) {
 	if(isAuthenticated(req)) {
 		res.redirect('/intranet');
 	} else {
@@ -889,7 +941,7 @@ app.get('/sponsors/recruiter_login', function(req, res) {
 	}
 });
 
-app.get('/sponsors/resume_book', function(req, res) {
+app.get('/resumes/new', function(req, res) {
 	if (req.session.roles.isStudent) {
 		request({
 			url: `${SERVICES_URL}/students/` + req.session.netid,
@@ -924,7 +976,7 @@ app.get('/sponsors/resume_book', function(req, res) {
 	}
 });
 
-app.post('/sponsors/resume_book', function(req, res) {
+app.post('/resumes/new', function(req, res) {
     request({
         url: `${SERVICES_URL}/students`,
         method: "POST",
@@ -939,10 +991,10 @@ app.post('/sponsors/resume_book', function(req, res) {
     });
 });
 
-app.get('/sponsors/resume_filter', function(req, res) {
+app.get('/corporate/resumes', function(req, res) {
     // Restrict route to recruiters and corporate committee members
     if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
-        res.redirect('/sponsors/recruiter_login');
+        res.redirect('/sponsors/login');
         return;
     }
     request({
@@ -979,10 +1031,10 @@ app.get('/sponsors/resume_filter', function(req, res) {
     });
 });
 
-app.post('/sponsors/resume_filter', function(req, res) {
+app.post('/corporate/resumes', function(req, res) {
     // Restrict route to recruiters and corporate committee members
     if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
-        res.redirect('/sponsors/recruiter_login');
+        res.redirect('/sponsors/login');
         return;
     }
     request({

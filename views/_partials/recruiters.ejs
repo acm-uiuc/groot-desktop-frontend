@@ -5,6 +5,7 @@
         <th>Name</th>
         <th>Email</th>
         <th>Expires</th>
+        <th>Type</th>
         <th>Action</th>
     </tr>
     <% for (var recruiter of recruiters) { %>
@@ -13,9 +14,23 @@
       <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
       <td><%= recruiter.email %></td>
       <td><%= recruiter.expires_on %></td>
+      <td><%= recruiter.type %></td>
       <td>
+          <% if (!recruiter.invited) { %>
+            <a class="button" href="recruiters/<%= recruiter.id %>/invite">Invite</a>
+          <% } else { %>
+            <p>Invited!</p>
+          <% } %>
           <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
           <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
+
+          <% if (!recruiter.is_sponsor) { %> 
+            <a class="button" onclick="upgradeRecruiter('<%= recruiter.id %>')">Give Resume Access</a>
+          <% } else { %>
+            <a class="button" onclick="upgradeRecruiter('<%= recruiter.id %>')">Revoke Resume Access</a>
+          <% } %>
+
+          <a class="button" href="recruiters/<%= recruiter.id %>/edit">Edit</a>
       </td>
     </tr>
     <% } %>
