@@ -1,8 +1,10 @@
 <% if (job_listings.length != 0) { %>
+<h5>You have <%= job_listings.length %> unapproved job listings.</h5>
 <table id="job-post-table">
   <tr>
     <th> Action </th>
     <th> Role </th>
+    <th> Company </th>
     <th> Contact Information </th>
     <th> Description </th>
   </tr>
@@ -12,16 +14,17 @@
       <a class="button" onclick="approveJob('<%= job.id %>')">Approve</a>
       <a class="button" onclick="deleteJob('<%= job.id %>')">Delete</a>
     </td>
-    <td><%= job.title + " @ " + job.company %></td>
+    <td><%= job.title %></td>
+    <td><%= job.company %></td>
     <td>
-        <%= job.contact_name %> <br>
-        <%= job.contact_email %> <br>
-        <%= job.contact_phone %> <br>
+      <%= job.contact_name %> <br>
+      <%= job.contact_email %> <br>
+      <%= job.contact_phone %> <br>
     </td>
     <td> <%= job.description %> </td>
   </tr>
   <% } %>
 </table>
 <% } else { %>
-  <p>Hurray! You have no unapproved jobs!</p>
+  <h5>There are no unapproved job listings.</h5>
 <% } %>

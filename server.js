@@ -13,6 +13,7 @@ var path = require("path");
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 var express = require('express');
 var ejs = require('ejs');
+var moment = require('moment');
 var fileUpload = require('express-fileupload'); // ADDED
 var app = express();
 var bodyParser = require('body-parser');
@@ -140,6 +141,40 @@ app.post('/sponsors/recruiter_login', function(req, res) {
 	});
 });
 
+app.get('/sponsors/reset_password', function(req, res) {
+	if (isAuthenticated(req)) {
+		res.redirect('intranet');
+	}
+
+	res.render('reset_password', {
+		authenticated: false,
+		error: null,
+		success: null
+	});
+});
+
+app.post('/sponsors/reset_password', function(req, res) {
+	if (isAuthenticated(req)) {
+		res.redirect('intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/reset_password`,
+		method: "POST",
+		headers: {
+            "Authorization": GROOT_RECRUITER_TOKEN
+        },
+        json: true,
+		body: req.body
+	}, function(error, response, body) {
+		res.render('reset_password', {
+			authenticated: false,
+			error: body.error,
+			success: body.message
+		});
+	});
+});
+
 function isAuthenticated(req) {
 	return req.session.roles.isStudent || req.session.roles.isRecruiter;
 }
@@ -238,16 +273,7 @@ var sponsorsScope = {
 		gradYear: null,
 		years: [],
 	},
-	student: {
-		firstName: null,
-		lastName: null,
-		netid: null,
-		email: null,
-		gradYear: null,
-		degreeType: null,
-		jobType: null,
-		resume: null,
-	}
+	student: null
 };
 
 var d = new Date();
@@ -470,19 +496,11 @@ app.post('/sponsors/new_job_post', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (response.statusCode == 200) {
-			res.render('new_job_post', {
-				authenticated: isAuthenticated(req),
-				success: "You have successfully entered a new job.",
-				error: null
-			});
-        } else {
-            res.render('new_job_post', {
-				authenticated: isAuthenticated(req),
-				success: null,
-				error: "Error with creating your job: " + body.error
-			});
-        }
+		res.render('new_job_post', {
+			authenticated: isAuthenticated(req),
+			success: body.message,
+			error: body.error
+		});
     });
 });
 
@@ -525,20 +543,47 @@ app.get('/sponsors/corporate_manager', function(req, res) {
 							res.status(r_response.statusCode).send("Error: " + r_body.error);
 						} else {
 							res.render('corporate_manager', {
-								job: sponsorsScope.job,
-								degree: sponsorsScope.degree,
-								grad: sponsorsScope.grad,
-								student: sponsorsScope.student,
 								unapproved_resumes: s_body.data,
 								job_listings: body.data,
 								recruiters: r_body.data,
-								authenticated: true
+								authenticated: true,
+								dates: {
+									"one week ago": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
+									"one month ago": moment().subtract('1', 'months').format("YYYY-MM-DD"),
+									"three months ago": moment().subtract('3', 'months').format("YYYY-MM-DD"),
+									"six months ago": moment().subtract('6', 'months').format("YYYY-MM-DD"),
+									"one year ago": moment().subtract('1', 'years').format("YYYY-MM-DD")
+								},
+								dates_default: "three months ago",
+								error: req.query.error, //obtained from the post request below
+								message: req.query.message //obtained from the post request below
 							});
 						}
 					});
 				}
 			});
 		}
+	});
+});
+
+app.get('/students/:date', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/students`,
+		method: "GET",
+		json: true,
+		qs: {
+			last_updated_at: req.params.date
+		},
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN
+		},
+		body: req.body
+	}, function(error, response, body) {
+		res.status(response.statusCode).send(body);
 	});
 });
 
@@ -556,16 +601,16 @@ app.post('/sponsors/corporate_manager', function(req, res) {
 		},
 		body: req.body
 	}, function(error, response, body) {
-		if (response && response.statusCode != 200) {
-			res.status(response.statusCode).send("Error: " + body.error);
+		if (body.error == null) {
+			res.redirect('/sponsors/corporate_manager?message=' + body.message);
 		} else {
-			res.redirect('/sponsors/corporate_manager');
+			res.redirect('/sponsors/corporate_manager?error=' + body.error);
 		}
 	});
 });
 
 app.put('/students/:netid/approve', function(req, res) {
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
 	}
 
@@ -590,7 +635,7 @@ app.put('/students/:netid/approve', function(req, res) {
 });
 
 app.delete('/students/:netid', function(req, res) {
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
 	}
 
@@ -615,7 +660,7 @@ app.delete('/students/:netid', function(req, res) {
 });
 
 app.put('/jobs/:jobId/approve', function(req, res) {
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
 	}
 	
@@ -640,7 +685,7 @@ app.put('/jobs/:jobId/approve', function(req, res) {
 });
 
 app.delete('/jobs/:jobId', function(req, res) {
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
 	}
 
@@ -664,6 +709,82 @@ app.delete('/jobs/:jobId', function(req, res) {
 	});
 });
 
+app.put('/recruiters/:recruiterId/renew', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/login');
+	}
+
+	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/renew`,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absRecruiterPath + "') %>", { recruiters : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.delete('/recruiters/:recruiterId', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/login');
+	}
+
+	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
+		method: "DELETE",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.status(200).send(ejs.render("<%- include('" + absRecruiterPath + "') %>", { recruiters : body.data } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
+app.post('/students/remind', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/login');
+	}
+
+	request({
+		url: `${SERVICES_URL}/students/remind`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		body: {
+			last_updated_at: req.body.lastUpdatedAt
+		},
+		json: true
+	}, function(error, response, body) {
+		if (body.error == null) {
+			res.redirect('/sponsors/corporate_manager?message=' + body.message);
+		} else {
+			res.redirect('/sponsors/corporate_manager?error=' + body.error);
+		}
+	});
+});
+
 app.get('/sponsors/recruiter_login', function(req, res) {
 	if(isAuthenticated(req)) {
 		res.redirect('/intranet');
@@ -675,14 +796,38 @@ app.get('/sponsors/recruiter_login', function(req, res) {
 });
 
 app.get('/sponsors/resume_book', function(req, res) {
-    res.render('resume_book', {
-		authenticated: isAuthenticated(req),
-        job: sponsorsScope.job,
-        degree: sponsorsScope.degree,
-        grad: sponsorsScope.grad,
-        student: sponsorsScope.student,
-		error: null
-    });
+	if (req.session.roles.isStudent) {
+		request({
+			url: `${SERVICES_URL}/students/` + req.session.netid,
+			method: "GET",
+			json: true,
+			body: {}
+		}, function(error, response, body) {
+			// Format graduation date into same format as how it should be displayed
+			body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
+			sponsorsScope.student = body.data;
+
+			res.render('resume_book', {
+				authenticated: isAuthenticated(req),
+				job: sponsorsScope.job,
+				degree: sponsorsScope.degree,
+				grad: sponsorsScope.grad,
+				student: sponsorsScope.student,
+				success: null,
+				error: null
+			});
+		});
+	} else {
+		res.render('resume_book', {
+			authenticated: isAuthenticated(req),
+			job: sponsorsScope.job,
+			degree: sponsorsScope.degree,
+			grad: sponsorsScope.grad,
+			student: sponsorsScope.student,
+			success: null,
+			error: null
+		});
+	}
 });
 
 app.post('/sponsors/resume_book', function(req, res) {
@@ -695,20 +840,8 @@ app.post('/sponsors/resume_book', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-        if (response.statusCode == 200) {
-            res.render('home', {
-                authenticated: isAuthenticated(req),
-            });
-        } else {
-            res.render('resume_book', {
-				authenticated: isAuthenticated(req),
-        		job: sponsorsScope.job,
-        		degree: sponsorsScope.degree,
-        		grad: sponsorsScope.grad,
-        		student: sponsorsScope.student,
-				error: body.error
-			});
-        }
+		// Because the resume needed to be serialized, this should return json instead.
+		res.status(response.statusCode).send(body);
     });
 });
 
@@ -738,7 +871,7 @@ app.get('/sponsors/resume_filter', function(req, res) {
             }
             req.query.page = req.query.page || 0
             res.render('resume_filter', {
-                authenticated:  req.session.auth,
+                authenticated: isAuthenticated(req),
                 job: sponsorsScope.job,
                 degree: sponsorsScope.degree,
                 grad: sponsorsScope.grad,
@@ -786,7 +919,7 @@ app.post('/sponsors/resume_filter', function(req, res) {
             }
             req.query.page = req.query.page || 0
             res.render('resume_filter', {
-                authenticated:  req.session.auth,
+                authenticated: isAuthenticated(req),
                 job: sponsorsScope.job,
                 degree: sponsorsScope.degree,
                 grad: sponsorsScope.grad,

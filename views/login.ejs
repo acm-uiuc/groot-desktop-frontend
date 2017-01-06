@@ -13,9 +13,16 @@ this license in a file with the distribution.
 <div id="login-container">
   <div class="row col-centered small-12 medium-4 large-4 login-form">
     <h3>Login</h3>
-    <p>Your username is your NetID. Your password is your Campus Active Directory password.<br/>You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!</p>
+    <p>
+      Your username is your NetID. Your password is your Campus Active Directory password.
+      <br/>
+      You must be an ACM Member to log into the ACM Intranet. If you are not currently a member, please consider joining ACM@UIUC!
+    </p>
+    <p>
+      Are you a recruiter? Log in <a href="/sponsors/recruiter_login">here</a> instead.
+    </p>
     <% if (locals.error) { %>
-    <p style="color:red;">Error: <%=error %></p>
+    <p class="form-validation-error"><%=error %></p>
     <% }%>
 
     <p>

@@ -11,62 +11,63 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
     <div id="resume-container">
         <div class="row">
+            <!-- Set by serialize_resume.js since that is needed to encode resume as string -->
+            <p class="form-validation-success" style="display: none"></p>
+            <p class="form-validation-error" style="display: none"></p>
+
             <h2>Students</h2>
             <p>
                 The ACM resume book is a packet of resumes provided to interested companies who contact ACM. To be included please fill in the information below. If you have any questions, please do not hesistate to <a href="mailto:corporate@acm.illinois.edu">email us</a>.
             </p>
-            <% if (locals.error) { %>
-                <p style="color:red;">Error: <%=error %></p>
-            <% }%>
 
             <form ref="uploadForm" id="uploadResume">
                 <div class="field-group required">
                     <label for="first_name" class="field-label">First Name</label>
                     <div class="field">
-                        <input id="first_name" type="text" name="firstName" maxlength="32" />
+                        <input id="first_name" type="text" name="firstName" maxlength="32" value='<%= student == null ? "" : student.first_name %>' />
                     </div>
                 </div>
                 <div class="field-group required">
                     <label for="last_name" class="field-label">Last Name</label>
                     <div class="field">
-                        <input id="last_name" type="text" name="lastName" maxlength="32" />
+                        <input id="last_name" type="text" name="lastName" maxlength="32" value='<%= student == null ? "" : student.last_name %>' />
                     </div>
                 </div>
                 <div class="field-group required">
                     <label for="netid" class="field-label">NetID</label>
                     <div class="field">
-                        <input id="netid" type="text" name="netid" maxlength="15" />
+                        <input id="netid" type="text" name="netid" maxlength="15" value='<%= student == null ? "" : student.netid %>' />
                     </div>
                 </div>
                 <div class="field-group required">
-                    <label for="netid" class="field-label">Prefered Email</label>
+                    <label for="netid" class="field-label">Preferred Email</label>
                     <div class="field">
-                        <input id="email" type="text" name="email" />
+                        <input id="email" type="text" name="email" value='<%= student == null ? "" : student.email %>'/>
                     </div>
                 </div>
                 <div class="field-group required">
                     <label for="year" class="field-label">Graduation</label>
                     <select id="grad_year" name="gradYear">
-          <% for (var option of grad.years) { %>
-            <option value= '<%= option.date %>' > <%= option.date %> </option>
-          <% } %>
-        </select>
+                        <% for (var option of grad.years) { %>
+                            <option value= '<%= option.date %>' <%= student != null && option.date === student.graduation_date ? "selected" : "" %> > <%= option.date %> </option>
+                        <% } %>
+                    </select>
                 </div>
                 <div class="field-group required">
                     <label for="degreeType" class="field-label">Degree</label>
                     <select id="degree_type" name="degreeType">
-          <% for (var option of degree.types) { %>
-            <option value= '<%= option.name %>' > <%= option.name %> </option>
-          <% } %>
-        </select>
+                        <% for (var option of degree.types) { %>
+                            <option value= '<%= option.name %>' <%= student != null && option.name === student.degree_type ? "selected" : "" %> > <%= option.name %> </option>
+                        <% } %>
+                    </select>
                 </div>
                 <div class="field-group required">
                     <label for="jobType" class="field-label">Seeking</label>
                     <select id="job_type" name="jobType">
-          <% for (var option of job.types) { %>
-            <option value= '<%= option.name %>' > <%= option.name %> </option>
-          <% } %>
-        </select>
+                        <% for (var option of job.types) { %>
+                            <option value= '<%= option.name %>' <%= student != null && option.name === student.job_type ? "selected" : "" %> > <%= option.name %> </option>
+                        <% } %>
+                    </select>
                 </div>
                 <div class="field-group required">
                     <label for="jobType" class="field-label">Resume</label>

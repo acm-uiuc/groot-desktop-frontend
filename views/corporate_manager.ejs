@@ -11,15 +11,41 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="resume-container">
   <div class="row">
+    <% if (error) { %>
+        <p class="form-validation-error"><%= error %></p>
+    <% } else if (message) { %>
+        <p class="form-validation-success"><%= message %></p>
+    <% } %>
+    
     <h2>Corporate Manager</h2>
+
     <h3>Resume Manager </h3>
     <div id="unapproved-resumes-partial">
-        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) -%>
+        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) %>
     </div>
 
+    <h3>Resume Reminder</h3>
+    <form ref="uploadForm" method="post" action="/students/remind">
+        <div class="inline-form" style="float:left; padding-right:1em; vertical-align: middle;">
+            <p>Remind students who haven't updated their resume in:</p>
+        </div>
+        <div class="inline-form">
+            <select id="identified_students" name="lastUpdatedAt">
+            <% Object.keys(dates).forEach(function(key) { %>
+                <option value='"<%= dates[key] %>"' <%= key === dates_default ? "selected" : "" %> ><%= key %></option>
+            <% }); %>
+            </select>
+            <h5>
+                Identified Students:
+                <span id="remind_students_number"> </span>
+            </h5>
+            <button type="submit" class="button">Send Reminder</button>
+        </div>
+    </form>
+    
     <h3>Job Post Manager</h3>
     <div id="unapproved-jobs-partial">
-        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) -%>
+        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) %>
     </div>
 
     <h3>Account Manager</h3>
@@ -54,28 +80,16 @@ this license in a file with the distribution.
     </form>
 
     <h3>All Recruiters</h3>
-    <table>
-      <tr>
-          <th>Company </th>
-          <th>Name</th>
-          <th>Email </th>
-          <th>Expires </th>
-      </tr>
-      <% for (var recruiter of recruiters) { %>
-      <tr>
-        <td><%= recruiter.company_name %></td>
-        <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
-        <td><%= recruiter.email %></td>
-        <td><%= recruiter.expires_on %></td>
-      </tr>
-      <% } %>
-    </table>
+    <div id="recruiters-partial">
+        <%- include('_partials/recruiters', { recruiters: recruiters }) %>
+    </div>
   </div>
 </div>
 
 <%- include('_partials/footer') -%>
 
 <script>
+    // Function calls are invoked from the buttons on each of the partials
   function approveStudent(netid) {
     $.ajax({
         url: "/students/" + netid + "/approve",
@@ -115,4 +129,44 @@ this license in a file with the distribution.
         }
     });
   }
+
+  function renewRecruiter(recruiterId) {
+      $.ajax({
+        url: "/recruiters/" + recruiterId + "/renew",
+        method: "PUT",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+        }
+    });
+  }
+
+  function deleteRecruiter(recruiterId) {
+      $.ajax({
+        url: "/recruiters/" + recruiterId,
+        method: "DELETE",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+        }
+    });
+  }
+
+  function getIdentifiedStudents(date) {
+      $.ajax({
+          url: "/students/" + date,
+          method: "GET",
+          success: function(response) {
+              $("#remind_students_number").html(response.data.length);
+          }
+      });
+  }
+
+  $(document).ready(function() {
+      var date = $('#identified_students').find(":selected").val();
+      getIdentifiedStudents(date);
+
+      $('select').on('change', function(e) {
+          var date = $('#identified_students').find(":selected").val();
+          getIdentifiedStudents(date);
+      });
+  });
 </script>
