@@ -11,19 +11,23 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="container">
     <div class="row">
-      <h2>Invite <%= recruiter.first_name %> from <%= recruiter.company_name %></h2>
-      <form method="post" action="/sponsors/recruiter_invite/<%= recruiter.id %>">
+      <% if (error) { %>
+        <p class="form-validation-error"><%- error %></p>
+      <% } %>
+      
+      <h3>Invite <%= recruiter.first_name %>, a <%= recruiter.type %> recruiter from <%= recruiter.company_name %></h3>
+      <form method="post">
         <div class="field-group required">
-          <label for="sender" class="field-label">From</label>
+          <label for="from" class="field-label">From</label>
           <div class="field">
-            <input id="sender" type="text" name="sender" ng-model="composer.sender" value="<%= email.from %>" />
+            <input id="from" type="text" name="from" ng-model="composer.from" value="<%= email.from %>" readonly />
           </div>
         </div>
 
         <div class="field-group required">
-          <label for="recipient" class="field-label">To</label>
+          <label for="to" class="field-label">To</label>
           <div class="field">
-            <input id="recipient" type="text" name="recipient" ng-model="composer.recipient" value="<%= email.to %>" />
+            <input id="to" type="text" name="to" ng-model="composer.to" value="<%= email.to %>" />
           </div>
         </div>
 
@@ -37,13 +41,15 @@ this license in a file with the distribution.
         <div class="field-group required">
           <label for="body" class="field-label">Message</label>
           <div class="field">
-            <textarea id="body" type="text" name="body" ng-model="composer.body" value="<%= email.body %>" />
+            <textarea id="body" type="text" name="body" rows="20" ng-model="composer.body">
+              <%= email.body %>
+            </textarea>
           </div>
         </div>
 
         <div class="control-group">
           <div class="controls">
-            <button type="submit" class="button">Submit</button>
+            <button type="submit" class="button">Email</button>
           </div>
         </div>
       </form>

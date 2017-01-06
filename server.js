@@ -724,6 +724,7 @@ app.post('/corporate/accounts', function(req, res) {
 		},
 		body: req.body
 	}, function(error, response, body) {
+		console.log(body);
 		if (body.error == null) {
 			res.redirect('/corporate/accounts?message=' + body.message);
 		} else {
@@ -747,11 +748,42 @@ app.get('/corporate/recruiters/:recruiterId/invite', function(req, res) {
 			"Token": req.session.token
 		},
 	}, function(error, response, body) {
+		if (response.statusCode != 200) {
+			res.status(response.statusCode).send(body.error);
+		} else if (body.data == null || body.data.recruiter == null || body.data.recruiter.invited) {
+			res.redirect('/corporate/accounts');
+		}
+
 		res.render('recruiter_invite', {
 			authenticated: true,
 			email: body.data,
-			recruiter: body.data.recruiter
+			recruiter: body.data.recruiter,
+			error: req.query.error
 		});
+	});
+});
+
+app.post('/corporate/recruiters/:recruiterId/invite', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/invite`,
+		method: "POST",
+		json: true,
+		body: req.body,
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
+		},
+	}, function(error, response, body) {
+		if (body.error == null) {
+			res.redirect('/corporate/accounts?message=' + body.message);
+		} else {
+			res.redirect('/corporate/recruiters/' + req.params.recruiterId + '/invite?error=' + body.error);
+		}
 	});
 });
 
@@ -855,7 +887,56 @@ app.delete('/corporate/jobs/:jobId', function(req, res) {
 	});
 });
 
-app.put('/corporate/recruiters/:recruiterId/renew', function(req, res) {
+app.get('/corporate/accounts/:recruiterId', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
+		method: "GET",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true
+	}, function(error, response, body) {
+		res.render('recruiter_view', {
+			authenticated: true,
+			recruiter: body.data,
+			error: null,
+			message: null
+		});
+	});
+});
+
+app.put('/corporate/accounts/:recruiterId', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: req.body
+	}, function(error, response, body) {
+		res.render('recruiter_view', {
+			authenticated: true,
+			recruiter: req.body,
+			error: body.error,
+			message: body.message
+		});
+	});
+});
+
+app.put('/corporate/accounts/:recruiterId/renew', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -880,7 +961,7 @@ app.put('/corporate/recruiters/:recruiterId/renew', function(req, res) {
 	});
 });
 
-app.delete('/corporate/recruiters/:recruiterId', function(req, res) {
+app.delete('/corporate/accounts/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}

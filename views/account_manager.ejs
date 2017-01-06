@@ -56,6 +56,19 @@ this license in a file with the distribution.
       </div>
     </form>
 
+    <h3>Invitation Reset</h3>
+    <p>
+        Note that pressing this button will reset all invitations to recruiters, allowing you to email recruiters again for career fairs.
+
+        This CANNOT be undone.
+    </p>
+
+    <form method="post" action="/corporate/recruiters/reset">
+        <div class="controls">
+          <button type="submit" class="button">Reset Recruiter Invitations</button>
+      </div>
+    </form>
+
     <h3>All Recruiters</h3>
     <div id="recruiters-partial">
         <%- include('_partials/recruiters', { recruiters: recruiters }) %>
@@ -68,7 +81,7 @@ this license in a file with the distribution.
 <script>
   function renewRecruiter(recruiterId) {
       $.ajax({
-        url: "/recruiters/" + recruiterId + "/renew",
+        url: "/corporate/accounts/" + recruiterId + "/renew",
         method: "PUT",
         success: function(response) {
             $("#recruiters-partial").html(response);
@@ -78,7 +91,7 @@ this license in a file with the distribution.
 
   function deleteRecruiter(recruiterId) {
       $.ajax({
-        url: "/recruiters/" + recruiterId,
+        url: "/corporate/accounts/" + recruiterId,
         method: "DELETE",
         success: function(response) {
             $("#recruiters-partial").html(response);
@@ -88,11 +101,21 @@ this license in a file with the distribution.
 
   function upgradeRecruiter(recruiterId) {
       $.ajax({
-        url: "/recruiters/" + recruiterId + "/",
+        url: "/corporate/accounts/" + recruiterId + "/UPGRADE/DOWNGRADE",
         method: "PUT",
         success: function(response) {
             $("#recruiters-partial").html(response);
         }
     });
+  }
+
+  function resetRecruiters() {
+      $.ajax({
+          url: "/corporate/accounts/reset",
+          method: "POST",
+          success: function(response) {
+            $("#recruiters-partial").html(response);
+          }
+      });
   }
 </script>

@@ -16,9 +16,9 @@
       <td><%= recruiter.expires_on %></td>
       <td><%= recruiter.type %></td>
       <td>
-          <% if (!recruiter.invited) { %>
+          <% if (!recruiter.invited && !recruiter.is_sponsor) { %>
             <a class="button" href="recruiters/<%= recruiter.id %>/invite">Invite</a>
-          <% } else { %>
+          <% } else if (!recruiter.is_sponsor) { %>
             <p>Invited!</p>
           <% } %>
           <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
@@ -30,7 +30,7 @@
             <a class="button" onclick="upgradeRecruiter('<%= recruiter.id %>')">Revoke Resume Access</a>
           <% } %>
 
-          <a class="button" href="recruiters/<%= recruiter.id %>/edit">Edit</a>
+          <a class="button" href="accounts/<%= recruiter.id %>">Edit</a>
       </td>
     </tr>
     <% } %>
