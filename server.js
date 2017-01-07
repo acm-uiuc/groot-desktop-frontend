@@ -700,7 +700,7 @@ app.get('/corporate/accounts', function(req, res) {
 			res.render('account_manager', {
 				recruiters: body.data,
 				authenticated: true,
-				recruiter: sponsorsScope.recruiter,
+				recruiter_types: sponsorsScope.recruiter,
 				error: req.query.error,
 				message: req.query.message
 			});
@@ -902,16 +902,16 @@ app.get('/corporate/accounts/:recruiterId', function(req, res) {
 		},
 		json: true
 	}, function(error, response, body) {
-		res.render('recruiter_view', {
+		res.render('edit_recruiter', {
 			authenticated: true,
 			recruiter: body.data,
-			error: null,
-			message: null
+			recruiter_types: sponsorsScope.recruiter,
+			error: null
 		});
 	});
 });
 
-app.put('/corporate/accounts/:recruiterId', function(req, res) {
+app.post('/corporate/accounts/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -927,12 +927,16 @@ app.put('/corporate/accounts/:recruiterId', function(req, res) {
 		json: true,
 		body: req.body
 	}, function(error, response, body) {
-		res.render('recruiter_view', {
-			authenticated: true,
-			recruiter: req.body,
-			error: body.error,
-			message: body.message
-		});
+		if (body.error == null && body.message != null) {
+			res.redirect('/corporate/accounts?message=' + body.message);
+		} else {
+			res.render('edit_recruiter', {
+				authenticated: true,
+				recruiter: req.body,
+				recruiter_types: sponsorsScope.recruiter,
+				error: body.error
+			});
+		}
 	});
 });
 
