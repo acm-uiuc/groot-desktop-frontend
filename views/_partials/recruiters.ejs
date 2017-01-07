@@ -19,12 +19,12 @@
       <td><%= recruiter.type %></td>
       <td>
           <% if (!recruiter.invited && !recruiter.is_sponsor) { %>
-            <a class="button" href="recruiters/<%= recruiter.id %>/invite">Invite</a>
+            <a class="button" href="/corporate/accounts/<%= recruiter.id %>/invite">Invite</a>
           <% } else if (!recruiter.is_sponsor) { %>
             <p>Invited!</p>
           <% } %>
           <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
-          <a class="button" href="accounts/<%= recruiter.id %>">Edit</a>
+          <a class="button" href="/corporate/accounts/<%= recruiter.id %>">Edit</a>
           <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
       </td>
     </tr>

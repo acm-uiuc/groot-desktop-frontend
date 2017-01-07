@@ -103,7 +103,6 @@ app.post('/login', function(req, res){
 			if(body["reason"]) {
 				console.log("ISSUE: " + body["reason"]);
 			}
-				
 			req.session.netid = netid;
 			req.session.username = netid;
 			req.session.token = body["token"];
@@ -623,7 +622,9 @@ app.get('/jobs', function(req, res) {
 			"Token": req.session.token
 		},
 		json: true,
-		body: req.body
+		qs: {
+			approved: true
+		}
 	}, function(error, response, body) {
 		res.render('job_filter', {
 			authenticated: true,
@@ -638,7 +639,7 @@ app.get('/corporate/manage', function(req, res) {
 	}
 
 	request({
-		url: `${SERVICES_URL}/jobs`,
+		url: `${SERVICES_URL}/jobs?approved=false`,
 		method: "GET",
 		json: true,
 		headers: {
@@ -756,7 +757,7 @@ app.post('/corporate/accounts', function(req, res) {
 	});
 });
 
-app.get('/corporate/recruiters/:recruiterId/invite', function(req, res) {
+app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -770,6 +771,9 @@ app.get('/corporate/recruiters/:recruiterId/invite', function(req, res) {
 			"Netid": req.session.netid,
 			"Token": req.session.token
 		},
+		qs: {
+			username: req.session.username
+		}
 	}, function(error, response, body) {
 		if (response.statusCode != 200) {
 			res.status(response.statusCode).send(body.error);
@@ -786,7 +790,7 @@ app.get('/corporate/recruiters/:recruiterId/invite', function(req, res) {
 	});
 });
 
-app.post('/corporate/recruiters/:recruiterId/invite', function(req, res) {
+app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
 	}
@@ -934,6 +938,30 @@ app.get('/corporate/accounts/:recruiterId', function(req, res) {
 	});
 });
 
+app.post('/corporate/accounts/reset', function(req, res) {
+	if (!req.session.roles.isCorporate) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/recruiters/reset`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token  
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (body.error == null) {
+			res.redirect('/corporate/accounts?message=' + body.message);
+		} else {
+			res.redirect('/corporate/accounts?error=' + body.error);
+		}
+	});
+});
+
 app.post('/corporate/accounts/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/intranet');
@@ -1057,9 +1085,11 @@ app.get('/resumes/new', function(req, res) {
 			json: true,
 			body: {}
 		}, function(error, response, body) {
-			// Format graduation date into same format as how it should be displayed
-			body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
-			sponsorsScope.student = body.data;
+			if (body.data) {
+				// Format graduation date into same format as how it should be displayed
+				body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
+				sponsorsScope.student = body.data;
+			}
 
 			res.render('resume_book', {
 				authenticated: isAuthenticated(req),
@@ -1068,7 +1098,7 @@ app.get('/resumes/new', function(req, res) {
 				grad: sponsorsScope.grad,
 				student: sponsorsScope.student,
 				success: null,
-				error: null
+				error: body.error
 			});
 		});
 	} else {
