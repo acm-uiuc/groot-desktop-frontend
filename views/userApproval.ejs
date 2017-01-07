@@ -10,24 +10,24 @@ this license in a file with the distribution.
 
 <%- include('_partials/header') -%>
 
-<!-- http get on http://localhost:9001/groups/committees/Admin?isMember=<NETID> and http://localhost:9001/groups/committees/top4?isMember=<NETID> to find out if user is admin, check response json for "isValid":"true" -->
-
-
 <div id="home-container" class="row">
 	<div id="main-container" class="small-12 medium-9 large-9 columns">
 		<div id="links-top" class="row">
 			<h2>Pre Members</h2>
-			<!-- have netid, first name, last name, uin -->
+			<% if (locals.message && message === "user-add-success") { %>
+			<p>The member was added successfully!</p>
+			<% } else if (locals.message && message === "error") { %>
+				<p>There was an issue, and the member may not have been added.  Please contact someone from the Admin committee.</p>
+			<% } %>
+
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th>Mark Paid</th>  <!-- with paid, might be nice to have a js modal that comes up so that user can confirm that the member has paid -->
-											<!-- issue of licensing? -->
+						<th>Mark Paid</th> 
 						<th>Netid</th>
 						<th>First Name</th>
 						<th>Last Name</th>
 						<th>Submitted</th>
-						<!-- not currently storing time that a user requests to signup, probably should -->
 					<tr>
 				</thead>
 				<tbody>

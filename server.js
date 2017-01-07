@@ -20,6 +20,9 @@ var session = require('client-sessions'); // ADDED
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
+
+
+
 // require('request-debug')(request);
 // for debugging of outbound requests
 
@@ -30,7 +33,6 @@ const GROOT_RECRUITER_TOKEN = process.env.GROOT_RECRUITER_TOKEN || "TEMP_STRING"
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
-// npm install client-sessions
 app.use(session({
 	cookieName: 'session',
 	secret: process.env.SESSION_TOKEN,//used for hashing
@@ -106,7 +108,9 @@ app.post('/login', function(req, res){
 			req.session.roles.isStudent = true;
 
 			setAuthentication(req, res, function(req, res) {
-				res.redirect('/intranet');
+				getUserData(req, res, function(req, res){
+					res.redirect('/intranet');
+				});
 			});
 		}
 	}
@@ -188,7 +192,6 @@ function checkIfCorporate(req, res, nextSteps) {
 	}, function(error, response, body) {
 		if(response && response.statusCode == 200) {
 			req.session.roles.isCorporate = (JSON.parse(body).isValid  == 'true');
-
 		}		
 		nextSteps(req, res);
 	});
@@ -207,6 +210,30 @@ function checkIfTop4(req, res, nextSteps) {
 		if(response && response.statusCode == 200) {
 			req.session.roles.isTop4 = (JSON.parse(body).isValid  == 'true');
 		}		
+		nextSteps(req, res);
+	});
+}
+
+function getUserData(req, res, nextSteps){
+	var netid = req.body.netid;
+	request({
+		url: `${SERVICES_URL}/users/${netid}`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		body: {
+			"token" : req.session.token,
+		},
+		json: true
+	}, function(error, response, body) {
+		if(body && body[0] != undefined) {
+			req.session.student = {
+				email: netid + "@illinois.edu",
+				firstName: body[0].first_name,
+				lastName: body[0].last_name,
+			};
+		}
 		nextSteps(req, res);
 	});
 }
@@ -367,7 +394,7 @@ app.get('/intranet', function(req, res) {
 });
 
 app.get('/intranet/userApproval', function(req, res){
-	if(!isAuthenticated(req)) {
+	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
 		res.redirect('login');
 	}
 
@@ -384,14 +411,13 @@ app.get('/intranet/userApproval', function(req, res){
 	}, function(err, response, body) {
 		if(err) {
 			console.log(err);
-			res.status(500).send("Error");
-			return;
+			return res.status(500).send("Sorry, there was a server error.  Please try again.");
 		}
-		// console.log(body);
 		res.render('userApproval', {
 			authenticated: true,
 			session:req.session,
 			premembers: body,
+			message: req.query.message
 		});
 	});
 
@@ -399,12 +425,12 @@ app.get('/intranet/userApproval', function(req, res){
 
 
 app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
-	if(!isAuthenticated(req)) {
+	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
 		res.redirect('login');
 	}
 
 	request({
-		url: `${SERVICES_URL}/user/paid`,
+		url: `${SERVICES_URL}/users/paid`,
 		method: "POST",
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -417,11 +443,10 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 	}, function(err, response, body) {
 		if(err) {
 			console.log(err);
-			res.status(500).send("Error");
-			return;
+			res.redirect('/intranet/userApproval?message=error');
 		}
 		console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
-		res.redirect('/intranet/userApproval');
+		res.redirect('/intranet/userApproval?message=user-add-success');
 	});
 });
 
@@ -433,7 +458,7 @@ app.post('/join', function(req, res) {
         uin: req.body.uin
     };
     request({
-        url: `${SERVICES_URL}/newUser`,
+        url: `${SERVICES_URL}/users/newUser`,
         method: "POST",
         headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -443,14 +468,18 @@ app.post('/join', function(req, res) {
     }, function(err, response, body) {
         if(err) {
             console.log(err);
-			res.status(500).send("Error");
-            return;
+			return res.status(500).send("There was an error. Please try again.");
         }
-		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);        res.redirect('/');
+		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);
+		res.redirect('/');
     });
 });
 
 app.get('/join', function(req, res) {
+	if(isAuthenticated(req)) {
+		res.redirect('/intranet');
+	}
+
 	// Going to grab SIG data from the micro-service
 	request({
 		/* URL to grab SIG data from groot-groups-service */
@@ -462,8 +491,7 @@ app.get('/join', function(req, res) {
 	}, function(err, response, body) {
 		if (err) {
 			console.log(err);
-			res.status(500).send("Error " + err);
-			return;
+			return res.status(500).send({"Error" : err});
 		}
 		res.render('join', {
 			authenticated: false,
@@ -775,7 +803,6 @@ app.post('/sponsors/resume_book', function(req, res) {
 			});
         }
     });
-
 });
 
 app.get('/sponsors/resume_filter', function(req, res) {
