@@ -2,8 +2,7 @@
   <table>
     <tr>
         <th>Company</th>
-        <th>Name</th>
-        <th>Email</th>
+        <th>Contact</th>
         <th>Expires</th>
         <th>Type</th>
         <th>Action</th>
@@ -11,8 +10,11 @@
     <% for (var recruiter of recruiters) { %>
     <tr>
       <td><%= recruiter.company_name %></td>
-      <td><%= recruiter.first_name + " " + recruiter.last_name%></td>
-      <td><%= recruiter.email %></td>
+      <td>
+        <%= recruiter.first_name + " " + recruiter.last_name%>
+        <br/>
+        <a href="mailto:<%= recruiter.email %>"><%= recruiter.email %></a>
+      </td>
       <td><%= recruiter.expires_on %></td>
       <td><%= recruiter.type %></td>
       <td>
@@ -22,15 +24,8 @@
             <p>Invited!</p>
           <% } %>
           <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
-          <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
-
-          <% if (!recruiter.is_sponsor) { %> 
-            <a class="button" onclick="upgradeRecruiter('<%= recruiter.id %>')">Give Resume Access</a>
-          <% } else { %>
-            <a class="button" onclick="upgradeRecruiter('<%= recruiter.id %>')">Revoke Resume Access</a>
-          <% } %>
-
           <a class="button" href="accounts/<%= recruiter.id %>">Edit</a>
+          <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
       </td>
     </tr>
     <% } %>

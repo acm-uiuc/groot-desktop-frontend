@@ -609,6 +609,29 @@ app.post('/sponsors/jobs', function(req, res) {
     });
 });
 
+app.get('/jobs', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+
+	request({
+        url: `${SERVICES_URL}/jobs`,
+        method: "GET",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
+		},
+		json: true,
+		body: req.body
+	}, function(error, response, body) {
+		res.render('job_filter', {
+			authenticated: true,
+			jobs: body.data
+		});
+	});
+});
+
 app.get('/corporate/manage', function(req, res) {
 	if (!req.session.roles.isCorporate) {
 		res.redirect('/login');
