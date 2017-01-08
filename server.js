@@ -130,6 +130,8 @@ app.post('/sponsors/login', function(req, res) {
 	}, function(err, response, body) {
 		if (response && response.statusCode == 200) {
 			req.session.recruiter = body.data;
+			req.session.recruiter.token = body.token;
+
 			req.session.username = body.data.first_name;
 			req.session.roles.isRecruiter = true;
 			
@@ -1130,17 +1132,17 @@ app.post('/resumes/new', function(req, res) {
 });
 
 app.get('/corporate/resumes', function(req, res) {
-    // Restrict route to recruiters and corporate committee members
     if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
         res.redirect('/sponsors/login');
-        return;
-    }
+		}
+
     request({
         url: `${SERVICES_URL}/students`,
         method: "GET",
         json: true,
         headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
+            "Authorization": GROOT_RECRUITER_TOKEN,
+            "Recruiter Token": req.session.recruiter.token
         }
     }, function(error, response, body) {
         if(error){
@@ -1180,7 +1182,8 @@ app.post('/corporate/resumes', function(req, res) {
         method: "GET",
         json: true,
         headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
+            "Authorization": GROOT_RECRUITER_TOKEN,
+            "Recruiter Token": req.session.recruiter.token
         },
         qs: {
             name: req.body.name,
