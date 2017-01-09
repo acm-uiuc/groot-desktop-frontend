@@ -72,7 +72,7 @@ app.post('/login', function(req, res){
 	var netid = req.body.netid, pass = req.body.password;
 	var options = {
 		url: `${SERVICES_URL}/session?username=${netid}`,
-		method:"POST",
+		method: "POST",
 		json: true,
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -105,6 +105,13 @@ app.post('/login', function(req, res){
 			}
 			req.session.netid = netid;
 			req.session.username = netid;
+			
+			// Somewhat temporary, until Aashish returns a student object with information like the student name, email, etc
+			req.session.student = {
+				email: netid + "@illinois.edu",
+				password: pass
+			};
+
 			req.session.token = body["token"];
 			req.session.roles.isStudent = true;
 
@@ -129,8 +136,8 @@ app.post('/sponsors/login', function(req, res) {
 		body: req.body
 	}, function(err, response, body) {
 		if (response && response.statusCode == 200) {
+			// Contains JWT token
 			req.session.recruiter = body.data;
-			req.session.recruiter.token = body.token;
 
 			req.session.username = body.data.first_name;
 			req.session.roles.isRecruiter = true;
@@ -164,14 +171,18 @@ app.post('/sponsors/reset_password', function(req, res) {
 		res.redirect('intranet');
 	}
 
+	var payload = req.body;
+	payload["email"] = req.session.student.email;
+	payload["password"] = req.session.student.password;
+
 	request({
 		url: `${SERVICES_URL}/recruiters/reset_password`,
 		method: "POST",
 		headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
-        },
-        json: true,
-		body: req.body
+			"Authorization": GROOT_RECRUITER_TOKEN
+		},
+    json: true,
+		body: payload
 	}, function(error, response, body) {
 		res.render('reset_password', {
 			authenticated: false,
@@ -593,21 +604,21 @@ app.get('/sponsors/jobs', function(req, res) {
 });
 
 app.post('/sponsors/jobs', function(req, res) {
-    request({
-        url: `${SERVICES_URL}/jobs`,
-        method: "POST",
-        headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
-        },
-        json: true,
-        body: req.body
-    }, function(err, response, body) {
+	request({
+		url: `${SERVICES_URL}/jobs`,
+		method: "POST",
+		headers: {
+			"Authorization": GROOT_RECRUITER_TOKEN
+		},
+		json: true,
+		body: req.body
+	}, function(err, response, body) {
 		res.render('new_job_post', {
 			authenticated: isAuthenticated(req),
 			success: body.message,
 			error: body.error
 		});
-    });
+	});
 });
 
 app.get('/jobs', function(req, res) {
@@ -616,8 +627,8 @@ app.get('/jobs', function(req, res) {
 	}
 
 	request({
-        url: `${SERVICES_URL}/jobs`,
-        method: "GET",
+		url: `${SERVICES_URL}/jobs`,
+		method: "GET",
 		headers: {
 			"Authorization": GROOT_RECRUITER_TOKEN,
 			"Netid": req.session.netid,
@@ -628,7 +639,7 @@ app.get('/jobs', function(req, res) {
 			approved: true
 		}
 	}, function(error, response, body) {
-		res.render('job_filter', {
+		res.render('job_index', {
 			authenticated: true,
 			jobs: body.data
 		});
@@ -656,7 +667,9 @@ app.get('/corporate/manage', function(req, res) {
 				method: "GET",
 				json: true,
 				headers: {
-					"Authorization": GROOT_RECRUITER_TOKEN
+					"Authorization": GROOT_RECRUITER_TOKEN,
+					"Netid": req.session.netid,
+					"Token": req.session.token
 				}
 			}, function(s_error, s_response, s_body) {
 				if (s_response && s_response.statusCode != 200) {
@@ -739,6 +752,10 @@ app.post('/corporate/accounts', function(req, res) {
 		res.redirect('/intranet');
 	}
 
+	var payload = req.body;
+	payload["email"] = req.session.student.email;
+	payload["password"] = req.session.student.password;
+
 	request({
 		url: `${SERVICES_URL}/recruiters`,
 		method: "POST",
@@ -748,9 +765,8 @@ app.post('/corporate/accounts', function(req, res) {
 			"Netid": req.session.netid,
 			"Token": req.session.token
 		},
-		body: req.body
+		body: payload
 	}, function(error, response, body) {
-		console.log(body);
 		if (body.error == null) {
 			res.redirect('/corporate/accounts?message=' + body.message);
 		} else {
@@ -1126,98 +1142,104 @@ app.post('/resumes/new', function(req, res) {
         json: true,
         body: req.body
     }, function(err, response, body) {
-		// Because the resume needed to be serialized, this should return json instead.
-		res.status(response.statusCode).send(body);
+			// Because the resume needed to be serialized, this should return json instead (to serialize_resume.js).
+			res.status(response.statusCode).send(body);
     });
 });
 
 app.get('/corporate/resumes', function(req, res) {
-    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
-        res.redirect('/sponsors/login');
-		}
+	if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+		res.redirect('/sponsors/login');
+	}
 
-    request({
-        url: `${SERVICES_URL}/students`,
-        method: "GET",
-        json: true,
-        headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN,
-            "Recruiter Token": req.session.recruiter.token
-        }
-    }, function(error, response, body) {
-        if(error){
-            res.status(500).send("Error " + error.code);
-        }
-        else if(body.error) {
-            res.status(500).send("Error: " + body.error)
-        }
-        else{
-            for( var resume of body.data ){
-                resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
-            }
-            req.query.page = req.query.page || 0
-            res.render('resume_filter', {
-                authenticated: isAuthenticated(req),
-                job: sponsorsScope.job,
-                degree: sponsorsScope.degree,
-                grad: sponsorsScope.grad,
-                student: sponsorsScope.student,
-                resumes: utils.getPage(body.data, req.query.page),
-                defaults: {},
-                curr_page: req.query.page,
-                max_page: utils.maxPage(body.data)
-            });
-        }
-    });
+	var headers = {
+		"Authorization": GROOT_RECRUITER_TOKEN
+	};
+
+	if (req.session.roles.isRecruiter) {
+		headers["RECRUITER_TOKEN"] = req.session.recruiter.token;
+	} else {
+		headers["Netid"] = req.session.netid;
+		headers["Token"] = req.session.token;
+	}
+
+	request({
+		url: `${SERVICES_URL}/students`,
+		method: "GET",
+		json: true,
+		headers: headers
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			for (var resume of body.data) {
+				resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
+			}
+			req.query.page = req.query.page || 0;
+			res.render('resume_filter', {
+				authenticated: isAuthenticated(req),
+				job: sponsorsScope.job,
+				degree: sponsorsScope.degree,
+				grad: sponsorsScope.grad,
+				student: sponsorsScope.student,
+				resumes: utils.getPage(body.data, req.query.page),
+				defaults: {},
+				curr_page: req.query.page,
+				max_page: utils.maxPage(body.data)
+			});
+		} else {
+			res.status(500).send(body);
+		}
+	});
 });
 
 app.post('/corporate/resumes', function(req, res) {
-    // Restrict route to recruiters and corporate committee members
-    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
-        res.redirect('/sponsors/login');
-        return;
-    }
-    request({
-        url: `${SERVICES_URL}/students`,
-        method: "GET",
-        json: true,
-        headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN,
-            "Recruiter Token": req.session.recruiter.token
-        },
-        qs: {
-            name: req.body.name,
-            graduationStart: req.body.gradYearStart,
-            graduationEnd: req.body.gradYearEnd,
-            netid: req.body.netid,
-            degree_type: req.body.degreeType,
-            job_type: req.body.jobType,
-        }
-    }, function(error, response, body) {
-        if(error){
-            res.status(500).send("Error " + error.code);
-        }
-        else if(body.error) {
-            res.status(500).send("Error: " + body.error)
-        }
-        else{
-            for( var resume of body.data ){
-                resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
-            }
-            req.query.page = req.query.page || 0
-            res.render('resume_filter', {
-                authenticated: isAuthenticated(req),
-                job: sponsorsScope.job,
-                degree: sponsorsScope.degree,
-                grad: sponsorsScope.grad,
-                student: sponsorsScope.student,
-                resumes: utils.getPage(body.data, req.query.page),
-                defaults: req.body,
-                curr_page: req.query.page,
-                max_page: utils.maxPage(body.data)
-            });
-        }
-    });
+	if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+		res.redirect('/sponsors/login');
+	}
+
+	var headers = {
+		"Authorization": GROOT_RECRUITER_TOKEN
+	};
+	if (req.session.roles.isRecruiter) {
+		headers["RECRUITER_TOKEN"] = req.session.recruiter.token;
+	} else {
+		headers["Netid"] = req.session.netid;
+		headers["Token"] = req.session.token;
+	}
+
+	request({
+		url: `${SERVICES_URL}/students`,
+		method: "GET",
+		json: true,
+		headers: headers,
+		qs: {
+			name: req.body.name,
+			graduationStart: req.body.gradYearStart,
+			graduationEnd: req.body.gradYearEnd,
+			netid: req.body.netid,
+			degree_type: req.body.degreeType,
+			job_type: req.body.jobType,
+		}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			for (var resume of body.data) {
+				resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
+			}
+			req.query.page = req.query.page || 0;
+			res.render('resume_filter', {
+				authenticated: isAuthenticated(req),
+				job: sponsorsScope.job,
+				degree: sponsorsScope.degree,
+				grad: sponsorsScope.grad,
+				student: sponsorsScope.student,
+				resumes: utils.getPage(body.data, req.query.page),
+				defaults: req.body,
+				curr_page: req.query.page,
+				max_page: utils.maxPage(body.data)
+			});
+		} else {
+			res.status(500).send(body);
+		}
+	});
 });
 
 app.get('/sponsors', function(req, res) {
@@ -1235,7 +1257,7 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
-// //Start server and logs port as a callback
+// Start server and logs port as a callback
 app.listen(PORT, function() {
 	console.log('GROOT_DESKTOP is live on port ' + PORT + "!");
 });
