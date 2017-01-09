@@ -108,8 +108,7 @@ app.post('/login', function(req, res){
 			
 			// Somewhat temporary, until Aashish returns a student object with information like the student name, email, etc
 			req.session.student = {
-				email: netid + "@illinois.edu",
-				password: pass
+				email: netid + "@illinois.edu"
 			};
 
 			req.session.token = body["token"];
@@ -173,7 +172,6 @@ app.post('/sponsors/reset_password', function(req, res) {
 
 	var payload = req.body;
 	payload["email"] = req.session.student.email;
-	payload["password"] = req.session.student.password;
 
 	request({
 		url: `${SERVICES_URL}/recruiters/reset_password`,
@@ -181,7 +179,7 @@ app.post('/sponsors/reset_password', function(req, res) {
 		headers: {
 			"Authorization": GROOT_RECRUITER_TOKEN
 		},
-    json: true,
+		json: true,
 		body: payload
 	}, function(error, response, body) {
 		res.render('reset_password', {
@@ -710,7 +708,9 @@ app.get('/corporate/students/:date', function(req, res) {
 			last_updated_at: req.params.date
 		},
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN
+			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Netid": req.session.netid,
+			"Token": req.session.token
 		},
 		body: req.body
 	}, function(error, response, body) {
@@ -754,7 +754,6 @@ app.post('/corporate/accounts', function(req, res) {
 
 	var payload = req.body;
 	payload["email"] = req.session.student.email;
-	payload["password"] = req.session.student.password;
 
 	request({
 		url: `${SERVICES_URL}/recruiters`,
@@ -801,7 +800,8 @@ app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 
 		res.render('recruiter_invite', {
 			authenticated: true,
-			email: body.data,
+			emailTemplate: body.data,
+			from_email: req.session.student.email,
 			recruiter: body.data.recruiter,
 			error: req.query.error
 		});
@@ -813,11 +813,14 @@ app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		res.redirect('/intranet');
 	}
 
+	var payload = req.body;
+	payload["email"] = req.session.student.email;
+
 	request({
 		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/invite`,
 		method: "POST",
 		json: true,
-		body: req.body,
+		body: payload,
 		headers: {
 			"Authorization": GROOT_RECRUITER_TOKEN,
 			"Netid": req.session.netid,
@@ -827,7 +830,7 @@ app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		if (body.error == null) {
 			res.redirect('/corporate/accounts?message=' + body.message);
 		} else {
-			res.redirect('/corporate/recruiters/' + req.params.recruiterId + '/invite?error=' + body.error);
+			res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite?error=' + body.error);
 		}
 	});
 });
