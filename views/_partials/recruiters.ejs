@@ -1,12 +1,14 @@
 <% if (recruiters.length != 0) { %>
-  <table>
-    <tr>
-        <th>Company</th>
-        <th>Contact</th>
-        <th>Expires</th>
-        <th>Type</th>
-        <th>Action</th>
-    </tr>
+  <table id="accounts-table" class="dynatable-container">
+    <thead>
+      <tr>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Expires</th>
+          <th>Type</th>
+          <th>Action</th>
+      </tr>
+    </thead>
     <% for (var recruiter of recruiters) { %>
     <tr>
       <td><%= recruiter.company_name %></td>

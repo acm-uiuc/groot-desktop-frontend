@@ -85,6 +85,7 @@ this license in a file with the distribution.
         method: "PUT",
         success: function(response) {
             $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
         }
     });
   }
@@ -95,6 +96,7 @@ this license in a file with the distribution.
         method: "DELETE",
         success: function(response) {
             $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
         }
     });
   }
@@ -105,6 +107,7 @@ this license in a file with the distribution.
         method: "PUT",
         success: function(response) {
             $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
         }
     });
   }
@@ -115,7 +118,12 @@ this license in a file with the distribution.
           method: "POST",
           success: function(response) {
             $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
           }
       });
   }
+
+  $(document).ready(function() {
+      $("#accounts-table").dynatable();
+  });
 </script>

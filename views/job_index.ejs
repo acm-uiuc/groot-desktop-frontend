@@ -10,31 +10,37 @@ this license in a file with the distribution.
 
 <%- include('_partials/header') -%>
 
-<div id="job-container">
+<div id="job-container" class="dynatable-container">
   <div class="row">
     <h2>ACM@UIUC Job List</h2>
 
-    <table>
+    <table id="job-table">
+      <thead>
         <tr>
             <th>Title </th>
             <th>Company </th>
             <th>Description </th>
             <th>Contact Info </th>
         </tr>
-        <% for (var job of jobs) { %>
-          <tr>
-            <td><%= job.title %></td>
-            <td><%= job.company %></td>
-            <td><%= job.description %></td>
-            <td>
-              <%= job.contact_name %>
-              <br/>
-              <a href="mailto:<%= job.contact_email %>"><%= job.contact_email %></a>
-            </td>
-          </tr>
-        <% } %>
-      </table>
+      </thead>
+      <% for (var job of jobs) { %>
+        <tr>
+          <td><%= job.title %></td>
+          <td><%= job.company %></td>
+          <td><%= job.description %></td>
+          <td>
+            <%= job.contact_name %>
+            <br/>
+            <a href="mailto:<%= job.contact_email %>"><%= job.contact_email %></a>
+          </td>
+        </tr>
+      <% } %>
+    </table>
   </div>
 </div>
 
 <%- include('_partials/footer') -%>
+
+<script>
+  $('#job-table').dynatable();
+</script>

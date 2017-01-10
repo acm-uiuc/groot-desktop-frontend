@@ -60,6 +60,7 @@ this license in a file with the distribution.
         method: "PUT",
         success: function(response) {
             $("#unapproved-resumes-partial").html(response);
+            $('#unapproved-resumes-table').dynatable();
         }
     });
   }
@@ -70,6 +71,7 @@ this license in a file with the distribution.
         method: "PUT",
         success: function(response) {
             $("#unapproved-jobs-partial").html(response);
+            $('#job-post-table').dynatable();
         }
     });
   }
@@ -80,6 +82,7 @@ this license in a file with the distribution.
         method: "DELETE",
         success: function(response) {
             $("#unapproved-resumes-partial").html(response);
+            $('#unapproved-resumes-table').dynatable();
         }
     });
   }
@@ -90,6 +93,7 @@ this license in a file with the distribution.
         method: "DELETE",
         success: function(response) {
             $("#unapproved-jobs-partial").html(response);
+            $('#job-post-table').dynatable();
         }
     });
   }
@@ -107,6 +111,9 @@ this license in a file with the distribution.
   $(document).ready(function() {
       var date = $('#identified_students').find(":selected").val();
       getIdentifiedStudents(date);
+
+      $('#job-post-table').dynatable();
+      $('#unapproved-resumes-table').dynatable();
 
       $('select').on('change', function(e) {
           var date = $('#identified_students').find(":selected").val();

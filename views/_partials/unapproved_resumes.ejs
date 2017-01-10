@@ -1,9 +1,13 @@
 <% if (unapproved_resumes.length != 0) { %>
   <h5>You have <%= unapproved_resumes.length %> unapproved resumes</h5>
-  <table>
-    <tr>
-      <th> Action </th> <th> Preview </th> <th> Data </th>
-    </tr>
+  <table id="unapproved-resumes-table" class="dynatable-container">
+    <thead>
+      <tr>
+        <th> Action </th> 
+        <th> Preview </th> 
+        <th> Data </th>
+      </tr>
+    </thead>
     <% for (var resume of unapproved_resumes) { %>
     <tr>
       <td>

@@ -70,15 +70,17 @@ this license in a file with the distribution.
           <button type="submit" class="button">Search</button>
         </div>
       </div>
-      <table>
-        <tr>
-            <th>Name </th>
-            <th>NetID </th>
-            <th>Graduation </th>
-            <th>Level </th>
-            <th>Seeking </th>
-            <th>Resume </th>
-        </tr>
+      <table id="resume-table" class="dynatable-container">
+        <thead>
+          <tr>
+              <th>Name </th>
+              <th>NetID </th>
+              <th>Graduation </th>
+              <th>Level </th>
+              <th>Seeking </th>
+              <th>Resume </th>
+          </tr>
+        </thead>
         <% for (var resume of resumes) { %>
           <tr>
             <td><%= resume.first_name %> <%= resume.last_name %></td>
@@ -90,19 +92,20 @@ this license in a file with the distribution.
           </tr>
         <% } %>
       </table>
-      <div class="control-group">
-      <div class="controls">
-        <% if(curr_page - 1 >= 0) { %>
-          <button formaction="/corporate/resumes?page=<%= curr_page - 1 %>" type="submit" class="button">Previous Page</button>
-        <% } %>
-        <% if(curr_page + 1 < max_page) { %>
-          <button formaction="/corporate/resumes?page=<%= curr_page + 1 %>" type="submit" class="button" style="float: right;"style="float: right;">Next Page</button>
-        <% } %>
-      </div>
-      </div>
-      </form>
+    </form>
   </div>
 </div>
 
 
 <%- include('_partials/footer') -%>
+
+<script>
+  $("#resume-table").dynatable({
+    features: {
+      search: false
+    },
+    dataset: {
+        perPageDefault: 20
+    }
+  });
+</script>

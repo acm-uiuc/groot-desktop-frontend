@@ -1176,17 +1176,15 @@ app.get('/corporate/resumes', function(req, res) {
 			for (var resume of body.data) {
 				resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
 			}
-			req.query.page = req.query.page || 0;
+			
 			res.render('resume_filter', {
 				authenticated: isAuthenticated(req),
 				job: sponsorsScope.job,
 				degree: sponsorsScope.degree,
 				grad: sponsorsScope.grad,
 				student: sponsorsScope.student,
-				resumes: utils.getPage(body.data, req.query.page),
-				defaults: {},
-				curr_page: req.query.page,
-				max_page: utils.maxPage(body.data)
+				resumes: body.data,
+				defaults: {}
 			});
 		} else {
 			res.status(500).send(body);
@@ -1227,17 +1225,15 @@ app.post('/corporate/resumes', function(req, res) {
 			for (var resume of body.data) {
 				resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
 			}
-			req.query.page = req.query.page || 0;
+
 			res.render('resume_filter', {
 				authenticated: isAuthenticated(req),
 				job: sponsorsScope.job,
 				degree: sponsorsScope.degree,
 				grad: sponsorsScope.grad,
 				student: sponsorsScope.student,
-				resumes: utils.getPage(body.data, req.query.page),
-				defaults: req.body,
-				curr_page: req.query.page,
-				max_page: utils.maxPage(body.data)
+				resumes: body.data,
+				defaults: req.body
 			});
 		} else {
 			res.status(500).send(body);
