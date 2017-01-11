@@ -210,7 +210,7 @@ function checkIfAdmin(req, res, nextSteps) {
 		}
 	}, function(error, response, body) {
 		if(response && response.statusCode == 200) {
-			req.session.roles.isAdmin = (JSON.parse(body).isValid  == 'true');
+			req.session.roles.isAdmin = (JSON.parse(body).isValid);
 		}		
 		nextSteps(req, res);
 	});
@@ -227,7 +227,7 @@ function checkIfCorporate(req, res, nextSteps) {
 		}
 	}, function(error, response, body) {
 		if(response && response.statusCode == 200) {
-			req.session.roles.isCorporate = (JSON.parse(body).isValid  == 'true');
+			req.session.roles.isCorporate = (JSON.parse(body).isValid);
 		}		
 		nextSteps(req, res);
 	});
@@ -244,7 +244,7 @@ function checkIfTop4(req, res, nextSteps) {
 		}
 	}, function(error, response, body) {
 		if(response && response.statusCode == 200) {
-			req.session.roles.isTop4 = (JSON.parse(body).isValid  == 'true');
+			req.session.roles.isTop4 = (JSON.parse(body).isValid);
 		}		
 		nextSteps(req, res);
 	});
