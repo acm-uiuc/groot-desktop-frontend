@@ -96,30 +96,30 @@ app.post('/login', function(req, res){
 			});
 		}
 		else {
-			if(error) {
-				console.log("Error: " + error);
-			}
-			if(body["reason"]) {
-				console.log("ISSUE: " + body["reason"]);
-			}
-			req.session.student = {
-				netid: netid,
-				token: body["token"]
-			};
-			req.session.roles.isStudent = true;
+			if (!error && response && response.statusCode == 200) {
+				req.session.student = {
+					netid: netid,
+					token: body["token"],
+					email: netid + "@illinois.edu"
+				};
+				req.session.roles.isStudent = true;
 
-			setAuthentication(req, res, function(req, res) {
-				getUserData(req, res, function(req, res){
-					res.redirect('/intranet');
+				setAuthentication(req, res, function(req, res) {
+					getUserData(req, res, function(req, res){
+						res.redirect('/intranet');
+					});
 				});
-			});
+			} else {
+				console.log("Error: " + body["reason"]);
+				res.status(response.statusCode).send(error);
+			}
 		}
 	}
 	request(options, callback);
 });
 
 app.post('/sponsors/login', function(req, res) {
-    request({
+	request({
 		url: `${SERVICES_URL}/recruiters/login`,
 		method: "POST",
 		headers: {
@@ -128,7 +128,7 @@ app.post('/sponsors/login', function(req, res) {
 		json: true,
 		body: req.body
 	}, function(err, response, body) {
-		if (response && response.statusCode == 200) {
+		if (!error && response && response.statusCode == 200) {
 			// Contains JWT token
 			req.session.recruiter = body.data;
 
@@ -268,7 +268,6 @@ function getUserData(req, res, nextSteps){
 		json: true
 	}, function(error, response, body) {
 		if(body && body[0] != undefined) {
-			req.session.student.email = netid + "@illinois.edu";
 			req.session.student.firstName = body[0].first_name;
 			req.session.student.lastName = body[0].last_name,
 			
@@ -508,13 +507,13 @@ app.post('/join', function(req, res) {
         body: userData,
         json: true
     }, function(err, response, body) {
-        if(err) {
-            console.log(err);
+		if(err || !response || response.statusCode != 200) {
+			console.log(err);
 			return res.status(500).send("There was an error. Please try again.");
-        }
+		}
 		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);
 		res.redirect('/');
-    });
+	});
 });
 
 app.get('/join', function(req, res) {
@@ -531,7 +530,7 @@ app.get('/join', function(req, res) {
 		},
 		method: "GET",
 	}, function(err, response, body) {
-		if (err) {
+		if (err || !response || response.statusCode != 200) {
 			console.log(err);
 			return res.status(500).send({"Error" : err});
 		}
@@ -550,7 +549,7 @@ app.get('/sigs', function(req, res) {
 		},
         method: "GET",
     }, function(err, response, body) {
-        if (err) {
+        if (err || !response || !response.statusCode) {
             console.log(err);
             res.status(500).send("Error " + err);
             return;
@@ -574,16 +573,16 @@ app.get('/quotes', function(req, res) {
 		},
 		method: "GET",
     }, function(error, response, body) {
-        if (error) {
-            // TODO: ender error page
-            // alert("status");
-            res.status(500).send("Error " + error.code);
-        } else {
-            res.render('quotes', {
-                authenticated: isAuthenticated(req),
-                quotes: body
-            });
-        }
+	if (error || response.statusCode != 200) {
+		// TODO: ender error page
+		// alert("status");
+		res.status(500).send("Error " + error.code);
+	} else {
+		res.render('quotes', {
+			authenticated: isAuthenticated(req),
+			quotes: body
+		});
+	}
     });
 });
 
@@ -651,8 +650,8 @@ app.get('/corporate/manage', function(req, res) {
 			"Authorization": GROOT_ACCESS_TOKEN
 		}
 	}, function(error, response, body) {
-		if (response && response.statusCode != 200) {
-			res.status(response.statusCode).send("Error: " + body.error);
+		if (error || !response || response.statusCode != 200) {
+			res.status(500).send("Error: " + error);
 		} else {
 			request({
 				url: `${SERVICES_URL}/students?approved_resumes=false`,
@@ -664,9 +663,7 @@ app.get('/corporate/manage', function(req, res) {
 					"Token": req.session.student.token
 				}
 			}, function(s_error, s_response, s_body) {
-				if (s_response && s_response.statusCode != 200) {
-					res.status(s_response.statusCode).send("Error: " + s_body.error);
-				} else {
+				if (s_response && s_response.statusCode == 200 && s_body && body) {
 					res.render('corporate_manager', {
 						unapproved_resumes: s_body.data,
 						job_listings: body.data,
@@ -683,6 +680,8 @@ app.get('/corporate/manage', function(req, res) {
 						error: req.query.error, //obtained from the post request below
 						message: req.query.message //obtained from the post request below
 					});
+				} else {
+					res.status(500).send("Error: " + s_body);
 				}
 			});
 		}
@@ -708,7 +707,11 @@ app.get('/corporate/students/:date', function(req, res) {
 		},
 		body: req.body
 	}, function(error, response, body) {
-		res.status(response.statusCode).send(body);
+		if (response) {
+			res.status(response.statusCode).send(body);
+		} else {
+			res.status(500).send(error);
+		}
 	});
 });
 
@@ -727,9 +730,7 @@ app.get('/corporate/accounts', function(req, res) {
 			"Token": req.session.student.token
 		},
 	}, function(error, response, body) {
-		if (response && response.statusCode != 200) {
-			res.status(response.statusCode).send(body.error);
-		} else {
+		if (!error && response && response.statusCode == 200 && body) {
 			res.render('account_manager', {
 				recruiters: body.data,
 				authenticated: true,
@@ -737,6 +738,8 @@ app.get('/corporate/accounts', function(req, res) {
 				error: req.query.error,
 				message: req.query.message
 			});
+		} else {
+			res.status(500).send(body);
 		}
 	});
 });
@@ -760,10 +763,12 @@ app.post('/corporate/accounts', function(req, res) {
 		},
 		body: payload
 	}, function(error, response, body) {
-		if (body.error == null) {
+		if (body && body.error == null) {
 			res.redirect('/corporate/accounts?message=' + body.message);
-		} else {
+		} else if (body && body.message == null) {
 			res.redirect('/corporate/accounts?error=' + body.error);
+		} else {
+			res.redirect('/corporate/accounts?error=' + 'An unexpected error occurred.');
 		}
 	});
 });
@@ -821,10 +826,12 @@ app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 			"Token": req.session.student.token
 		},
 	}, function(error, response, body) {
-		if (body.error == null) {
+		if (body && body.error == null) {
 			res.redirect('/corporate/accounts?message=' + body.message);
-		} else {
+		} else if (body && body.message == null) {
 			res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite?error=' + body.error);
+		} else {
+			res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite?error=' + 'An unexpected error occurred');
 		}
 	});
 });
@@ -846,7 +853,7 @@ app.put('/corporate/students/:netid/approve', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -871,7 +878,7 @@ app.delete('/corporate/students/:netid', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absResumePath + "') %>", { unapproved_resumes : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -896,7 +903,7 @@ app.put('/corporate/jobs/:jobId/approve', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -921,7 +928,7 @@ app.delete('/corporate/jobs/:jobId', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absJobPath + "') %>", { job_listings : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -944,12 +951,16 @@ app.get('/corporate/accounts/:recruiterId', function(req, res) {
 		},
 		json: true
 	}, function(error, response, body) {
-		res.render('edit_recruiter', {
-			authenticated: true,
-			recruiter: body.data,
-			recruiter_types: sponsorsScope.recruiter,
-			error: null
-		});
+		if (response && response.statusCode == 200 && body) {
+			res.render('edit_recruiter', {
+				authenticated: true,
+				recruiter: body.data,
+				recruiter_types: sponsorsScope.recruiter,
+				error: null
+			});
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
 	});
 });
 
@@ -1023,7 +1034,7 @@ app.put('/corporate/accounts/:recruiterId/renew', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absRecruiterPath + "') %>", { recruiters : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -1048,7 +1059,7 @@ app.delete('/corporate/accounts/:recruiterId', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (response && response.statusCode == 200) {
+		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absRecruiterPath + "') %>", { recruiters : body.data } ));
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -1100,7 +1111,7 @@ app.get('/resumes/new', function(req, res) {
 			json: true,
 			body: {}
 		}, function(error, response, body) {
-			if (body.data) {
+			if (body && body.data) {
 				// Format graduation date into same format as how it should be displayed
 				body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
 				sponsorsScope.student = body.data;
