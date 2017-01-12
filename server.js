@@ -1271,6 +1271,9 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 });
 
 app.get('/memes', function(req, res){
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
 	request({
 		url: `${SERVICES_URL}/memes`,
 		headers: {
@@ -1291,14 +1294,39 @@ app.get('/memes', function(req, res){
 });
 
 app.get('/memes/upload', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
 	res.render('meme_upload', {
 		authenticated: isAuthenticated(req)
 	});
 });
 
 app.post('/memes/upload', function(req, res) {
-	req.flash('success', "Meme uploaded! Waiting on admin approval.")
-	res.redirect('/memes');
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+	request({
+		url: `${SERVICES_URL}/memes`,
+		method: "POST",
+		headers: {
+      "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    json: true,
+    qs: {
+    	token: req.session.student.token,
+    },
+    body: {
+    	title: req.body.title,
+    	url: req.body.url
+    }
+	}, function(err, response, body){
+		if(err) {
+			return req.status(500).send(err)
+		}
+		req.flash('success', "Meme uploaded! Waiting on admin approval.")
+		res.redirect('/memes');
+	});
 });
 
 
