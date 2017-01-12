@@ -1,0 +1,52 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+
+
+<div class="meme-container">
+  <div class="meme-header row">
+    <h2>Memes</h2>
+    <a href="/memes/upload">
+      <button class="button meme-button">Upload</button>
+    </a>
+    <% if ( messages.length > 0 ) { %>
+    <div class="callout secondary">
+      <p><%= messages %></p>
+    </div>
+    <% } %>
+  </div>
+  <div>
+    <% for (var i = 0; i < memes.length; i++) { %>
+      <% if(i % 4 == 0) { %>
+        <div class="row meme-card-row">
+      <% } %>
+      <div class="small-4 columns">
+        <div class="meme-card card" style="width:300px; max-height: 500px;">
+          <img class="meme-image" src="<%= memes[i].url %>" />
+          
+          <div class="card-section meme-info">
+            <% if(memes[i].title) { %>
+              <h5 class="meme-title"><%= memes[i].title %></h5>
+            <% } %>
+            <span class="meme-uploader"><%= memes[i].netid %></span>
+            <small>(<%= memes[i].created_at %>)</small>
+          </div>
+        </div>
+      </div>
+      <% if(i % 4 == 3) { %>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>

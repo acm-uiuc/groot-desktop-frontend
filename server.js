@@ -22,6 +22,8 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 var request = require('request');
 var utils = require('./etc/utils.js');
+var flash = require('express-flash');
+app.use(flash());
 
 
 
@@ -1267,6 +1269,38 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 		authenticated: isAuthenticated(req),
 	});
 });
+
+app.get('/memes', function(req, res){
+	request({
+		url: `${SERVICES_URL}/memes`,
+		headers: {
+      "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    json: true
+	}, function(err, response, body) {
+		var memes = body.map(function(meme) {
+			meme.created_at = moment(meme.created_at).fromNow();
+			return meme;
+		});
+		res.render('memes', {
+			authenticated: isAuthenticated(req),
+			messages: req.flash('success'),
+			memes: memes
+		});
+	});
+});
+
+app.get('/memes/upload', function(req, res) {
+	res.render('meme_upload', {
+		authenticated: isAuthenticated(req)
+	});
+});
+
+app.post('/memes/upload', function(req, res) {
+	req.flash('success', "Meme uploaded! Waiting on admin approval.")
+	res.redirect('/memes');
+});
+
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
