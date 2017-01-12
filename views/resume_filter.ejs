@@ -14,7 +14,7 @@ this license in a file with the distribution.
   <div class="row">
     <h2>ACM@UIUC Resume Book </h2>
     <p>You can filter the resumes by categories below. <br> If you have any trouble accessing resume, please contact us at <a href="mailto:corporate@acm.illinois.edu">corporate@acm.illinois.edu</a></p>
-      <form method="post" action="/sponsors/resume_filter">
+      <form method="post" action="/corporate/resumes">
         <div class="field-group">
           <label for="name" class="field-label">First Name </label>
           <div class="field">
@@ -70,15 +70,17 @@ this license in a file with the distribution.
           <button type="submit" class="button">Search</button>
         </div>
       </div>
-      <table>
-        <tr>
-            <th>Name </th>
-            <th>NetID </th>
-            <th>Graduation </th>
-            <th>Level </th>
-            <th>Seeking </th>
-            <th>Resume </th>
-        </tr>
+      <table id="resume-table" class="dynatable-container">
+        <thead>
+          <tr>
+              <th>Name </th>
+              <th>NetID </th>
+              <th>Graduation </th>
+              <th>Level </th>
+              <th>Seeking </th>
+              <th>Resume </th>
+          </tr>
+        </thead>
         <% for (var resume of resumes) { %>
           <tr>
             <td><%= resume.first_name %> <%= resume.last_name %></td>
@@ -90,19 +92,20 @@ this license in a file with the distribution.
           </tr>
         <% } %>
       </table>
-      <div class="control-group">
-      <div class="controls">
-        <% if(curr_page - 1 >= 0) { %>
-          <button formaction="/sponsors/resume_filter?page=<%= curr_page - 1 %>" type="submit" class="button">Previous Page</button>
-        <% } %>
-        <% if(curr_page + 1 < max_page) { %>
-          <button formaction="/sponsors/resume_filter?page=<%= curr_page + 1 %>" type="submit" class="button" style="float: right;"style="float: right;">Next Page</button>
-        <% } %>
-      </div>
-      </div>
-      </form>
+    </form>
   </div>
 </div>
 
 
 <%- include('_partials/footer') -%>
+
+<script>
+  $("#resume-table").dynatable({
+    features: {
+      search: false
+    },
+    dataset: {
+        perPageDefault: 20
+    }
+  });
+</script>

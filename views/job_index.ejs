@@ -1,0 +1,49 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div id="job-container" class="dynatable-container">
+  <div class="row">
+    <h2>ACM@UIUC Job List</h2>
+    <% if (jobs.length != 0) { %>
+    <table id="job-table">
+      <thead>
+        <tr>
+            <th>Title </th>
+            <th>Company </th>
+            <th>Description </th>
+            <th>Contact Info </th>
+        </tr>
+      </thead>
+      <% for (var job of jobs) { %>
+        <tr>
+          <td><%= job.title %></td>
+          <td><%= job.company %></td>
+          <td><%= job.description %></td>
+          <td>
+            <%= job.contact_name %>
+            <br/>
+            <a href="mailto:<%= job.contact_email %>"><%= job.contact_email %></a>
+          </td>
+        </tr>
+      <% } %>
+    </table>
+    <% } else { %>
+      <h5>There are no jobs currently posted.</h5>
+    <% } %>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
+
+<script>
+  $('#job-table').dynatable();
+</script>

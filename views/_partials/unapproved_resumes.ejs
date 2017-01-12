@@ -1,9 +1,13 @@
 <% if (unapproved_resumes.length != 0) { %>
   <h5>You have <%= unapproved_resumes.length %> unapproved resumes</h5>
-  <table>
-    <tr>
-      <th> Action </th> <th> Preview </th> <th> Data </th>
-    </tr>
+  <table id="unapproved-resumes-table" class="dynatable-container">
+    <thead>
+      <tr>
+        <th> Action </th> 
+        <th> Preview </th> 
+        <th> Data </th>
+      </tr>
+    </thead>
     <% for (var resume of unapproved_resumes) { %>
     <tr>
       <td>
@@ -19,7 +23,7 @@
       </td>
       <td>
           Name: <%= resume.first_name + " " + resume.last_name %> <br>
-          Graduation Date: <%= (new Date(resume.graduation_date)).toDateString() %> <br>
+          Graduation Date: <%= resume.graduation_date %> <br>
           Degree Type: <%= resume.degree_type %> <br>
           Job Type: <%= resume.job_type %>
       </td>

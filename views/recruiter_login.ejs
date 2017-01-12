@@ -14,10 +14,10 @@ this license in a file with the distribution.
   <div class="row col-centered small-12 medium-4 large-4 login-form">
     <h3>Recruiter Login</h3>
     <% if (locals.error) { %>
-    <p style="color:red;">Error: <%=error %></p>
+    <p class="form-validation-error"><%=error %></p>
     <% } %>
     <p>If you would like access to the ACM@UIUC Resume Book please email <a href="corporate@acm.illinois.edu">corporate@acm.illinois.edu</a>.</p>
-    <form method="post" action="/sponsors/recruiter_login">
+    <form method="post" action="/sponsors/login">
       <div class="field-group required">
         <label for="email" class="field-label">Email</label>
         <div class="field">

@@ -1,13 +1,15 @@
 <% if (job_listings.length != 0) { %>
 <h5>You have <%= job_listings.length %> unapproved job listings.</h5>
-<table id="job-post-table">
-  <tr>
-    <th> Action </th>
-    <th> Role </th>
-    <th> Company </th>
-    <th> Contact Information </th>
-    <th> Description </th>
-  </tr>
+<table id="job-post-table" class="dynatable-container">
+  <thead>
+    <tr>
+      <th> Action </th>
+      <th> Role </th>
+      <th> Company </th>
+      <th> Contact Information </th>
+      <th> Description </th>
+    </tr>
+  </thead>
   <% for (var job of job_listings) { %>
   <tr>
     <td>
