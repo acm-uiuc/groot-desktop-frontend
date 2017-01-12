@@ -23,6 +23,11 @@ this license in a file with the distribution.
       <p><%= messages %></p>
     </div>
     <% } %>
+    <% if ( errors.length > 0 ) { %>
+    <div class="callout alert">
+      <p><%= errors %></p>
+    </div>
+    <% } %>
   </div>
   <div>
     <% for (var i = 0; i < memes.length; i++) { %>

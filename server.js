@@ -1288,6 +1288,7 @@ app.get('/memes', function(req, res){
 		res.render('memes', {
 			authenticated: isAuthenticated(req),
 			messages: req.flash('success'),
+			errors: req.flash('error'),
 			memes: memes
 		});
 	});
@@ -1324,7 +1325,12 @@ app.post('/memes/upload', function(req, res) {
 		if(err) {
 			return req.status(500).send(err)
 		}
-		req.flash('success', "Meme uploaded! Waiting on admin approval.")
+		if(body.error){
+			req.flash('error', body)
+		}
+		else {
+			req.flash('success', "Meme uploaded! Waiting on admin approval.")
+		}
 		res.redirect('/memes');
 	});
 });
