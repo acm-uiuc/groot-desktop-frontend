@@ -1281,7 +1281,7 @@ app.get('/memes', function(req, res){
     },
     json: true
 	}, function(err, response, body) {
-		var memes = body.map(function(meme) {
+		var memes = body.memes.map(function(meme) {
 			meme.created_at = moment(meme.created_at).fromNow();
 			return meme;
 		});
