@@ -122,12 +122,13 @@ this license in a file with the distribution.
     </div>
     <div id="events" class="row">
       <div class="event">
-        <h5>Sample Link</h5>
-        <ul class="dashed">
-          <li>Link</li>
-        </ul>
       </div>
     </div>
+
+    <div id="events-title" class="row">
+      <h2>Upcoming Events</h2>
+    </div>
+    <div id="events" class="row fb_events"></div>
     
     <% if (session.roles.isStudent) { %>
       <div id="events-title" class="row">
@@ -135,26 +136,39 @@ this license in a file with the distribution.
       </div>
       <div id="events" class="row">
         <div class="event">
-          <h5>Welcome</h5>
-          <ul class="dashed">
-            <li>test</li>
-          </ul>
         </div>
       </div>
     <% } %>
-    
-    <div id="events-title" class="row">
-      <h2>Events</h2>
-    </div>
-    <div id="events" class="row">
-      <div class="event">
-       <h5>Sample Event (from FB)</h5>
-        <ul class="dashed">
-          <li>Details</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </div>
 
 <%- include('_partials/footer') -%>
+
+<script>
+  $.ajax({
+      url: "/intranet/events/upcoming",
+      method: "GET",
+      success: function(events) {
+        $('.fb_events').empty();
+        for (var event of events) {
+          var sameDate = (
+            new Date(event.start_time).toISOString().split("T")[0] == 
+            new Date(event.end_time).toISOString().split("T")[0]
+          );
+
+          var dateString = sameDate
+            ? event.start_time + " - " + event.end_time.split(", ")[1]
+            : event.start_time + " - " + event.end_time;
+
+          $('.fb_events').append(
+            "<div class='event'> \
+              <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
+              <ul class='dashed'> \
+                <li>" + dateString + "</li> \
+              </ul> \
+            </div>"
+          );
+        }
+      }
+  });
+</script>

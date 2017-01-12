@@ -1237,6 +1237,25 @@ app.post('/corporate/resumes', function(req, res) {
 	});
 });
 
+app.get('/intranet/events/upcoming', function(req, res) {
+	if (!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+
+	request({
+		url: `${SERVICES_URL}/events/upcoming`,
+		method: "GET",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN
+		}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200) {
+			res.json(body);
+		}
+	});
+});
+
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
 		authenticated: isAuthenticated(req),
