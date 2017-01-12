@@ -31,7 +31,6 @@ var utils = require('./etc/utils.js');
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
-const GROOT_RECRUITER_TOKEN = process.env.GROOT_RECRUITER_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -124,9 +123,9 @@ app.post('/sponsors/login', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/login`,
 		method: "POST",
 		headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
-        },
-        json: true,
+			"Authorization": GROOT_ACCESS_TOKEN
+		},
+		json: true,
 		body: req.body
 	}, function(err, response, body) {
 		if (response && response.statusCode == 200) {
@@ -172,7 +171,7 @@ app.post('/sponsors/reset_password', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/reset_password`,
 		method: "POST",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		json: true,
 		body: payload
@@ -601,7 +600,7 @@ app.post('/sponsors/jobs', function(req, res) {
 		url: `${SERVICES_URL}/jobs`,
 		method: "POST",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		json: true,
 		body: req.body
@@ -623,7 +622,7 @@ app.get('/jobs', function(req, res) {
 		url: `${SERVICES_URL}/jobs`,
 		method: "GET",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -649,7 +648,7 @@ app.get('/corporate/manage', function(req, res) {
 		method: "GET",
 		json: true,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN
+			"Authorization": GROOT_ACCESS_TOKEN
 		}
 	}, function(error, response, body) {
 		if (response && response.statusCode != 200) {
@@ -660,7 +659,7 @@ app.get('/corporate/manage', function(req, res) {
 				method: "GET",
 				json: true,
 				headers: {
-					"Authorization": GROOT_RECRUITER_TOKEN,
+					"Authorization": GROOT_ACCESS_TOKEN,
 					"Netid": req.session.student.netid,
 					"Token": req.session.student.token
 				}
@@ -703,7 +702,7 @@ app.get('/corporate/students/:date', function(req, res) {
 			last_updated_at: req.params.date
 		},
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -723,7 +722,7 @@ app.get('/corporate/accounts', function(req, res) {
 		method: "GET",
 		json: true,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -755,7 +754,7 @@ app.post('/corporate/accounts', function(req, res) {
 		method: "POST",
 		json: true,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -779,7 +778,7 @@ app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		method: "GET",
 		json: true,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -817,7 +816,7 @@ app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		json: true,
 		body: payload,
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token
 		},
@@ -840,7 +839,7 @@ app.put('/corporate/students/:netid/approve', function(req, res) {
 		url: `${SERVICES_URL}/students/` + req.params.netid + `/approve`,
 		method: "PUT",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -865,7 +864,7 @@ app.delete('/corporate/students/:netid', function(req, res) {
 		url: `${SERVICES_URL}/students/` + req.params.netid,
 		method: "DELETE",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -890,7 +889,7 @@ app.put('/corporate/jobs/:jobId/approve', function(req, res) {
 		url: `${SERVICES_URL}/jobs/` + req.params.jobId + `/approve`,
 		method: "PUT",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -915,7 +914,7 @@ app.delete('/corporate/jobs/:jobId', function(req, res) {
 		url: `${SERVICES_URL}/jobs/` + req.params.jobId,
 		method: "DELETE",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -939,7 +938,7 @@ app.get('/corporate/accounts/:recruiterId', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
 		method: "GET",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -963,7 +962,7 @@ app.post('/corporate/accounts/reset', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/reset`,
 		method: "POST",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -987,7 +986,7 @@ app.post('/corporate/accounts/:recruiterId', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
 		method: "PUT",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -1017,7 +1016,7 @@ app.put('/corporate/accounts/:recruiterId/renew', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/renew`,
 		method: "PUT",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -1042,7 +1041,7 @@ app.delete('/corporate/accounts/:recruiterId', function(req, res) {
 		url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
 		method: "DELETE",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -1066,7 +1065,7 @@ app.post('/corporate/students/remind', function(req, res) {
 		url: `${SERVICES_URL}/students/remind`,
 		method: "POST",
 		headers: {
-			"Authorization": GROOT_RECRUITER_TOKEN,
+			"Authorization": GROOT_ACCESS_TOKEN,
 			"Netid": req.session.student.netid,
 			"Token": req.session.student.token  
 		},
@@ -1136,7 +1135,7 @@ app.post('/resumes/new', function(req, res) {
         url: `${SERVICES_URL}/students`,
         method: "POST",
         headers: {
-            "Authorization": GROOT_RECRUITER_TOKEN
+            "Authorization": GROOT_ACCESS_TOKEN
         },
         json: true,
         body: req.body
@@ -1152,7 +1151,7 @@ app.get('/corporate/resumes', function(req, res) {
 	}
 
 	var headers = {
-		"Authorization": GROOT_RECRUITER_TOKEN
+		"Authorization": GROOT_ACCESS_TOKEN
 	};
 
 	if (req.session.roles.isRecruiter) {
@@ -1194,7 +1193,7 @@ app.post('/corporate/resumes', function(req, res) {
 	}
 
 	var headers = {
-		"Authorization": GROOT_RECRUITER_TOKEN
+		"Authorization": GROOT_ACCESS_TOKEN
 	};
 	if (req.session.roles.isRecruiter) {
 		headers["RECRUITER_TOKEN"] = req.session.recruiter.token;
