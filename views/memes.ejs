@@ -72,6 +72,14 @@ this license in a file with the distribution.
       </div>
     <% } %>
   </div>
+  <div class="row">
+    <% if(prevPage) { %>
+      <a href="?page=<%= prevPage %>" class="button">Previous Page</a>
+    <% } %>
+    <% if(nextPage) { %>
+      <a href="?page=<%= nextPage %>" class="button" style="float:right;">Next Page</a>
+    <% } %>
+  </div>
 </div>
 
 <script>

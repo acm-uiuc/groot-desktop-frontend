@@ -1281,6 +1281,7 @@ app.get('/memes', function(req, res){
     },
     qs: {
     	token: req.session.student.token,
+    	page: req.query.page
     },
     json: true
 	}, function(err, response, body) {
@@ -1293,6 +1294,8 @@ app.get('/memes', function(req, res){
 			messages: req.flash('success'),
 			errors: req.flash('error'),
 			memes: memes,
+			nextPage: body.next_page,
+			prevPage: body.prev_page,
 			adminPage: false
 		});
 	});
@@ -1389,6 +1392,8 @@ app.get('/memes/admin', function(req, res) {
 			messages: req.flash('success'),
 			errors: req.flash('error'),
 			memes: memes,
+			nextPage: body.next_page,
+			prevPage: body.prev_page,
 			adminPage: true
 		});
 	});
