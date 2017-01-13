@@ -1286,7 +1286,7 @@ app.get('/memes', function(req, res){
     json: true
 	}, function(err, response, body) {
 		if(err || body.error || !body.memes) {
-			res.status(500).send("Couldn't fetch memes. :'(")
+			return res.status(500).send("Couldn't fetch memes. :'(")
 		}
 		var memes = body.memes.map(function(meme) {
 			meme.created_at = moment(meme.created_at).fromNow();
@@ -1299,7 +1299,8 @@ app.get('/memes', function(req, res){
 			memes: memes,
 			nextPage: body.next_page,
 			prevPage: body.prev_page,
-			adminPage: false
+			adminPage: false,
+			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
 		});
 	});
 });
@@ -1391,7 +1392,7 @@ app.get('/memes/admin', function(req, res) {
     json: true
 	}, function(err, response, body) {
 		if(err || body.error || !body.memes) {
-			res.status(500).send("Couldn't fetch memes. :'(")
+			return res.status(500).send("Couldn't fetch memes. :'(")
 		}
 		var memes = body.memes.map(function(meme) {
 			meme.created_at = moment(meme.created_at).fromNow();
@@ -1404,7 +1405,8 @@ app.get('/memes/admin', function(req, res) {
 			memes: memes,
 			nextPage: body.next_page,
 			prevPage: body.prev_page,
-			adminPage: true
+			adminPage: true,
+			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
 		});
 	});
 });
