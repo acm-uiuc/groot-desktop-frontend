@@ -1272,12 +1272,15 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 
 app.get('/memes', function(req, res){
 	if (!isAuthenticated(req)) {
-		res.redirect('/login');
+		return res.redirect('/login');
 	}
 	request({
 		url: `${SERVICES_URL}/memes`,
 		headers: {
       "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    qs: {
+    	token: req.session.student.token,
     },
     json: true
 	}, function(err, response, body) {
@@ -1285,19 +1288,19 @@ app.get('/memes', function(req, res){
 			meme.created_at = moment(meme.created_at).fromNow();
 			return meme;
 		});
-		res.render('memes', {
+		return res.render('memes', {
 			authenticated: isAuthenticated(req),
 			messages: req.flash('success'),
 			errors: req.flash('error'),
 			memes: memes,
-			admin: false
+			adminPage: false
 		});
 	});
 });
 
 app.get('/memes/upload', function(req, res) {
 	if (!isAuthenticated(req)) {
-		res.redirect('/login');
+		return res.redirect('/login');
 	}
 	res.render('meme_upload', {
 		authenticated: isAuthenticated(req)
@@ -1306,7 +1309,7 @@ app.get('/memes/upload', function(req, res) {
 
 app.post('/memes/upload', function(req, res) {
 	if (!isAuthenticated(req)) {
-		res.redirect('/login');
+		return res.redirect('/login');
 	}
 	request({
 		url: `${SERVICES_URL}/memes`,
@@ -1324,7 +1327,7 @@ app.post('/memes/upload', function(req, res) {
     }
 	}, function(err, response, body){
 		if(err) {
-			return req.status(500).send(err)
+			return res.status(500).send(err)
 		}
 		if(body.error){
 			req.flash('error', body)
@@ -1336,13 +1339,39 @@ app.post('/memes/upload', function(req, res) {
 	});
 });
 
-app.get('/memes/admin', function(req, res) {
-	if(!isAuthenticated(req)) {
+app.get('/memes/vote/:meme_id', function(req, res) {
+	if (!isAuthenticated(req)) {
 		res.redirect('/login');
 	}
+	request({
+		url: `${SERVICES_URL}/memes/vote/${req.params.meme_id}`,
+		method: req.query.action === 'unvote' ? 'DELETE' : 'PUT',
+		headers: {
+      "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    json: true,
+    qs: {
+    	token: req.session.student.token,
+    },
+    body: {}
+	}, function(err, response, body){
+		if(err) {
+			return req.status(500).send(err)
+		}
+		if(body.error){
+			req.flash('error', body)
+		}
+		return res.send(200);
+	});
+});
+
+app.get('/memes/admin', function(req, res) {
+	if(!isAuthenticated(req)) {
+		return res.redirect('/login');
+	}
 	if(!(req.session.roles.isAdmin || req.session.roles.isAdmin || req.session.roles.isAdmin)) {
-		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
-		res.redirect('/memes');
+		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
+		return res.redirect('/memes');
 	}
 	request({
 		url: `${SERVICES_URL}/memes/unapproved`,
@@ -1360,7 +1389,7 @@ app.get('/memes/admin', function(req, res) {
 			messages: req.flash('success'),
 			errors: req.flash('error'),
 			memes: memes,
-			admin: true
+			adminPage: true
 		});
 	});
 });

@@ -18,7 +18,7 @@ this license in a file with the distribution.
     <a href="/memes/upload">
       <button class="button meme-button">Upload</button>
     </a>
-    <% if(admin) { %>
+    <% if(adminPage) { %>
       <h3>Admin Page</h3>
     <% } %>
     <% if ( messages.length > 0 ) { %>
@@ -46,9 +46,11 @@ this license in a file with the distribution.
               <h5 class="meme-title"><%= memes[i].title %></h5>
             <% } %>
             <span class="meme-uploader"><%= memes[i].author %></span>
-            <small>(<%= memes[i].created_at %>)</small>
+            <small>(<%= memes[i].created_at %>)</small><br />
+            <small><span id="meme-votes-<%=memes[i].id %>"><%= memes[i].votes %></span> Votes</small>
+            <a href="#" onclick="memeVote(<%= memes[i].id %>)"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
           </div>
-          <% if(admin) { %>
+          <% if(adminPage) { %>
             <div class="card-section meme-info">
               <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post">
                   <button class="button" type="submit" name="approve">Approve</button>
@@ -71,5 +73,27 @@ this license in a file with the distribution.
     <% } %>
   </div>
 </div>
+
+<script>
+function memeVote(id) {
+  var vote_span = $('#meme-votes-' + id);
+  var vote_icon = $('#vote-icon-' + id);
+  if (vote_icon.hasClass('busy')) {
+    return; // Vote request already sent
+  }
+  var curr_count = parseInt(vote_span.text());
+  var url = '/memes/vote/' + id;
+  if(vote_icon.hasClass('meme-voted')) {
+    url += '?action=unvote';
+  }
+  vote_icon.toggleClass('busy');
+  $.get(url, function(data) {
+    vote_span.text(vote_icon.hasClass('meme-voted') ? curr_count - 1 : curr_count + 1);
+    vote_icon.toggleClass('meme-voted').toggleClass('busy');
+    vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
+  });
+  
+}
+</script>
 
 <%- include('_partials/footer') -%>
