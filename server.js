@@ -1281,7 +1281,8 @@ app.get('/memes', function(req, res){
     },
     qs: {
     	token: req.session.student.token,
-    	page: req.query.page
+    	page: req.query.page,
+    	order: req.query.order
     },
     json: true
 	}, function(err, response, body) {

@@ -21,7 +21,13 @@ this license in a file with the distribution.
     <% } %>
     <% if(adminPage) { %>
       <h3>Admin Page</h3>
+    <% } else { %>
+      <br />
+      <a class='meme-order-link' href='?order=latest'>Latest</a>
+      <a class='meme-order-link' href='?order=top'>Top</a>
+      <a class='meme-order-link' href='?order=hottest'>Hottest</a>
     <% } %>
+
     <% if ( messages.length > 0 ) { %>
     <div class="callout secondary">
       <p><%= messages %></p>
