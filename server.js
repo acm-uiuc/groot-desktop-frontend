@@ -1381,6 +1381,10 @@ app.get('/memes/admin', function(req, res) {
 		headers: {
       "Authorization": GROOT_RECRUITER_TOKEN
     },
+    qs: {
+    	token: req.session.student.token,
+    	page: req.query.page
+    },
     json: true
 	}, function(err, response, body) {
 		var memes = body.memes.map(function(meme) {

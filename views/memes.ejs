@@ -38,25 +38,27 @@ this license in a file with the distribution.
         <div class="row meme-card-row">
       <% } %>
       <div class="small-4 columns">
-        <div class="meme-card card" style="width:300px; max-height: 500px;">
-          <img class="meme-image" src="<%= memes[i].url %>" />
+        <div id="meme-card-<%= memes[i].id %>" class="meme-card card" style="width:300px; max-height: 500px;">
+          <a href="#" onclick="memePopout(<%= memes[i].id %>)">
+            <img class="meme-image" src="<%= memes[i].url %>" />
+          </a>
           
           <div class="card-section meme-info">
             <% if(memes[i].title) { %>
               <h5 class="meme-title"><%= memes[i].title %></h5>
             <% } %>
             <span class="meme-uploader"><%= memes[i].author %></span>
-            <small>(<%= memes[i].created_at %>)</small><br />
-            <small><span id="meme-votes-<%=memes[i].id %>"><%= memes[i].votes %></span> Votes</small>
+            <small>(<span class="meme-created-at"><%= memes[i].created_at %></span>)</small><br />
+            <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
             <a href="#" onclick="memeVote(<%= memes[i].id %>)"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
           </div>
           <% if(adminPage) { %>
             <div class="card-section meme-info">
-              <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post">
-                  <button class="button" type="submit" name="approve">Approve</button>
+              <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post" style="display:inline;">
+                  <button class="button" type="submit" name="approve" >Approve</button>
               </form>
-              <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post">
-                  <button class="button" type="submit" name="reject">Reject</button>
+              <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post" style="display:inline;">
+                  <button class="button" type="submit" name="reject" style="float:right;">Reject</button>
               </form>
             </div>
           <% } %>
@@ -82,7 +84,20 @@ this license in a file with the distribution.
   </div>
 </div>
 
+<div class="reveal card-section" id="memeModal" data-reveal>
+  <img id="memeModalImage" class="meme-image" style="max-height:100%;"/>
+  <div class="card-divider meme-info">
+    <h5 id="memeModalTitle" class="meme-title"></h5>
+    <span id="memeModalUploader"></span>
+    <small>(<span id="memeModalDate"></span>)</small><br />
+    <small><span id="memeModalVotes"></span> Votes</small>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
+
 <script>
+$(document).foundation();
 function memeVote(id) {
   var vote_span = $('#meme-votes-' + id);
   var vote_icon = $('#vote-icon-' + id);
@@ -99,9 +114,18 @@ function memeVote(id) {
     vote_span.text(vote_icon.hasClass('meme-voted') ? curr_count - 1 : curr_count + 1);
     vote_icon.toggleClass('meme-voted').toggleClass('busy');
     vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
-  });
-  
+  }); 
+}
+function memePopout(id) {
+  $('#memeModal').foundation('destroy'); // Destroy any previous instantiations of modal
+  var popup = new Foundation.Reveal($('#memeModal'));
+  var card = $('#meme-card-' + id);
+  $('#memeModalImage').attr('src', card.find('img').attr('src'));
+  $('#memeModalTitle').text(card.find('.meme-title').text());
+  $('#memeModalDate').text(card.find('.meme-created-at').text());
+  $('#memeModalVotes').text(card.find('.meme-votes').text());
+  $('#memeModalUploader').text(card.find('.meme-uploader').text());
+  popup.open();
 }
 </script>
 
-<%- include('_partials/footer') -%>
