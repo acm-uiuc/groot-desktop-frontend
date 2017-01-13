@@ -1289,7 +1289,8 @@ app.get('/memes', function(req, res){
 			authenticated: isAuthenticated(req),
 			messages: req.flash('success'),
 			errors: req.flash('error'),
-			memes: memes
+			memes: memes,
+			admin: false
 		});
 	});
 });
@@ -1332,6 +1333,73 @@ app.post('/memes/upload', function(req, res) {
 			req.flash('success', "Meme uploaded! Waiting on admin approval.")
 		}
 		res.redirect('/memes');
+	});
+});
+
+app.get('/memes/admin', function(req, res) {
+	if(!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+	if(!(req.session.roles.isAdmin || req.session.roles.isAdmin || req.session.roles.isAdmin)) {
+		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
+		res.redirect('/memes');
+	}
+	request({
+		url: `${SERVICES_URL}/memes/unapproved`,
+		headers: {
+      "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    json: true
+	}, function(err, response, body) {
+		var memes = body.memes.map(function(meme) {
+			meme.created_at = moment(meme.created_at).fromNow();
+			return meme;
+		});
+		res.render('memes', {
+			authenticated: isAuthenticated(req),
+			messages: req.flash('success'),
+			errors: req.flash('error'),
+			memes: memes,
+			admin: true
+		});
+	});
+});
+
+app.post('/memes/admin/:meme_id', function(req, res) {
+	if(!isAuthenticated(req)) {
+		res.redirect('/login');
+	}
+	if(!(req.session.roles.isAdmin || req.session.roles.isAdmin || req.session.roles.isAdmin)) {
+		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
+		res.redirect('/memes');
+	}
+	var opts = {
+		headers: {
+      "Authorization": GROOT_RECRUITER_TOKEN
+    },
+    json: true,
+    qs: {
+    	token: req.session.student.token,
+    }
+	};
+	switch(req.query.action) {
+		case 'approve':
+			opts.method = "PUT";
+			opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}/approve`
+			opts.body = {}
+			break;
+		case 'reject':
+			opts.method = "DELETE";
+			opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}`
+			break;
+		default:
+			return req.status(400).send("Invalid action.");
+	}
+	request(opts, function(err, response, body){
+		console.log(body)
+		if(err) return res.status(500).send(err);
+		if(body.error) return res.status(500).send(body.error);
+		return res.redirect('/memes/admin');
 	});
 });
 

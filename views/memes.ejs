@@ -18,6 +18,9 @@ this license in a file with the distribution.
     <a href="/memes/upload">
       <button class="button meme-button">Upload</button>
     </a>
+    <% if(admin) { %>
+      <h3>Admin Page</h3>
+    <% } %>
     <% if ( messages.length > 0 ) { %>
     <div class="callout secondary">
       <p><%= messages %></p>
@@ -45,11 +48,26 @@ this license in a file with the distribution.
             <span class="meme-uploader"><%= memes[i].author %></span>
             <small>(<%= memes[i].created_at %>)</small>
           </div>
+          <% if(admin) { %>
+            <div class="card-section meme-info">
+              <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post">
+                  <button class="button" type="submit" name="approve">Approve</button>
+              </form>
+              <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post">
+                  <button class="button" type="submit" name="reject">Reject</button>
+              </form>
+            </div>
+          <% } %>
         </div>
       </div>
       <% if(i % 4 == 3) { %>
         </div>
       <% } %>
+    <% } %>
+    <% if (memes.length == 0) { %>
+      <div class="row">
+        <p>Nothing to see here... ¯\_ツ_/¯</p>
+      </div>
     <% } %>
   </div>
 </div>
