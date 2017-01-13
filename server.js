@@ -1285,6 +1285,9 @@ app.get('/memes', function(req, res){
     },
     json: true
 	}, function(err, response, body) {
+		if(err || body.error || !body.memes) {
+			res.status(500).send("Couldn't fetch memes. :'(")
+		}
 		var memes = body.memes.map(function(meme) {
 			meme.created_at = moment(meme.created_at).fromNow();
 			return meme;
@@ -1387,6 +1390,9 @@ app.get('/memes/admin', function(req, res) {
     },
     json: true
 	}, function(err, response, body) {
+		if(err || body.error || !body.memes) {
+			res.status(500).send("Couldn't fetch memes. :'(")
+		}
 		var memes = body.memes.map(function(meme) {
 			meme.created_at = moment(meme.created_at).fromNow();
 			return meme;
