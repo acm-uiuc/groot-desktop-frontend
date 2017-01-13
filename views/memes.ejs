@@ -99,8 +99,9 @@ this license in a file with the distribution.
 <script>
 $(document).foundation();
 function memeVote(id) {
-  var vote_span = $('#meme-votes-' + id);
-  var vote_icon = $('#vote-icon-' + id);
+  var card = $('#meme-card-' + id);
+  var vote_span = card.find('.meme-votes');
+  var vote_icon = card.find('i');
   if (vote_icon.hasClass('busy')) {
     return; // Vote request already sent
   }
