@@ -50,7 +50,7 @@ this license in a file with the distribution.
             <span class="meme-uploader"><%= memes[i].author %></span>
             <small>(<span class="meme-created-at"><%= memes[i].created_at %></span>)</small><br />
             <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
-            <a href="#" onclick="memeVote(<%= memes[i].id %>)"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
+            <a href="#" onclick="memeVote(<%= memes[i].id %>);return false;"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
           </div>
           <% if(adminPage) { %>
             <div class="card-section meme-info">

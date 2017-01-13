@@ -1333,7 +1333,7 @@ app.post('/memes/upload', function(req, res) {
 			return res.status(500).send(err)
 		}
 		if(body.error){
-			req.flash('error', body)
+			req.flash('error', body.error)
 		}
 		else {
 			req.flash('success', "Meme uploaded! Waiting on admin approval.")
@@ -1362,7 +1362,7 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 			return req.status(500).send(err)
 		}
 		if(body.error){
-			req.flash('error', body)
+			req.flash('error', body.error)
 		}
 		return res.send(200);
 	});
