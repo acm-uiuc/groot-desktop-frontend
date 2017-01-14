@@ -1353,7 +1353,7 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 		req.status(403).send();
 	}
 	request({
-		url: `${SERVICES_URL}/memes/vote/${req.params.meme_id}`,
+		url: `${SERVICES_URL}/memes/${req.params.meme_id}/vote`,
 		method: req.query.action === 'unvote' ? 'DELETE' : 'PUT',
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN,
