@@ -1277,14 +1277,14 @@ app.get('/memes', function(req, res){
 	request({
 		url: `${SERVICES_URL}/memes`,
 		headers: {
-      "Authorization": GROOT_ACCESS_TOKEN,
-      "Meme-Token": req.session.student.token
-    },
-    qs: {
-    	page: req.query.page,
-    	order: req.query.order
-    },
-    json: true
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Meme-Token": req.session.student.token
+		},
+		qs: {
+			page: req.query.page,
+			order: req.query.order
+		},
+		json: true
 	}, function(err, response, body) {
 		if(err || body.error || !body.memes) {
 			return res.status(500).send("Couldn't fetch memes. :'(")
@@ -1323,14 +1323,14 @@ app.post('/memes', function(req, res) {
 		url: `${SERVICES_URL}/memes`,
 		method: "POST",
 		headers: {
-      "Authorization": GROOT_ACCESS_TOKEN,
-      "Meme-Token": req.session.student.token
-    },
-    json: true,
-    body: {
-    	title: req.body.title,
-    	url: req.body.url
-    }
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Meme-Token": req.session.student.token
+		},
+		json: true,
+		body: {
+			title: req.body.title,
+			url: req.body.url
+		}
 	}, function(err, response, body){
 		if(err) {
 			return res.status(500).send(err)
@@ -1353,11 +1353,11 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 		url: `${SERVICES_URL}/memes/vote/${req.params.meme_id}`,
 		method: req.query.action === 'unvote' ? 'DELETE' : 'PUT',
 		headers: {
-      "Authorization": GROOT_ACCESS_TOKEN,
-      "Meme-Token": req.session.student.token
-    },
-    json: true,
-    body: {}
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Meme-Token": req.session.student.token
+		},
+		json: true,
+		body: {}
 	}, function(err, response, body){
 		if(err) {
 			return req.status(500).send(err)
@@ -1380,13 +1380,13 @@ app.get('/memes/admin', function(req, res) {
 	request({
 		url: `${SERVICES_URL}/memes/unapproved`,
 		headers: {
-      "Authorization": GROOT_ACCESS_TOKEN,
-      "Meme-Token": req.session.student.token
-    },
-    qs: {
-    	page: req.query.page
-    },
-    json: true
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Meme-Token": req.session.student.token
+		},
+		qs: {
+			page: req.query.page
+		},
+		json: true
 	}, function(err, response, body) {
 		if(err || body.error || !body.memes) {
 			return res.status(500).send("Couldn't fetch memes. :'(")
@@ -1418,10 +1418,10 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 	}
 	var opts = {
 		headers: {
-      "Authorization": GROOT_ACCESS_TOKEN,
-      "Meme-Token": req.session.student.token
-    },
-    json: true
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Meme-Token": req.session.student.token
+		},
+		json: true
 	};
 	switch(req.query.action) {
 		case 'approve':
