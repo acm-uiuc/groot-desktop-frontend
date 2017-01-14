@@ -1,0 +1,37 @@
+<% if (recruiters && recruiters.length != 0) { %>
+  <table id="accounts-table" class="dynatable-container">
+    <thead>
+      <tr>
+          <th>Company</th>
+          <th>Contact</th>
+          <th>Expires</th>
+          <th>Type</th>
+          <th>Action</th>
+      </tr>
+    </thead>
+    <% for (var recruiter of recruiters) { %>
+    <tr>
+      <td><%= recruiter.company_name %></td>
+      <td>
+        <%= recruiter.first_name + " " + recruiter.last_name%>
+        <br/>
+        <a href="mailto:<%= recruiter.email %>"><%= recruiter.email %></a>
+      </td>
+      <td><%= recruiter.expires_on %></td>
+      <td><%= recruiter.type %></td>
+      <td>
+          <% if (!recruiter.invited && !recruiter.is_sponsor) { %>
+            <a class="button" href="/corporate/accounts/<%= recruiter.id %>/invite">Invite</a>
+          <% } else if (!recruiter.is_sponsor) { %>
+            <p>Invited!</p>
+          <% } %>
+          <a class="button" onclick="renewRecruiter('<%= recruiter.id %>')">Renew</a>
+          <a class="button" href="/corporate/accounts/<%= recruiter.id %>">Edit</a>
+          <a class="button" onclick="deleteRecruiter('<%= recruiter.id %>')">Delete</a>
+      </td>
+    </tr>
+    <% } %>
+  </table>
+<% } else { %>
+  <h5>You have no recruiter accounts.</h5>
+<% } %>

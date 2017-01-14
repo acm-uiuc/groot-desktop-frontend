@@ -39,6 +39,7 @@
 **********************************/
 @import "components/nav.less";
 @import "components/footer.less";
+@import "components/dynatable.less";
 
 @import "partials/about.less";
 @import "partials/home.less";
@@ -149,5 +150,15 @@ a:hover {
     padding-right: 50px;
     padding-left: 20px;
     text-align: center;
+}
 
+.inline-form {
+    display: inline;
+    select {
+        width: auto;
+    }
+    label {
+        float: left;
+        padding-right: 0.5em;
+    }
 }

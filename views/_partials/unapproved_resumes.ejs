@@ -1,0 +1,35 @@
+<% if (unapproved_resumes && unapproved_resumes.length != 0) { %>
+  <h5>You have <%= unapproved_resumes.length %> unapproved resumes</h5>
+  <table id="unapproved-resumes-table" class="dynatable-container">
+    <thead>
+      <tr>
+        <th> Action </th> 
+        <th> Preview </th> 
+        <th> Data </th>
+      </tr>
+    </thead>
+    <% for (var resume of unapproved_resumes) { %>
+    <tr>
+      <td>
+        <a class="button" onclick="approveStudent('<%= resume.netid %>')">Approve</a>
+        <a class="button" onclick="deleteStudent('<%= resume.netid %>')">Delete</a>
+      </td>
+      <td>
+        <% if (resume.resume_url) { %>
+          <a target="_blank" href="<%= resume.resume_url%>">View resume</a>
+        <% } else { %>
+          Resume unavailable
+        <% } %>
+      </td>
+      <td>
+          Name: <%= resume.first_name + " " + resume.last_name %> <br>
+          Graduation Date: <%= resume.graduation_date %> <br>
+          Degree Type: <%= resume.degree_type %> <br>
+          Job Type: <%= resume.job_type %>
+      </td>
+    </tr>
+    <% } %>
+  </table>
+<% } else { %>
+  <h5>There are no unapproved resumes.</h5>
+<% } %>

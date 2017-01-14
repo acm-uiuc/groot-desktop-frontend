@@ -1,0 +1,123 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+<div id="resume-container">
+  <div class="row">
+    <% if (error) { %>
+        <p class="form-validation-error"><%= error %></p>
+    <% } else if (message) { %>
+        <p class="form-validation-success"><%= message %></p>
+    <% } %>
+    
+    <h2>Corporate Manager</h2>
+
+    <h3>Resume Manager </h3>
+    <div id="unapproved-resumes-partial">
+        <%- include('_partials/unapproved_resumes', { unapproved_resumes: unapproved_resumes }) %>
+    </div>
+
+    <h3>Resume Reminder</h3>
+    <form ref="uploadForm" method="post" action="/corporate/students/remind">
+        <div class="inline-form" style="float:left; padding-right:1em; vertical-align: middle;">
+            <p>Remind students who haven't updated their resume in:</p>
+        </div>
+        <div class="inline-form">
+            <select id="identified_students" name="lastUpdatedAt">
+            <% Object.keys(dates).forEach(function(key) { %>
+                <option value='"<%= dates[key] %>"' <%= key === dates_default ? "selected" : "" %> ><%= key %></option>
+            <% }); %>
+            </select>
+            <h5>
+                Identified Students:
+                <span id="remind_students_number"> </span>
+            </h5>
+            <button type="submit" class="button">Send Reminder</button>
+        </div>
+    </form>
+    
+    <h3>Job Post Manager</h3>
+    <div id="unapproved-jobs-partial">
+        <%- include('_partials/unapproved_jobs', { job_listings: job_listings }) %>
+    </div>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
+
+<script>
+    // Function calls are invoked from the buttons on each of the partials
+  function approveStudent(netid) {
+    $.ajax({
+        url: "/corporate/students/" + netid + "/approve",
+        method: "PUT",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+            $('#unapproved-resumes-table').dynatable();
+        }
+    });
+  }
+
+  function approveJob(jobId) {
+    $.ajax({
+        url: "/corporate/jobs/" + jobId + "/approve",
+        method: "PUT",
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
+            $('#job-post-table').dynatable();
+        }
+    });
+  }
+
+  function deleteStudent(netid) {
+      $.ajax({
+        url: "/corporate/students/" + netid,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-resumes-partial").html(response);
+            $('#unapproved-resumes-table').dynatable();
+        }
+    });
+  }
+
+  function deleteJob(jobId) {
+    $.ajax({
+        url: "/corporate/jobs/" + jobId,
+        method: "DELETE",
+        success: function(response) {
+            $("#unapproved-jobs-partial").html(response);
+            $('#job-post-table').dynatable();
+        }
+    });
+  }
+
+  function getIdentifiedStudents(date) {
+      $.ajax({
+          url: "/corporate/students/" + date,
+          method: "GET",
+          success: function(response) {
+              $("#remind_students_number").html(response.data.length);
+          }
+      });
+  }
+
+  $(document).ready(function() {
+      var date = $('#identified_students').find(":selected").val();
+      getIdentifiedStudents(date);
+
+      $('#job-post-table').dynatable();
+      $('#unapproved-resumes-table').dynatable();
+
+      $('select').on('change', function(e) {
+          var date = $('#identified_students').find(":selected").val();
+          getIdentifiedStudents(date);
+      });
+  });
+</script>
