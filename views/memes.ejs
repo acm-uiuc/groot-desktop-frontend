@@ -106,11 +106,16 @@ function memeVote(id) {
     url += '?action=unvote';
   }
   vote_icon.toggleClass('busy');
-  $.get(url, function(data) {
-    vote_span.text(vote_icon.hasClass('meme-voted') ? curr_count - 1 : curr_count + 1);
-    vote_icon.toggleClass('meme-voted').toggleClass('busy');
-    vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
-  }); 
+  $.ajax({
+    url: url,
+    statusCode: {
+      200: function() {
+        vote_span.text(vote_icon.hasClass('meme-voted') ? curr_count - 1 : curr_count + 1);
+        vote_icon.toggleClass('meme-voted').toggleClass('busy');
+        vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
+      }
+    } 
+  });    
 }
 function memePopout(id) {
   $('#memeModal').foundation('destroy'); // Destroy any previous instantiations of modal

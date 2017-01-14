@@ -1350,7 +1350,7 @@ app.post('/memes', function(req, res) {
 
 app.get('/memes/vote/:meme_id', function(req, res) {
 	if (!req.session.roles.isStudent) {
-		req.status(403).send();
+		return req.sendStatus(403);
 	}
 	request({
 		url: `${SERVICES_URL}/memes/${req.params.meme_id}/vote`,
@@ -1362,19 +1362,16 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 		json: true,
 		body: {}
 	}, function(err, response, body){
-		if(err) {
-			return req.status(500).send(err)
+		if(err || body.error) {
+			return req.status(500).send(err || body.error)
 		}
-		if(body.error){
-			req.flash('error', body.error)
-		}
-		return res.send(200);
+		return res.sendStatus(200);
 	});
 });
 
 app.post('/memes/admin/:meme_id', function(req, res) {
 	if(!req.session.roles.isStudent) {
-		req.status(403).send();
+		return req.sendStatus(403);
 	}
 	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
 		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
