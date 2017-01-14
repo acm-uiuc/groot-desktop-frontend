@@ -39,41 +39,33 @@ this license in a file with the distribution.
     </div>
     <% } %>
   </div>
-  <div class="meme-card-container">
+  <div class="meme-card-container row">
     <% for (var i = 0; i < memes.length; i++) { %>
-      <% if(i % 4 == 0) { %>
-        <div class="row meme-card-row">
-      <% } %>
-      <div class="small-4 columns">
-        <div id="meme-card-<%= memes[i].id %>" class="meme-card card" style="width:300px; max-height: 500px;">
-          <a href="#" onclick="memePopout(<%= memes[i].id %>); return false;">
-            <img class="meme-image" src="<%= memes[i].url %>" />
-          </a>
-          
-          <div class="card-section meme-info">
-            <% if(memes[i].title) { %>
-              <h5 class="meme-title"><%= memes[i].title %></h5>
-            <% } %>
-            <span class="meme-uploader"><%= memes[i].author %></span>
-            <small>(<span class="meme-created-at"><%= memes[i].created_at %></span>)</small><br />
-            <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
-            <a href="#" onclick="memeVote(<%= memes[i].id %>);return false;"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
-          </div>
-          <% if(adminPage) { %>
-            <div class="card-section meme-info">
-              <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post" style="display:inline;">
-                  <button class="button" type="submit" name="approve" >Approve</button>
-              </form>
-              <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post" style="display:inline;">
-                  <button class="button" type="submit" name="reject" style="float:right;">Reject</button>
-              </form>
-            </div>
+      <div id="meme-card-<%= memes[i].id %>" class="meme-card card">
+        <a href="#" onclick="memePopout(<%= memes[i].id %>); return false;">
+          <img class="meme-image" src="<%= memes[i].url %>" />
+        </a>
+        
+        <div class="card-section meme-info">
+          <% if(memes[i].title) { %>
+            <h5 class="meme-title"><%= memes[i].title %></h5>
           <% } %>
+          <span class="meme-uploader"><%= memes[i].author %></span>
+          <small>(<span class="meme-created-at"><%= memes[i].created_at %></span>)</small><br />
+          <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
+          <a href="#" onclick="memeVote(<%= memes[i].id %>);return false;"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
         </div>
+        <% if(adminPage) { %>
+          <div class="card-section meme-info">
+            <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post" style="display:inline;">
+                <button class="button" type="submit" name="approve" >Approve</button>
+            </form>
+            <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post" style="display:inline;">
+                <button class="button" type="submit" name="reject" style="float:right;">Reject</button>
+            </form>
+          </div>
+        <% } %>
       </div>
-      <% if(i % 4 == 3) { %>
-        </div>
-      <% } %>
     <% } %>
     <% if (memes.length == 0) { %>
       <div class="row">
