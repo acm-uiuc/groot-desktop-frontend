@@ -16,16 +16,12 @@ this license in a file with the distribution.
   <div class="meme-header row">
     <h2>Memes</h2>
     <a class="button meme-button" href="/memes/upload">Upload</a>
+    <br />
+    <a class='meme-order-link' href='?order=latest'>Latest</a>
+    <a class='meme-order-link' href='?order=top'>Top</a>
+    <a class='meme-order-link' href='?order=hottest'>Hottest</a>
     <% if(isAdmin) { %>
-      <a class="button meme-button" href="<%= adminPage ? '/memes' : '/memes/admin' %>"><%= adminPage ? 'Return' : 'Admin Panel'%></a>
-    <% } %>
-    <% if(adminPage) { %>
-      <h3>Admin Page</h3>
-    <% } else { %>
-      <br />
-      <a class='meme-order-link' href='?order=latest'>Latest</a>
-      <a class='meme-order-link' href='?order=top'>Top</a>
-      <a class='meme-order-link' href='?order=hottest'>Hottest</a>
+      <a class='meme-order-link' href='?order=unapproved'>Unapproved</a>
     <% } %>
 
     <% if ( messages.length > 0 ) { %>
@@ -55,7 +51,7 @@ this license in a file with the distribution.
           <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
           <a href="#" onclick="memeVote(<%= memes[i].id %>);return false;"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
         </div>
-        <% if(adminPage) { %>
+        <% if(isAdmin && memes[i].unapproved) { %>
           <div class="card-section meme-info">
             <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post" style="display:inline;">
                 <button class="button" type="submit" name="approve" >Approve</button>

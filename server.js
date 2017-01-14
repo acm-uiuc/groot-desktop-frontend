@@ -1274,6 +1274,10 @@ app.get('/memes', function(req, res){
 	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
+	if(req.query.order == 'unapproved' && !(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
+		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
+		return res.redirect('/memes');
+	}
 	request({
 		url: `${SERVICES_URL}/memes`,
 		headers: {
@@ -1300,7 +1304,6 @@ app.get('/memes', function(req, res){
 			memes: memes,
 			nextPage: body.next_page,
 			prevPage: body.prev_page,
-			adminPage: false,
 			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
 		});
 	});
@@ -1366,45 +1369,6 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 			req.flash('error', body.error)
 		}
 		return res.send(200);
-	});
-});
-
-app.get('/memes/admin', function(req, res) {
-	if(!req.session.roles.isStudent) {
-		return res.redirect('/login');
-	}
-	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
-		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
-		return res.redirect('/memes');
-	}
-	request({
-		url: `${SERVICES_URL}/memes/unapproved`,
-		headers: {
-			"Authorization": GROOT_ACCESS_TOKEN,
-			"Meme-Token": req.session.student.token
-		},
-		qs: {
-			page: req.query.page
-		},
-		json: true
-	}, function(err, response, body) {
-		if(err || body.error || !body.memes) {
-			return res.status(500).send("Couldn't fetch memes. :'(")
-		}
-		var memes = body.memes.map(function(meme) {
-			meme.created_at = moment(meme.created_at).fromNow();
-			return meme;
-		});
-		res.render('memes', {
-			authenticated: isAuthenticated(req),
-			messages: req.flash('success'),
-			errors: req.flash('error'),
-			memes: memes,
-			nextPage: body.next_page,
-			prevPage: body.prev_page,
-			adminPage: true,
-			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
-		});
 	});
 });
 
