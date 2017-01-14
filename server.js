@@ -1271,16 +1271,16 @@ app.get('/sponsors/sponsors_list', function(req, res) {
 });
 
 app.get('/memes', function(req, res){
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
 	request({
 		url: `${SERVICES_URL}/memes`,
 		headers: {
-      "Authorization": GROOT_RECRUITER_TOKEN
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Meme-Token": req.session.student.token
     },
     qs: {
-    	token: req.session.student.token,
     	page: req.query.page,
     	order: req.query.order
     },
@@ -1307,7 +1307,7 @@ app.get('/memes', function(req, res){
 });
 
 app.get('/memes/upload', function(req, res) {
-	if (!isAuthenticated(req)) {
+	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
 	res.render('meme_upload', {
@@ -1315,20 +1315,18 @@ app.get('/memes/upload', function(req, res) {
 	});
 });
 
-app.post('/memes/upload', function(req, res) {
-	if (!isAuthenticated(req)) {
+app.post('/memes', function(req, res) {
+	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
 	request({
 		url: `${SERVICES_URL}/memes`,
 		method: "POST",
 		headers: {
-      "Authorization": GROOT_RECRUITER_TOKEN
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Meme-Token": req.session.student.token
     },
     json: true,
-    qs: {
-    	token: req.session.student.token,
-    },
     body: {
     	title: req.body.title,
     	url: req.body.url
@@ -1348,19 +1346,17 @@ app.post('/memes/upload', function(req, res) {
 });
 
 app.get('/memes/vote/:meme_id', function(req, res) {
-	if (!isAuthenticated(req)) {
-		res.redirect('/login');
+	if (!req.session.roles.isStudent) {
+		req.status(403).send();
 	}
 	request({
 		url: `${SERVICES_URL}/memes/vote/${req.params.meme_id}`,
 		method: req.query.action === 'unvote' ? 'DELETE' : 'PUT',
 		headers: {
-      "Authorization": GROOT_RECRUITER_TOKEN
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Meme-Token": req.session.student.token
     },
     json: true,
-    qs: {
-    	token: req.session.student.token,
-    },
     body: {}
 	}, function(err, response, body){
 		if(err) {
@@ -1374,20 +1370,20 @@ app.get('/memes/vote/:meme_id', function(req, res) {
 });
 
 app.get('/memes/admin', function(req, res) {
-	if(!isAuthenticated(req)) {
+	if(!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
-	if(!(req.session.roles.isAdmin || req.session.roles.isAdmin || req.session.roles.isAdmin)) {
+	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
 		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
 		return res.redirect('/memes');
 	}
 	request({
 		url: `${SERVICES_URL}/memes/unapproved`,
 		headers: {
-      "Authorization": GROOT_RECRUITER_TOKEN
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Meme-Token": req.session.student.token
     },
     qs: {
-    	token: req.session.student.token,
     	page: req.query.page
     },
     json: true
@@ -1413,21 +1409,19 @@ app.get('/memes/admin', function(req, res) {
 });
 
 app.post('/memes/admin/:meme_id', function(req, res) {
-	if(!isAuthenticated(req)) {
-		res.redirect('/login');
+	if(!req.session.roles.isStudent) {
+		req.status(403).send();
 	}
-	if(!(req.session.roles.isAdmin || req.session.roles.isAdmin || req.session.roles.isAdmin)) {
+	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
 		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
-		res.redirect('/memes');
+		return res.redirect('/memes');
 	}
 	var opts = {
 		headers: {
-      "Authorization": GROOT_RECRUITER_TOKEN
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Meme-Token": req.session.student.token
     },
-    json: true,
-    qs: {
-    	token: req.session.student.token,
-    }
+    json: true
 	};
 	switch(req.query.action) {
 		case 'approve':
