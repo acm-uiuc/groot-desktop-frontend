@@ -17,9 +17,9 @@ this license in a file with the distribution.
       <div class="field-group required">
         <label for="url" class="field-label">Image URL
           <div class="field">
-            <input type="text" name="url" required pattern="https?:\/\/.*\.(?:png|jpg)"/>
+            <input type="text" name="url" required pattern="(https?://)?(\w+\.)?imgur.com/((\w*\d*)+)(\.[a-zA-Z]{3})?$"/>
           </div>
-          <p class="help-text" id="urlHelpText">Your image URL must point to a jpg or png.</p>
+          <p class="help-text" id="urlHelpText">Your image URL must point to a valid <a href="https://imgur.com">imgur</a> image (not an album or gallery).</p>
         </label>
       </div>
       <div class="field-group required">

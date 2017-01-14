@@ -1337,8 +1337,8 @@ app.post('/memes/upload', function(req, res) {
 		if(err) {
 			return res.status(500).send(err)
 		}
-		if(body.error){
-			req.flash('error', body.error)
+		if(response.statusCode != 200 || body.error){
+			req.flash('error', body.error || "Something went wrong... :'(")
 		}
 		else {
 			req.flash('success', "Meme uploaded! Waiting on admin approval.")
