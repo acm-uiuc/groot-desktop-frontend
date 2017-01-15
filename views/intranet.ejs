@@ -143,32 +143,5 @@ this license in a file with the distribution.
 </div>
 
 <%- include('_partials/footer') -%>
+<%- include('_partials/events') -%>
 
-<script>
-  $.ajax({
-      url: "/intranet/events/upcoming",
-      method: "GET",
-      success: function(events) {
-        $('.fb_events').empty();
-        for (var event of events) {
-          var sameDate = (
-            new Date(event.start_time).toISOString().split("T")[0] == 
-            new Date(event.end_time).toISOString().split("T")[0]
-          );
-
-          var dateString = sameDate
-            ? event.start_time + " - " + event.end_time.split(", ")[1]
-            : event.start_time + " - " + event.end_time;
-
-          $('.fb_events').append(
-            "<div class='event'> \
-              <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
-              <ul class='dashed'> \
-                <li>" + dateString + "</li> \
-              </ul> \
-            </div>"
-          );
-        }
-      }
-  });
-</script>

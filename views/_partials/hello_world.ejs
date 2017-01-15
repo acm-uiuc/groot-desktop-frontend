@@ -1,0 +1,17 @@
+<script>
+  (function(){
+    var message_str = "echo Hello, World!"
+    var showText = function(target, message, index, interval) {
+        if (index < message.length) {
+            $(target).append(message[index++]);
+            setTimeout(function() {
+                showText(target, message, index, interval);
+            }, interval);
+        }
+    }
+    console.log($)
+    $(function() {
+        showText("#qualities", message_str, -1, 150);
+    });
+  })()
+</script>

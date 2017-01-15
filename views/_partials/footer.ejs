@@ -2,23 +2,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="/js/serialize_resume.js"></script>
 <script src="/js/jquery.dynatable.js"></script>
-<script>
-  (function(){
-    var message_str = "echo Hello, World!"
-    var showText = function(target, message, index, interval) {
-        if (index < message.length) {
-            $(target).append(message[index++]);
-            setTimeout(function() {
-                showText(target, message, index, interval);
-            }, interval);
-        }
-    }
-    console.log($)
-    $(function() {
-        showText("#qualities", message_str, -1, 150);
-    });
-  })()
-</script>
 </body>
     <footer class="footer">
         <div class="small-4 medium-4 large-4 columns">
