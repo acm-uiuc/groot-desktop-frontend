@@ -1253,11 +1253,7 @@ app.post('/corporate/resumes', function(req, res) {
 	});
 });
 
-app.get('/intranet/events/upcoming', function(req, res) {
-	if (!isAuthenticated(req)) {
-		res.redirect('/login');
-	}
-
+app.get('/events/upcoming', function(req, res) {
 	request({
 		url: `${SERVICES_URL}/events/upcoming`,
 		method: "GET",
