@@ -314,9 +314,15 @@ app.get('/conference', function(req, res) {
 	})
 });
 
-app.get('/events', function(req, res) {
-	res.render('events', {
+app.get('/hackillinois', function(req, res) {
+	res.render('hackillinois', {
 		authenticated: req.session.auth,
+		editions: [
+			{ year: '2017', path: 'https://hackillinois.org' },	
+			{ year: '2016', path: 'https://2016.hackillinois.org' },
+			{ year: '2015', path: 'https://2015.hackillinois.org' },
+			{ year: '2014', path: 'https://2014.hackillinois.org' },	
+		]
 	});
 });
 
