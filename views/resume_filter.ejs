@@ -14,66 +14,98 @@ this license in a file with the distribution.
   <div class="row">
     <h2>ACM@UIUC Resume Book </h2>
     <p>You can filter the resumes by categories below. <br> If you have any trouble accessing resume, please contact us at <a href="mailto:corporate@acm.illinois.edu">corporate@acm.illinois.edu</a></p>
-      <form>
+      <form method="post" action="/corporate/resumes">
         <div class="field-group">
-          <label for="name" class="field-label">Name </label>
+          <label for="name" class="field-label">First Name </label>
           <div class="field">
-            <input id="name" type="text" name="name" maxlength="20" />
+            <input id="name" type="text" name="name" maxlength="20" value="<%= defaults.name %>" />
           </div>
         </div>
         <div class="field-group">
           <label for="netid" class="field-label">NetID</label>
           <div class="field">
-            <input id="netid" type="text" name="netid" maxlength="15"/>
+            <input id="netid" type="text" name="netid" maxlength="15" value="<%= defaults.netid %>"/>
           </div>
         </div>
         <div class="field-group">
-          <label for="gradYear" class="field-label">Graduating:</label>
-          <select id="grad_year" name="gradYear">
-          <% for (var option of grad.years) { %>
-            <option value= <%= option.date %> > <%= option.date %> </option>
-          <% } %>
-        </select> to   <select id="grad_year" name="gradYear">
-          <% for (var option of grad.years) { %>
-            <option value= <%= option.date %> > <%= option.date %> </option>
-          <% } %>
-        </select>
+          <div class="inline-form" style="float:left; padding-right:1em;">
+            <label for="grad_year_start" class="field-label">Graduating From:</label>
+            <select id="grad_year_start" name="gradYearStart">
+              <option value="" <%= defaults.gradYearStart ? "selected" : "" %>></option>
+              <% for (var option of grad.years) { %>
+                <option value= "<%= option.date %>" <%= option.date === defaults.gradYearStart ? "selected" : "" %> > <%= option.date %> </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="inline-form">
+            <label for="grad_year_end" class="field-label">Until:</label>
+            <select id="grad_year_end" name="gradYearEnd">
+              <option value="" <%= defaults.gradYearEnd ? "selected" : "" %>></option>
+              <% for (var option of grad.years) { %>
+                <option value="<%= option.date %>" <%= option.date === defaults.gradYearEnd  ? "selected" : "" %> %> > <%= option.date %> </option>
+              <% } %>
+            </select>
+          </div>
         </div>
         <div class="field-group">
           <label for="degreeType" class="field-label">Level</label>
           <select id="degree_type" name="degreeType">
-          <% for (var option of degree.types) { %>
-            <option value= <%= option.name %> > <%= option.name %> </option>
-          <% } %>
+            <option value="" <%= defaults.degreeType ? "selected" : "" %>></option>
+            <% for (var option of degree.types) { %>
+              <option value="<%= option.name %>" <%= option.name === defaults.degreeType ? "selected" : "" %> > <%= option.name %> </option>
+            <% } %>
           </select>
         </div>
         <div class="field-group">
           <label for="jobType" class="field-label">Seeking</label>
           <select id="job_type" name="jobType" >
+            <option value="" <%= defaults.jobType ? "selected" : "" %>></option>
             <% for (var option of job.types) { %>
-              <option value= <%= option.name %> > <%= option.name %> </option>
+              <option value="<%= option.name %>" <%= option.name === defaults.jobType ? "selected" : "" %> > <%= option.name %> </option>
             <% } %>
           </select>
         </div>
         <div class="control-group">
         <div class="controls">
-          <button type="submit" ng-click="Search()" class="button">Search</button>
+          <button type="submit" class="button">Search</button>
         </div>
       </div>
-      </form>
-      <table>
-        <tr>
-            <th>Name </th>
-            <th>Graduation </th>
-            <th>Level </th>
-            <th>Seeking </th>
-            <th>Resume </th>
+      <table id="resume-table" class="dynatable-container">
+        <thead>
+          <tr>
+              <th>Name </th>
+              <th>NetID </th>
+              <th>Graduation </th>
+              <th>Level </th>
+              <th>Seeking </th>
+              <th>Resume </th>
+          </tr>
+        </thead>
+        <% for (var resume of resumes) { %>
+          <tr>
+            <td><%= resume.first_name %> <%= resume.last_name %></td>
+            <td><%= resume.netid %></td>
+            <td><%= resume.graduation_date %></td>
+            <td><%= resume.degree_type %></td>
+            <td><%= resume.job_type %></td>
+            <td><a href="<%= resume.resume_url %>" target="_blank">View Resume</a></td>
+          </tr>
+        <% } %>
       </table>
+    </form>
   </div>
 </div>
 
 
-
-
-
 <%- include('_partials/footer') -%>
+
+<script>
+  $("#resume-table").dynatable({
+    features: {
+      search: false
+    },
+    dataset: {
+        perPageDefault: 20
+    }
+  });
+</script>

@@ -1,0 +1,49 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div id="home-container" class="row">
+	<div id="main-container" class="small-12 medium-9 large-9 columns">
+		<div id="links-top" class="row">
+			<h2>Pre Members</h2>
+			<% if (locals.message && message === "user-add-success") { %>
+			<p>The member was added successfully!</p>
+			<% } else if (locals.message && message === "error") { %>
+				<p>There was an issue, and the member may not have been added.  Please contact someone from the Admin committee.</p>
+			<% } %>
+
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Mark Paid</th> 
+						<th>Netid</th>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Submitted</th>
+					<tr>
+				</thead>
+				<tbody>
+					<% for (var preuser of premembers) { %>
+					<tr>
+						<td><a href="/intranet/userApproval/<%=preuser.netid%>" class="btn">Paid</a>
+						<td><%=preuser.netid%></td>
+						<td><%=preuser.first_name%></td>
+						<td><%=preuser.last_name%></td>
+						<td><%=new Date(preuser.created_at).toLocaleString() %></td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<%- include('_partials/footer') -%>

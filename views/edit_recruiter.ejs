@@ -1,0 +1,59 @@
+<!--
+Copyright © 2016, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div id="edit-recruiter-container">
+  <div class="row">
+    <% if (error) { %>
+        <p class="form-validation-error"><%- error %></p>
+    <% } %>
+
+    <h3>Editing Recruiter</h3>
+    <form method="post">
+      <div class="field-group required">
+        <label for="company_name" class="field-albe">Company Name </label>
+        <div class="field">
+          <input id="company_name" type="text" name="company_name" maxlength="16" value="<%= recruiter.company_name %>" />
+      </div>
+      <div class="field-group required">
+          <label for="first_name" class="field-label">First Name</label>
+          <div class="field">
+              <input id="first_name" type="text" name="first_name" maxlength="32" value="<%= recruiter.first_name %>" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="last_name" class="field-label">Last Name</label>
+          <div class="field">
+              <input id="last_name" type="text" name="last_name" maxlength="32" value="<%= recruiter.last_name %>" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="email" class="field-label">Contact Email</label>
+          <div class="field">
+              <input id="email" type="text" name="email" value="<%= recruiter.email %>" />
+          </div>
+      </div>
+      <div class="field-group required">
+        <label for="recruiter_type" class="field-label">Recruiter Type</label>
+        <select id="recruiter_type" name="type">
+          <% for (var option of recruiter_types.types) { %>
+            <option value= "<%= option.name %>" <%= recruiter.type == option.name ? "selected" : "" %> > <%= option.name %> </option>
+          <% } %>
+        </select>
+      </div>
+      <div class="controls">
+          <button type="submit" class="button">Update Account</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
