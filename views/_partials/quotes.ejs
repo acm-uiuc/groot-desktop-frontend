@@ -1,0 +1,34 @@
+<% if (quotes && quotes.length != 0) { %>
+      <table id="quotes-table" class="dynatable-container">
+        <thead>
+          <tr>
+            <th> Author </th>
+            <th> Source </th>
+            <th> Quote </th>
+            <th> Votes </th>
+          </tr>
+        </thead>
+        <% for (var q of quotes) { %>
+          <% if (isAdmin || !isAdmin && q.approved) { %>
+            <tr class="quote <%= q.approved? 'approved' : 'unapproved' %>">
+              <td> <%= q.author %> </td>
+              <td> <%= q.source %> </td>
+              <td> "<%= q.text %>" </td>
+              <td>
+                <a href="#" onClick="voteQuote('<%= q.id %>')">
+                  <i id="vote-icon-<%= q.id %>" class="fa <%= q.upvoted ? "fa-thumbs-up voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i>
+                </a>
+                <span id="quote-counter-<%=q.id%>"><%= q.votes %></span> Votes
+
+                <% if (isAdmin) { %>
+                  <% if (!q.approved) { %>
+                    <a href="#" onClick="approveQuote('<%= q.id %>')" class="button">Approve</a>
+                  <% } %>
+                  <a href="#" onClick="deleteQuote('<%= q.id %>')" class="button">Delete</a>
+                <% } %>
+              </td>
+            </tr>
+          <% } %>
+        <% } %>
+      </table>
+    <% } %>
