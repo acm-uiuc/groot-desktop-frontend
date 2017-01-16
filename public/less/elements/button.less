@@ -10,6 +10,7 @@
 
 .button {
     background: @font-color;
+    .monospace-font();
     vertical-align: middle;
     transform: translateY(15%);
     transition: all 0.5s ease-out;
@@ -21,7 +22,7 @@
     color: @background-color;
     .monospace-font();
     text-decoration: underline;
-    background: @button-color-lighter;
+    background: @button-hover-color;
 }
 .button:active {
     color: @background-color;
