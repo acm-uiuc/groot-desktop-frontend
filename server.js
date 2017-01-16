@@ -107,9 +107,9 @@ app.post('/login', function(req, res){
 				req.session.roles.isStudent = true;
 
 				setAuthentication(req, res, function(req, res) {
-					// getUserData(req, res, function(req, res){
+					getUserData(req, res, function(req, res){
 						res.redirect('/intranet');
-					// });
+					});
 				});
 			} else {
 				console.log("Error: " + body["reason"]);
@@ -1273,7 +1273,8 @@ app.get('/intranet/quotes', function(req, res) {
 			quotes: body.data,
 			error: req.query.error,
 			success: req.query.success,
-			isAdmin: validApprovalAuth(req)
+			isAdmin: validApprovalAuth(req),
+			netid: req.session.student.netid
 		});
 	});
 });
@@ -1415,7 +1416,7 @@ app.get('/memes', function(req, res){
 	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
-	if(req.query.order == 'unapproved' && !(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
+	if(req.query.order == 'unapproved' && !validApprovalAuth(req)) {
 		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
 		return res.redirect('/memes');
 	}
@@ -1445,7 +1446,7 @@ app.get('/memes', function(req, res){
 			memes: memes,
 			nextPage: body.next_page,
 			prevPage: body.prev_page,
-			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
+			isAdmin: validApprovalAuth(req)
 		});
 	});
 });
@@ -1514,7 +1515,7 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 	if(!req.session.roles.isStudent) {
 		return req.sendStatus(403);
 	}
-	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
+	if(!validApprovalAuth(req)) {
 		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
 		return res.redirect('/memes');
 	}
