@@ -19,99 +19,47 @@
   <body>
     <div class="viewbox">
       <div class="top-bar nav">
-        <!--
-        <div class="desktop">
-          <div class="top-bar-left">
-            <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-              <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="/images/acm-logo-flat.svg" class="logo"/>
-                    <h3 id="title-text">ACM@UIUC</h3></a></span></li>
-                    <li class="nav-loc">
-                      <a href="/about" > About </a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/sigs" >SIGs</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/conference" >Reflections|Projections</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/hackillinois" >HackIllinois</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/sponsors" >Sponsors</a>
-                    </li>
-                    <% if (!authenticated) { %>
-                      <li class="nav-loc">
-                        <a href="/join" >Join</a>
-                      </li>
-                    <% }  else { %>
-                      <li class="nav-loc">
-                        <a href="/intranet" >Intranet</a>
-                      </li>
-                    <% } %>
-            </ul>
-          </div>
-          <div class="top-bar-right">
-            <div class="top-bar-right">
-              <ul class="dropdown menu">
-                <% if (!authenticated) { %>
-                  <li><a id="nav-login" href="/login">
-                    <button id="login" class="button">Login</button></a></li>
-                <% } else { %>
-                  <li><a id="nav-login" href="/logout">
-                    <button id="logout" class="button">Logout</button></a></li>
-                <% } %>
-              </ul>
-            </div>
-          </div>
-        </div>
-        -->
-        <div class="mobile">
-         <div class="top-bar-left">
+        <div class="top-bar-left">
           <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
             <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="/images/acm-logo-flat.svg" class="logo"/>
                   <h3 id="title-text">ACM@UIUC</h3></a></span></li>
+                  <li class="nav-loc">
+                    <a href="/about" > About </a>
+                  </li>
+                  <li class="nav-loc">
+                    <a href="/sigs" >SIGs</a>
+                  </li>
+                  <li class="nav-loc">
+                    <a href="/conference" >Reflections|Projections</a>
+                  </li>
+                  <li class="nav-loc">
+                    <a href="/hackillinois" >HackIllinois</a>
+                  </li>
+                  <li class="nav-loc">
+                    <a href="/sponsors" >Sponsors</a>
+                  </li>
+                  <% if (!authenticated) { %>
+                    <li class="nav-loc">
+                      <a href="/join" >Join</a>
+                    </li>
+                  <% }  else { %>
+                    <li class="nav-loc">
+                      <a href="/intranet" >Intranet</a>
+                    </li>
+                  <% } %>
           </ul>
         </div>
         <div class="top-bar-right">
           <div class="top-bar-right">
             <ul class="dropdown menu">
-                <li><button id="menu" class="button"><img src="/images/menu.png"/></button></li>
+              <% if (!authenticated) { %>
+                <li><a id="nav-login" href="/login">
+                  <button id="login" class="button">Login</button></a></li>
+              <% } else { %>
+                <li><a id="nav-login" href="/logout">
+                  <button id="logout" class="button">Logout</button></a></li>
+              <% } %>
             </ul>
-            <nav>
-              <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-                    <li class="nav-loc">
-                      <a href="/about" > About </a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/sigs" >SIGs</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/conference" >Reflections|Projections</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/hackillinois" >HackIllinois</a>
-                    </li>
-                    <li class="nav-loc">
-                      <a href="/sponsors" >Sponsors</a>
-                    </li>
-                    <% if (!authenticated) { %>
-                      <li class="nav-loc">
-                        <a href="/join" >Join</a>
-                      </li>
-                    <% }  else { %>
-                      <li class="nav-loc">
-                        <a href="/intranet" >Intranet</a>
-                      </li>
-                    <% } %>
-                    <% if (!authenticated) { %>
-                      <li><a id="nav-login" href="/login">Login</a></li>
-                    <% } else { %>
-                      <li><a id="nav-login" href="/logout">Logout</a></li>
-                    <% } %>
-                </ul>
-            </nav>
           </div>
-        </div>
         </div>
       </div>
