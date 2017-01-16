@@ -435,7 +435,7 @@ app.get('/intranet', function(req, res) {
 	}
 	
 	res.render('intranet', {
-		authenticated: true,
+		authenticated: isAuthenticated(req),
 		session: req.session
 	});
 });
@@ -461,7 +461,7 @@ app.get('/intranet/userApproval', function(req, res){
 			return res.status(500).send("Sorry, there was a server error.  Please try again.");
 		}
 		res.render('userApproval', {
-			authenticated: true,
+			authenticated: isAuthenticated(req),
 			session:req.session,
 			premembers: body,
 			message: req.query.message

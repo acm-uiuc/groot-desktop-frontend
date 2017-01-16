@@ -17,7 +17,9 @@ this license in a file with the distribution.
         <h3>Your information</h3>
 
         <h5>Hello, <%= session.username %></p>
-        <% if (session.roles.isAdmin) { %>
+        <% if (session.roles.isTop4) { %>
+        <p> You are part of Top 4 </p>
+        <% } else if (session.roles.isAdmin) { %>
         <p>You are an admin</p>
         <% } else if (session.roles.isRecruiter) { %>
         <p>You are a recruiter at <%= session.recruiter.company_name %></p>
