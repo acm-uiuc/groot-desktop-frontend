@@ -130,16 +130,14 @@ app.post('/sponsors/login', function(req, res) {
 		json: true,
 		body: req.body
 	}, function(err, response, body) {
-		if (!error && response && response.statusCode == 200) {
+		if (!err && response && response.statusCode == 200) {
 			// Contains JWT token
 			req.session.recruiter = body.data;
 
 			req.session.username = body.data.first_name;
 			req.session.roles.isRecruiter = true;
 			
-			setAuthentication(req, res, function(req, res) {
-				res.redirect('/intranet');
-			});
+			res.redirect('/intranet');
 		} else {
 			res.render('recruiter_login', {
 				authenticated: false,
@@ -1268,14 +1266,18 @@ app.get('/intranet/quotes', function(req, res) {
 			"Token": req.session.student.token
 		}
 	}, function(error, response, body) {
-		res.render('quotes', {
-			authenticated: true,
-			quotes: body.data,
-			error: req.query.error,
-			success: req.query.success,
-			isAdmin: validApprovalAuth(req),
-			netid: req.session.student.netid
-		});
+		if (!error && response && response.statusCode == 200 && body) {
+			res.render('quotes', {
+				authenticated: true,
+				quotes: body.data,
+				error: req.query.error,
+				success: req.query.success,
+				isAdmin: validApprovalAuth(req),
+				netid: req.session.student.netid
+			});
+		} else {
+			res.status(500).send(error);
+		}
 	});
 });
 
@@ -1370,7 +1372,7 @@ app.put('/intranet/quotes/:quoteId/approve', function(req, res) {
 		if (response && response.statusCode == 200 && body) {
 			res.status(200).send(ejs.render("<%- include('" + absQuotesPath + "') %>", { quotes : body.data, isAdmin: validApprovalAuth(req) } ));
 		} else {
-			res.status(response.statusCode).send(body.error);
+			res.status(response.statusCode).send(error);
 		}
 	});
 });
@@ -1460,7 +1462,7 @@ app.get('/memes/upload', function(req, res) {
 	});
 });
 
-app.post('/memes', function(req, res) {
+app.post('/memes/upload', function(req, res) {
 	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
@@ -1543,7 +1545,7 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 		console.log(body)
 		if(err) return res.status(500).send(err);
 		if(body.error) return res.status(500).send(body.error);
-		return res.redirect('/memes/admin');
+		return res.redirect('/memes');
 	});
 });
 
