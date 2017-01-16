@@ -26,7 +26,7 @@ this license in a file with the distribution.
         <% } else if (session.roles.isCorporate) { %>
         <p>You're a member of the corporate committee.</p>
         <% } else { %>
-        <p>You are not an admin.</p>
+       
         <% } %>
       </div>
     </div>
@@ -120,30 +120,31 @@ this license in a file with the distribution.
 
   <div id="events-container" class="small-12 medium-3 large-3 columns">
     <div id="events-title" class="row">
-      <h2>Important Links</h2>
+      <h2>Links</h2>
     </div>
     <div id="events" class="row">
       <div class="event">
-      </div>
-    </div>
-
-    <div id="events-title" class="row">
-      <h2>Upcoming Events</h2>
-    </div>
-    <div id="events" class="row fb_events"></div>
-    
-    <% if (session.roles.isStudent) { %>
-      <div id="events-title" class="row">
-        <h2>Service Manager</h2>
-      </div>
-      <div id="events" class="row">
         <div class="event">
+          <ul class="dashed">
+            <li><a href="http://acm.illinois.edu/wiki">ACM Wiki</a></li>
+          </ul>
+        </div>
+        <div class="event">
+          <ul class="dashed">
+            <li><a href="https://www-s.acm.illinois.edu/mailman/listinfo">Mailing Lists </a></li>
+          </ul>
+        </div>
+        <div class="event">
+          <ul class="dashed">
+            <li><a href="https://www.facebook.com/groups/uiucacm/">ACM FB Group</a></li>
+          </ul>
         </div>
       </div>
-    <% } %>
+    </div>
   </div>
 </div>
-
+<div class="footer_padding">
+</div>
 <%- include('_partials/footer') -%>
 
 
