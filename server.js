@@ -419,9 +419,15 @@ app.get('/conference', function(req, res) {
 	})
 });
 
-app.get('/events', function(req, res) {
-	res.render('events', {
+app.get('/hackillinois', function(req, res) {
+	res.render('hackillinois', {
 		authenticated: isAuthenticated(req),
+		editions: [
+			{ year: '2017', path: 'https://hackillinois.org' },	
+			{ year: '2016', path: 'https://2016.hackillinois.org' },
+			{ year: '2015', path: 'https://2015.hackillinois.org' },
+			{ year: '2014', path: 'https://2014.hackillinois.org' },	
+		]
 	});
 });
 
@@ -431,7 +437,7 @@ app.get('/intranet', function(req, res) {
 	}
 	
 	res.render('intranet', {
-		authenticated: true,
+		authenticated: isAuthenticated(req),
 		session: req.session
 	});
 });
@@ -457,7 +463,7 @@ app.get('/intranet/userApproval', function(req, res){
 			return res.status(500).send("Sorry, there was a server error.  Please try again.");
 		}
 		res.render('userApproval', {
-			authenticated: true,
+			authenticated: isAuthenticated(req),
 			session:req.session,
 			premembers: body,
 			message: req.query.message
@@ -1249,11 +1255,7 @@ app.post('/corporate/resumes', function(req, res) {
 	});
 });
 
-app.get('/intranet/events/upcoming', function(req, res) {
-	if (!isAuthenticated(req)) {
-		res.redirect('/login');
-	}
-
+app.get('/events/upcoming', function(req, res) {
 	request({
 		url: `${SERVICES_URL}/events/upcoming`,
 		method: "GET",

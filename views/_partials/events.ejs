@@ -1,0 +1,45 @@
+<script>
+
+    if (!String.prototype.splice) {
+        String.prototype.splice = function(start, delCount, newSubStr) {
+            return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
+        };
+    }
+
+    $.ajax({
+        url: "/events/upcoming",
+        method: "GET",
+        success: function(events) {
+            $('.fb_events').empty();
+            for (var event of events) {
+                var sameDate = (
+                    new Date(event.start_time).toISOString().split("T")[0] == 
+                    new Date(event.end_time).toISOString().split("T")[0]
+                );               
+                if (sameDate) {
+                    var startDate = event.start_time.split(", ")[0];
+                    startDate = startDate.splice(startDate.length - 5, 0, ",");
+                    var startTime = event.start_time.split(", ")[1] + " - " + event.end_time.split(", ")[1]
+                    $('.fb_events').append(
+                        "<div class='event'> \
+                            <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
+                            <ul> \
+                                <li>" + startDate + "<br/>" + startTime + "</li> \
+                            </ul> \
+                        </div>"
+                    );
+                } else {
+                    var startDate = event.start_time + " - " + event.end_time;
+                    $('.fb_events').append(
+                        "<div class='event'> \
+                            <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
+                            <ul> \
+                                <li>" + startDate + "</li> \
+                            </ul> \
+                        </div>"
+                    );
+                }
+            }
+        }
+    });
+</script>
