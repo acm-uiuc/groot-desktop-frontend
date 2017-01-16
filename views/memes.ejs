@@ -51,13 +51,15 @@ this license in a file with the distribution.
           <small><span class="meme-votes"><%= memes[i].votes %></span> Votes</small>
           <a href="#" onclick="memeVote(<%= memes[i].id %>);return false;"><i id="vote-icon-<%=memes[i].id %>" class="fa <%= memes[i].upvoted ? "fa-thumbs-up meme-voted" : "fa-thumbs-o-up"%>" aria-hidden="true"></i></a>
         </div>
-        <% if(isAdmin && memes[i].unapproved) { %>
+        <% if(isAdmin) { %>
           <div class="card-section meme-info">
+            <% if(memes[i].unapproved) { %>
             <form action="/memes/admin/<%= memes[i].id %>?action=approve" method="post" style="display:inline;">
                 <button class="button" type="submit" name="approve" >Approve</button>
             </form>
+            <% } %>
             <form action="/memes/admin/<%= memes[i].id %>?action=reject" method="post" style="display:inline;">
-                <button class="button" type="submit" name="reject" style="float:right;">Reject</button>
+                <button class="button" type="submit" name="reject" style="float:right;">Delete</button>
             </form>
           </div>
         <% } %>
