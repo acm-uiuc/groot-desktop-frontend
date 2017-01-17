@@ -11,12 +11,9 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
     <div id="resume-container">
         <div class="row">
-            <% if (error) { %>
-                <p class="form-validation-error"><%- error %></p>
-            <% } %>
             <!-- Set by serialize_resume.js since that is needed to encode resume as string -->
-            <p class="form-validation-success" style="display: none"></p>
-            <p class="form-validation-error" style="display: none"></p>
+            <p class="callout secondary" style="display: none"></p>
+            <p class="callout alert" style="display: none"></p>
 
             <h2>Students</h2>
             <p>
