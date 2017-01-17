@@ -130,16 +130,14 @@ app.post('/sponsors/login', function(req, res) {
 		json: true,
 		body: req.body
 	}, function(err, response, body) {
-		if (!error && response && response.statusCode == 200) {
+		if (!err && response && response.statusCode == 200) {
 			// Contains JWT token
 			req.session.recruiter = body.data;
 
 			req.session.username = body.data.first_name;
 			req.session.roles.isRecruiter = true;
 			
-			setAuthentication(req, res, function(req, res) {
-				res.redirect('/intranet');
-			});
+			res.redirect('/intranet');
 		} else {
 			res.render('recruiter_login', {
 				authenticated: false,
@@ -277,6 +275,10 @@ function getUserData(req, res, nextSteps){
 		}
 		nextSteps(req, res);
 	});
+}
+
+function validApprovalAuth(req) {
+	return (req.session.roles.isAdmin || req.session.roles.isCorporate || req.session.roles.isTop4);
 }
 
 // reset session when user logs out
@@ -570,27 +572,6 @@ app.get('/sigs', function(req, res) {
             sig_col_a: sigs_a,
             sig_col_b: sigs_b,
         });
-    });
-});
-
-app.get('/quotes', function(req, res) {
-	request.get({
-		url: `${SERVICES_URL}/quotes`,
-		headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		},
-		method: "GET",
-    }, function(error, response, body) {
-	if (error || response.statusCode != 200) {
-		// TODO: ender error page
-		// alert("status");
-		res.status(500).send("Error " + error.code);
-	} else {
-		res.render('quotes', {
-			authenticated: isAuthenticated(req),
-			quotes: body
-		});
-	}
     });
 });
 
@@ -1270,6 +1251,157 @@ app.get('/events/upcoming', function(req, res) {
 	});
 });
 
+app.get('/intranet/quotes', function(req, res) {
+	if (!req.session.roles.isStudent) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/quotes`,
+		method: "GET",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		}
+	}, function(error, response, body) {
+		if (!error && response && response.statusCode == 200 && body) {
+			res.render('quotes', {
+				authenticated: true,
+				quotes: body.data,
+				error: req.query.error,
+				success: req.query.success,
+				isAdmin: validApprovalAuth(req),
+				netid: req.session.student.netid
+			});
+		} else {
+			res.status(500).send(error);
+		}
+	});
+});
+
+app.post('/intranet/quotes/new', function(req, res) {
+	if (!req.session.roles.isStudent) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/quotes`,
+		method: "POST",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		},
+		body: req.body
+	}, function(error, response, body) {
+		if(error || !response) {
+			res.status(500).send(error);
+			return;
+		}
+
+		if (body.error && !body.message) {
+			res.redirect('/intranet/quotes?error='+body.error);
+		} else if (!body.error && body.message) {
+			res.redirect('/intranet/quotes?success='+body.message);
+		} else {
+			res.redirect('/intranet/quotes');
+		}
+	});
+});
+
+app.post('/intranet/quotes/:quoteId/vote', function(req, res) {
+	if (!req.session.roles.isStudent) {
+		res.redirect('/intranet');
+	}
+
+	request({
+		url: `${SERVICES_URL}/quotes/` + req.params.quoteId + `/vote`,
+		method: "POST",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		},
+		body: {}
+	}, function(error, response, body) {
+		res.sendStatus(response.statusCode);
+	});
+});
+
+app.delete('/intranet/quotes/:quoteId/vote', function(req, res) {
+	if (!req.session.roles.isStudent) {
+		res.redirect('/intranet');
+	}
+	
+	request({
+		url: `${SERVICES_URL}/quotes/` + req.params.quoteId + `/vote`,
+		method: "DELETE",
+		json: true,
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		},
+		body: {}
+	}, function(error, response, body) {
+		res.sendStatus(response.statusCode);
+	});
+});
+
+app.put('/intranet/quotes/:quoteId/approve', function(req, res) {
+	if (!validApprovalAuth(req)) {
+		res.redirect('/intranet');
+	}
+
+	var absQuotesPath = path.resolve(__dirname) + '/views/_partials/quotes.ejs';
+	request({
+		url: `${SERVICES_URL}/quotes/` + req.params.quoteId + `/approve`,
+		method: "PUT",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200 && body) {
+			res.status(200).send(ejs.render("<%- include('" + absQuotesPath + "') %>", { quotes : body.data, isAdmin: validApprovalAuth(req) } ));
+		} else {
+			res.status(response.statusCode).send(error);
+		}
+	});
+});
+
+app.delete('/intranet/quotes/:quoteId', function(req, res) {
+	if (!validApprovalAuth(req)) {
+		res.redirect('/intranet');
+	}
+
+	var absQuotesPath = path.resolve(__dirname) + '/views/_partials/quotes.ejs';
+	request({
+		url: `${SERVICES_URL}/quotes/` + req.params.quoteId,
+		method: "DELETE",
+		headers: {
+			"Authorization": GROOT_ACCESS_TOKEN,
+			"Netid": req.session.student.netid,
+			"Token": req.session.student.token
+		},
+		json: true,
+		body: {}
+	}, function(error, response, body) {
+		if (response && response.statusCode == 200 && body) {
+			res.status(200).send(ejs.render("<%- include('" + absQuotesPath + "') %>", { quotes : body.data, isAdmin: validApprovalAuth(req) } ));
+		} else {
+			res.status(response.statusCode).send(body.error);
+		}
+	});
+});
+
 app.get('/sponsors', function(req, res) {
 	res.render('sponsors', {
 		authenticated: isAuthenticated(req),
@@ -1286,7 +1418,7 @@ app.get('/memes', function(req, res){
 	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
-	if(req.query.order == 'unapproved' && !(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
+	if(req.query.order == 'unapproved' && !validApprovalAuth(req)) {
 		req.flash('error', 'Your power level isn\'t high enough to administer memes.');
 		return res.redirect('/memes');
 	}
@@ -1316,7 +1448,7 @@ app.get('/memes', function(req, res){
 			memes: memes,
 			nextPage: body.next_page,
 			prevPage: body.prev_page,
-			isAdmin: (req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)
+			isAdmin: validApprovalAuth(req)
 		});
 	});
 });
@@ -1330,7 +1462,7 @@ app.get('/memes/upload', function(req, res) {
 	});
 });
 
-app.post('/memes', function(req, res) {
+app.post('/memes/upload', function(req, res) {
 	if (!req.session.roles.isStudent) {
 		return res.redirect('/login');
 	}
@@ -1385,7 +1517,7 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 	if(!req.session.roles.isStudent) {
 		return req.sendStatus(403);
 	}
-	if(!(req.session.roles.isAdmin || req.session.roles.isTop4 || req.session.roles.isCorporate)) {
+	if(!validApprovalAuth(req)) {
 		req.flash('error', 'Your power level isn\'t high enough to approve memes.');
 		return res.redirect('/memes');
 	}
@@ -1413,7 +1545,7 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 		console.log(body)
 		if(err) return res.status(500).send(err);
 		if(body.error) return res.status(500).send(body.error);
-		return res.redirect('/memes/admin');
+		return res.redirect('/memes');
 	});
 });
 
