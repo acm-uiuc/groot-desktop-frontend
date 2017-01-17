@@ -8,37 +8,32 @@
 * this license in a file with the distribution.
 **/
 
-// Requires
-var path = require("path");
+const path = require("path");
+const express = require('express');
+const ejs = require('ejs');
+const moment = require('moment');
+const app = express();
+const bodyParser = require('body-parser');
+const session = require('client-sessions');
+const request = require('request');
+const utils = require('./etc/utils.js');
+const flash = require('express-flash');
+
+// require('request-debug')(request); // for debugging of outbound requests
+
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
-var express = require('express');
-var ejs = require('ejs');
-var moment = require('moment');
-var fileUpload = require('express-fileupload'); // ADDED
-var app = express();
-var bodyParser = require('body-parser');
-var session = require('client-sessions'); // ADDED
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
-var request = require('request');
-var utils = require('./etc/utils.js');
-var flash = require('express-flash');
-app.use(flash());
-
-
-
-// require('request-debug')(request);
-// for debugging of outbound requests
-
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(flash());
 app.use(session({
 	cookieName: 'session',
-	secret: process.env.SESSION_TOKEN,//used for hashing
+	secret: process.env.SESSION_TOKEN, //used for hashing
 	duration: 30*60*1000,
 	activeDuration: 5*60*1000,
 	httpOnly: true, // prevents browers JS from accessing cookies
@@ -46,16 +41,6 @@ app.use(session({
 	ephemeral: true // Deletes cookie when browser closes.
 }));
 
-// Handle Sessions across different pages using express
-
-/*
-	Listing of session variables:
-		roles object has two main roles: student and recruiter
-		student is broken down into: admin, top4, corporate.
-
-		session.netid
-		session.token
-*/
 app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
 	if(!req.session.roles) {
 		req.session.roles = {
@@ -92,29 +77,27 @@ app.post('/login', function(req, res){
 
 	function callback(error, response, body) {
 		if(!body || !body["token"]) {
-			res.render('login', {
+			return res.render('login', {
 				authenticated: false,
-				error: 'Invalid email or password.'
+				errors: 'Invalid email or password.'
 			});
 		}
-		else {
-			if (!error && response && response.statusCode == 200) {
-				req.session.student = {
-					netid: netid,
-					token: body["token"],
-					email: netid + "@illinois.edu"
-				};
-				req.session.roles.isStudent = true;
+		
+		if (!error && response && response.statusCode == 200) {
+			req.session.student = {
+				netid: netid,
+				token: body["token"],
+				email: netid + "@illinois.edu"
+			};
+			req.session.roles.isStudent = true;
 
-				setAuthentication(req, res, function(req, res) {
-					getUserData(req, res, function(req, res){
-						res.redirect('/intranet');
-					});
+			setAuthentication(req, res, function(req, res) {
+				getUserData(req, res, function(req, res){
+					res.redirect('/intranet');
 				});
-			} else {
-				console.log("Error: " + body["reason"]);
-				res.status(response.statusCode).send(error);
-			}
+			});
+		} else {
+			res.status(response.statusCode).send(error);
 		}
 	}
 	request(options, callback);
@@ -137,35 +120,35 @@ app.post('/sponsors/login', function(req, res) {
 			req.session.username = body.data.first_name;
 			req.session.roles.isRecruiter = true;
 			
-			res.redirect('/intranet');
-		} else {
-			res.render('recruiter_login', {
-				authenticated: false,
-				error: body.error
-			});
+			return res.redirect('/intranet');
 		}
+		res.render('recruiter_login', {
+			authenticated: false,
+			errors: body.error
+		});
 	});
 });
 
 app.get('/sponsors/reset_password', function(req, res) {
 	if (isAuthenticated(req)) {
-		res.redirect('intranet');
+		return res.redirect('intranet');
 	}
 
 	res.render('reset_password', {
 		authenticated: false,
-		error: null,
-		success: null
+		messages: req.flash('success'),
+		errors: req.flash('error')
 	});
 });
 
 app.post('/sponsors/reset_password', function(req, res) {
 	if (isAuthenticated(req)) {
-		res.redirect('intranet');
+		return res.redirect('intranet');
 	}
 
+	// To send to recruiters service to send an email from the appropriate account
 	var payload = req.body;
-	payload["email"] = req.session.student.email;
+	payload["email"] = "corporate@acm.illinois.edu";
 
 	request({
 		url: `${SERVICES_URL}/recruiters/reset_password`,
@@ -176,11 +159,13 @@ app.post('/sponsors/reset_password', function(req, res) {
 		json: true,
 		body: payload
 	}, function(error, response, body) {
-		res.render('reset_password', {
-			authenticated: false,
-			error: body.error,
-			success: body.message
-		});
+		if (response.statusCode != 200 || body.error) {
+			req.flash('error', body.error || "Something went wrong...")
+		}
+		else {
+			req.flash('success', body.message);
+		}
+		res.redirect('/sponsors/reset_password');
 	});
 });
 
@@ -269,8 +254,7 @@ function getUserData(req, res, nextSteps){
 	}, function(error, response, body) {
 		if(body && body[0] != undefined) {
 			req.session.student.firstName = body[0].first_name;
-			req.session.student.lastName = body[0].last_name,
-			
+			req.session.student.lastName = body[0].last_name;
 			req.session.username = req.session.student.firstName;
 		}
 		nextSteps(req, res);
@@ -364,31 +348,31 @@ app.get('/', function(req, res) {
 
 app.get('/login', function(req, res) {
 	if (isAuthenticated(req)) {
-		res.redirect('intranet');
-	} else {
-		res.render('login', {
-			authenticated: false,
-		});
+		return res.redirect('intranet');
 	}
+	
+	res.render('login', {
+		authenticated: false,
+	});
 });
 
 app.get('/about', function(req, res) {
-	var groupsData = request({
+	request({
 		url: `${SERVICES_URL}/groups/committees`,
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
-        method: "GET"
-    }, function(err, response, body) {
-        if (err) {
-            // Sends the 404 page
-            res.status(404).send("Error:\nThis page will be implemented soon!");
-        }
-        res.render('about', {
-            authenticated: isAuthenticated(req),
-            committees: JSON.parse(body),
-        });
-    });
+		method: "GET"
+  }, function(err, response, body) {
+	if (err) {
+		return res.status(404).send("Error:\nThis page will be implemented soon!");
+	}
+
+	res.render('about', {
+		authenticated: isAuthenticated(req),
+		committees: JSON.parse(body),
+	});
+  });
 });
 
 app.get('/conference', function(req, res) {
@@ -435,7 +419,7 @@ app.get('/hackillinois', function(req, res) {
 
 app.get('/intranet', function(req, res) {
 	if(!isAuthenticated(req)) {
-		res.redirect('login');
+		return res.redirect('login');
 	}
 	
 	res.render('intranet', {
@@ -456,7 +440,7 @@ app.get('/intranet/userApproval', function(req, res){
 			"Authorization": GROOT_ACCESS_TOKEN
 		},
 		body: {
-			"token" : req.session.student.token,
+			"token": req.session.student.token,
 		},
 		json: true
 	}, function(err, response, body) {
@@ -468,7 +452,7 @@ app.get('/intranet/userApproval', function(req, res){
 			authenticated: isAuthenticated(req),
 			session:req.session,
 			premembers: body,
-			message: req.query.message
+			messages: req.flash('success')
 		});
 	});
 
@@ -477,7 +461,7 @@ app.get('/intranet/userApproval', function(req, res){
 
 app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
-		res.redirect('login');
+		return res.redirect('login');
 	}
 
 	request({
@@ -493,11 +477,12 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 		json: true
 	}, function(err, response, body) {
 		if(err) {
-			console.log(err);
-			res.redirect('/intranet/userApproval?message=error');
+			req.flash('error', "There was an issue, and the member may not have been added. Please contact someone from the Admin committee.");
+		} else {
+			req.flash('success', "The member was added successfully!");
 		}
-		console.log("Successfully added new preUser: " + req.params["approvedUserNetID"]);
-		res.redirect('/intranet/userApproval?message=user-add-success');
+
+		res.redirect('/intranet/userApproval');
 	});
 });
 
@@ -518,22 +503,20 @@ app.post('/join', function(req, res) {
         json: true
     }, function(err, response, body) {
 		if(err || !response || response.statusCode != 200) {
-			console.log(err);
-			return res.status(500).send("There was an error. Please try again.");
+			req.flash('error', err || body);
+		} else {
+			req.flash('success', "Added as a premember");
 		}
-		console.log("new premember: " + req.body.first_name + " " + req.body.last_name);
-		res.redirect('/');
+		res.redirect('/join');
 	});
 });
 
 app.get('/join', function(req, res) {
 	if(isAuthenticated(req)) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
-	// Going to grab SIG data from the micro-service
 	request({
-		/* URL to grab SIG data from groot-groups-service */
 		url: `${SERVICES_URL}/groups/sigs`,
 		headers: {
 			"Authorization": GROOT_ACCESS_TOKEN
@@ -541,12 +524,13 @@ app.get('/join', function(req, res) {
 		method: "GET",
 	}, function(err, response, body) {
 		if (err || !response || response.statusCode != 200) {
-			console.log(err);
-			return res.status(500).send({"Error" : err});
+			return res.status(500).send(err);
 		}
 		res.render('join', {
 			authenticated: false,
-			sigs: JSON.parse(body)
+			sigs: JSON.parse(body),
+			messages: req.flash('success'),
+			errors: req.flash('error')
 		});
 	});
 });
@@ -554,16 +538,15 @@ app.get('/join', function(req, res) {
 app.get('/sigs', function(req, res) {
     request({
         url: `${SERVICES_URL}/groups/sigs`,
-        headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		},
+	headers: {
+		"Authorization": GROOT_ACCESS_TOKEN
+	},
         method: "GET",
     }, function(err, response, body) {
         if (err || !response || !response.statusCode) {
-            console.log(err);
-            res.status(500).send("Error " + err);
-            return;
+            return res.status(500).send(err);
         }
+
         sigs = JSON.parse(body);
         sigs_a = sigs.slice(0, sigs.length / 2);
         sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
@@ -577,9 +560,9 @@ app.get('/sigs', function(req, res) {
 
 app.get('/sponsors/jobs', function(req, res) {
 	res.render('new_job_post', {
-		authenticated:  isAuthenticated(req),
-		success: null,
-		error: null
+		authenticated: isAuthenticated(req),
+		messages: req.flash('success'),
+		errors: req.flash('error')
 	});
 });
 
@@ -593,11 +576,13 @@ app.post('/sponsors/jobs', function(req, res) {
 		json: true,
 		body: req.body
 	}, function(err, response, body) {
-		res.render('new_job_post', {
-			authenticated: isAuthenticated(req),
-			success: body.message,
-			error: body.error
-		});
+		if (response.statusCode != 200 || body.error) {
+			req.flash('error', body.error || "An unexpected error occurred");
+		}
+		else {
+			req.flash('success', body.message);
+		}
+		res.redirect('/sponsors/jobs');
 	});
 });
 
@@ -628,7 +613,7 @@ app.get('/jobs', function(req, res) {
 
 app.get('/corporate/manage', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/login');
+		return res.redirect('/login');
 	}
 
 	request({
@@ -640,46 +625,44 @@ app.get('/corporate/manage', function(req, res) {
 		}
 	}, function(error, response, body) {
 		if (error || !response || response.statusCode != 200) {
-			res.status(500).send("Error: " + error);
-		} else {
-			request({
-				url: `${SERVICES_URL}/students?approved_resumes=false`,
-				method: "GET",
-				json: true,
-				headers: {
-					"Authorization": GROOT_ACCESS_TOKEN,
-					"Netid": req.session.student.netid,
-					"Token": req.session.student.token
-				}
-			}, function(s_error, s_response, s_body) {
-				if (s_response && s_response.statusCode == 200 && s_body && body) {
-					res.render('corporate_manager', {
-						unapproved_resumes: s_body.data,
-						job_listings: body.data,
-						authenticated: true,
-						dates: {
-							"one day": moment().subtract('1', 'days').format("YYYY-MM-DD"),
-							"one week": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
-							"one month": moment().subtract('1', 'months').format("YYYY-MM-DD"),
-							"three months": moment().subtract('3', 'months').format("YYYY-MM-DD"),
-							"six months": moment().subtract('6', 'months').format("YYYY-MM-DD"),
-							"one year": moment().subtract('1', 'years').format("YYYY-MM-DD")
-						},
-						dates_default: "three months",
-						error: req.query.error, //obtained from the post request below
-						message: req.query.message //obtained from the post request below
-					});
-				} else {
-					res.status(500).send("Error: " + s_body);
-				}
-			});
+			return res.status(500).send("Error: " + error);
 		}
+		
+		request({
+			url: `${SERVICES_URL}/students?approved_resumes=false`,
+			method: "GET",
+			json: true,
+			headers: {
+				"Authorization": GROOT_ACCESS_TOKEN,
+				"Netid": req.session.student.netid,
+				"Token": req.session.student.token
+			}
+		}, function(s_error, s_response, s_body) {
+			if (s_response && s_response.statusCode == 200 && s_body && body) {
+				res.render('corporate_manager', {
+					unapproved_resumes: s_body.data,
+					job_listings: body.data,
+					authenticated: true,
+					dates: {
+						"one day": moment().subtract('1', 'days').format("YYYY-MM-DD"),
+						"one week": moment().subtract('1', 'weeks').format("YYYY-MM-DD"),
+						"one month": moment().subtract('1', 'months').format("YYYY-MM-DD"),
+						"three months": moment().subtract('3', 'months').format("YYYY-MM-DD"),
+						"six months": moment().subtract('6', 'months').format("YYYY-MM-DD"),
+						"one year": moment().subtract('1', 'years').format("YYYY-MM-DD")
+					},
+					dates_default: "three months"
+				});
+			} else {
+				res.status(500).send(s_error);
+			}
+		});
 	});
 });
 
 app.get('/corporate/students/:date', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -696,11 +679,10 @@ app.get('/corporate/students/:date', function(req, res) {
 		},
 		body: req.body
 	}, function(error, response, body) {
-		if (response) {
-			res.status(response.statusCode).send(body);
-		} else {
-			res.status(500).send(error);
+		if (!response || error) {
+			return res.status(500).send(error);
 		}
+		res.status(response.statusCode).send(body);
 	});
 });
 
@@ -724,8 +706,8 @@ app.get('/corporate/accounts', function(req, res) {
 				recruiters: body.data,
 				authenticated: true,
 				recruiter_types: sponsorsScope.recruiter,
-				error: req.query.error,
-				message: req.query.message
+				errors: req.flash('error'),
+				messages: req.flash('success')
 			});
 		} else {
 			res.status(500).send(body);
@@ -739,7 +721,7 @@ app.post('/corporate/accounts', function(req, res) {
 	}
 
 	var payload = req.body;
-	payload["email"] = req.session.student.email;
+	payload["email"] = "corporate@acm.illinois.edu";
 
 	request({
 		url: `${SERVICES_URL}/recruiters`,
@@ -753,18 +735,20 @@ app.post('/corporate/accounts', function(req, res) {
 		body: payload
 	}, function(error, response, body) {
 		if (body && body.error == null) {
-			res.redirect('/corporate/accounts?message=' + body.message);
+			req.flash('success', body.message);
+			return res.redirect('/corporate/accounts');
 		} else if (body && body.message == null) {
-			res.redirect('/corporate/accounts?error=' + body.error);
-		} else {
-			res.redirect('/corporate/accounts?error=' + 'An unexpected error occurred.');
+			req.flash('error', body.error || 'An unexpected error occurred');
+			return res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite');
 		}
+
+		return res.redirect('/corporate/accounts');
 	});
 });
 
 app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -783,7 +767,7 @@ app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		if (response.statusCode != 200) {
 			res.status(response.statusCode).send(body.error);
 		} else if (body.data == null || body.data.recruiter == null || body.data.recruiter.invited) {
-			res.redirect('/corporate/accounts');
+			return res.redirect('/corporate/accounts');
 		}
 
 		res.render('recruiter_invite', {
@@ -791,14 +775,14 @@ app.get('/corporate/accounts/:recruiterId/invite', function(req, res) {
 			emailTemplate: body.data,
 			from_email: req.session.student.email,
 			recruiter: body.data.recruiter,
-			error: req.query.error
+			errors: req.flash('error')
 		});
 	});
 });
 
 app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var payload = req.body;
@@ -816,18 +800,20 @@ app.post('/corporate/accounts/:recruiterId/invite', function(req, res) {
 		},
 	}, function(error, response, body) {
 		if (body && body.error == null) {
-			res.redirect('/corporate/accounts?message=' + body.message);
+			req.flash('success', body.message);
+			return res.redirect('/corporate/accounts');
 		} else if (body && body.message == null) {
-			res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite?error=' + body.error);
-		} else {
-			res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite?error=' + 'An unexpected error occurred');
+			req.flash('error', body.error || 'An unexpected error occurred');
+			return res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite');
 		}
+
+		return res.redirect('/corporate/accounts');
 	});
 });
 
 app.put('/corporate/students/:netid/approve', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
@@ -852,7 +838,7 @@ app.put('/corporate/students/:netid/approve', function(req, res) {
 
 app.delete('/corporate/students/:netid', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absResumePath = path.resolve(__dirname) + '/views/_partials/unapproved_resumes.ejs';
@@ -902,7 +888,7 @@ app.put('/corporate/jobs/:jobId/approve', function(req, res) {
 
 app.delete('/corporate/jobs/:jobId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absJobPath = path.resolve(__dirname) + '/views/_partials/unapproved_jobs.ejs';
@@ -927,7 +913,7 @@ app.delete('/corporate/jobs/:jobId', function(req, res) {
 
 app.get('/corporate/accounts/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -945,7 +931,7 @@ app.get('/corporate/accounts/:recruiterId', function(req, res) {
 				authenticated: true,
 				recruiter: body.data,
 				recruiter_types: sponsorsScope.recruiter,
-				error: null
+				errors: req.flash('error')
 			});
 		} else {
 			res.status(response.statusCode).send(body.error);
@@ -969,11 +955,13 @@ app.post('/corporate/accounts/reset', function(req, res) {
 		json: true,
 		body: {}
 	}, function(error, response, body) {
-		if (body.error == null) {
-			res.redirect('/corporate/accounts?message=' + body.message);
-		} else {
-			res.redirect('/corporate/accounts?error=' + body.error);
+		if (!body.error && body.message) {
+			req.flash('success', body.message);
+		} else if (body.error && !body.message) {
+			req.flash('error', body.error);
 		}
+
+		res.redirect('/corporate/accounts');
 	});
 });
 
@@ -994,21 +982,22 @@ app.post('/corporate/accounts/:recruiterId', function(req, res) {
 		body: req.body
 	}, function(error, response, body) {
 		if (body.error == null && body.message != null) {
-			res.redirect('/corporate/accounts?message=' + body.message);
-		} else {
-			res.render('edit_recruiter', {
-				authenticated: true,
-				recruiter: req.body,
-				recruiter_types: sponsorsScope.recruiter,
-				error: body.error
-			});
+			req.flash('success', body.message);
+			return res.redirect('/corporate/accounts');
 		}
+		
+		res.render('edit_recruiter', {
+			authenticated: true,
+			recruiter: req.body,
+			recruiter_types: sponsorsScope.recruiter,
+			errors: body.error
+		});
 	});
 });
 
 app.put('/corporate/accounts/:recruiterId/renew', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
@@ -1033,7 +1022,7 @@ app.put('/corporate/accounts/:recruiterId/renew', function(req, res) {
 
 app.delete('/corporate/accounts/:recruiterId', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absRecruiterPath = path.resolve(__dirname) + '/views/_partials/recruiters.ejs';
@@ -1058,7 +1047,7 @@ app.delete('/corporate/accounts/:recruiterId', function(req, res) {
 
 app.post('/corporate/students/remind', function(req, res) {
 	if (!req.session.roles.isCorporate) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -1074,22 +1063,25 @@ app.post('/corporate/students/remind', function(req, res) {
 		},
 		json: true
 	}, function(error, response, body) {
-		if (body.error == null) {
-			res.redirect('/corporate/manage?message=' + body.message);
-		} else {
-			res.redirect('/corporate/manage?error=' + body.error);
+		if (!body.error && body.message) {
+			req.flash('success', body.message);
+		} else if (body.error && !body.message) {
+			req.flash('error', body.error);
 		}
+
+		res.redirect('/corporate/students/remind');
 	});
 });
 
 app.get('/sponsors/login', function(req, res) {
 	if(isAuthenticated(req)) {
-		res.redirect('/intranet');
-	} else {
-		res.render('recruiter_login', {
-			authenticated: false,
-		});
+		return res.redirect('/intranet');
 	}
+
+	res.render('recruiter_login', {
+		authenticated: false,
+		errors: req.flash('error')
+	});
 });
 
 app.get('/resumes/new', function(req, res) {
@@ -1106,7 +1098,7 @@ app.get('/resumes/new', function(req, res) {
 				sponsorsScope.student = body.data;
 			}
 
-			res.render('resume_book', {
+			return res.render('resume_book', {
 				authenticated: isAuthenticated(req),
 				job: sponsorsScope.job,
 				degree: sponsorsScope.degree,
@@ -1116,18 +1108,18 @@ app.get('/resumes/new', function(req, res) {
 				error: body.error
 			});
 		});
-	} else {
-		sponsorsScope.student = {};
-		res.render('resume_book', {
-			authenticated: isAuthenticated(req),
-			job: sponsorsScope.job,
-			degree: sponsorsScope.degree,
-			grad: sponsorsScope.grad,
-			student: sponsorsScope.student,
-			success: null,
-			error: null
-		});
 	}
+
+	sponsorsScope.student = {};
+	return res.render('resume_book', {
+		authenticated: isAuthenticated(req),
+		job: sponsorsScope.job,
+		degree: sponsorsScope.degree,
+		grad: sponsorsScope.grad,
+		student: sponsorsScope.student,
+		success: req.flash('success'),
+		error: req.flash('error')
+	});
 });
 
 app.post('/resumes/new', function(req, res) {
@@ -1189,7 +1181,7 @@ app.get('/corporate/resumes', function(req, res) {
 
 app.post('/corporate/resumes', function(req, res) {
 	if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
-		res.redirect('/sponsors/login');
+		return res.redirect('/sponsors/login');
 	}
 
 	var headers = {
@@ -1253,7 +1245,7 @@ app.get('/events/upcoming', function(req, res) {
 
 app.get('/intranet/quotes', function(req, res) {
 	if (!req.session.roles.isStudent) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -1269,10 +1261,10 @@ app.get('/intranet/quotes', function(req, res) {
 		if (!error && response && response.statusCode == 200 && body) {
 			res.render('quotes', {
 				authenticated: true,
-				quotes: body.data,
-				error: req.query.error,
-				success: req.query.success,
 				isAdmin: validApprovalAuth(req),
+				quotes: body.data,
+				messages: req.flash('success'),
+				errors: req.flash('error'),
 				netid: req.session.student.netid
 			});
 		} else {
@@ -1283,7 +1275,7 @@ app.get('/intranet/quotes', function(req, res) {
 
 app.post('/intranet/quotes/new', function(req, res) {
 	if (!req.session.roles.isStudent) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	request({
@@ -1298,17 +1290,16 @@ app.post('/intranet/quotes/new', function(req, res) {
 		body: req.body
 	}, function(error, response, body) {
 		if(error || !response) {
-			res.status(500).send(error);
-			return;
+			return res.status(500).send(error);
 		}
 
 		if (body.error && !body.message) {
-			res.redirect('/intranet/quotes?error='+body.error);
+			req.flash('error', body.error);
 		} else if (!body.error && body.message) {
-			res.redirect('/intranet/quotes?success='+body.message);
-		} else {
-			res.redirect('/intranet/quotes');
+			req.flash('success', body.message);
 		}
+		
+		res.redirect('/intranet/quotes');
 	});
 });
 
@@ -1334,7 +1325,7 @@ app.post('/intranet/quotes/:quoteId/vote', function(req, res) {
 
 app.delete('/intranet/quotes/:quoteId/vote', function(req, res) {
 	if (!req.session.roles.isStudent) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 	
 	request({
@@ -1379,7 +1370,7 @@ app.put('/intranet/quotes/:quoteId/approve', function(req, res) {
 
 app.delete('/intranet/quotes/:quoteId', function(req, res) {
 	if (!validApprovalAuth(req)) {
-		res.redirect('/intranet');
+		return res.redirect('/intranet');
 	}
 
 	var absQuotesPath = path.resolve(__dirname) + '/views/_partials/quotes.ejs';

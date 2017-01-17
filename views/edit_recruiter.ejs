@@ -12,8 +12,10 @@ this license in a file with the distribution.
 
 <div id="edit-recruiter-container">
   <div class="row">
-    <% if (error) { %>
-        <p class="form-validation-error"><%- error %></p>
+    <% if ( errors.length > 0 ) { %>
+        <div class="callout alert">
+            <p><%= errors %></p>
+        </div>
     <% } %>
 
     <h3>Editing Recruiter</h3>

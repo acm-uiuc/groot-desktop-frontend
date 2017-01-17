@@ -11,10 +11,15 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="resume-container">
   <div class="row">
-    <% if (error) { %>
-        <p class="form-validation-error"><%= error %></p>
-    <% } else if (message) { %>
-        <p class="form-validation-success"><%= message %></p>
+    <% if ( messages.length > 0 ) { %>
+        <div class="callout secondary">
+        <p><%= messages %></p>
+        </div>
+    <% } %>
+    <% if ( errors.length > 0 ) { %>
+        <div class="callout alert">
+        <p><%= errors %></p>
+        </div>
     <% } %>
     
     <h2>Corporate Manager</h2>

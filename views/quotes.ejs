@@ -12,11 +12,17 @@ this license in a file with the distribution.
 
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-12 large-12 columns">
-    <% if (error) { %>
-        <p class="form-validation-error"><%= error %></p>
-    <% } else if (success) { %>
-        <p class="form-validation-success"><%= success %></p>
+    <% if ( messages.length > 0 ) { %>
+      <div class="callout secondary">
+        <p><%= messages %></p>
+      </div>
     <% } %>
+    <% if ( errors.length > 0 ) { %>
+      <div class="callout alert">
+        <p><%= errors %></p>
+      </div>
+    <% } %>
+
     <h3>Add Quote</h3>
     <form ref="uploadForm" method="post" action="/intranet/quotes/new">
       <div class="field-group required">

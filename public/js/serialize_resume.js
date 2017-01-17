@@ -18,11 +18,11 @@ function post(serialized_data) {
     xhr.onload = function(e) {
         var response = JSON.parse(xhr.response);
         if (response['error']) {
-            $('.form-validation-success').hide();
-            $('.form-validation-error').text(response['error']).show();
+            $('.callout.secondary').hide();
+            $('.callout.alert').text(response['error']).show();
         } else {
-            $('.form-validation-error').hide();
-            $('.form-validation-success').text(response['message']).show();
+            $('.callout.alert').hide();
+            $('.callout.secondary').text(response['message']).show();
         }
         $('body, html').animate({scrollTop: 0}, 'fast');
     }

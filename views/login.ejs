@@ -19,9 +19,11 @@ this license in a file with the distribution.
     <p>
       Are you a recruiter? Log in <a href="/sponsors/login">here</a> instead.
     </p>
-    <% if (locals.error) { %>
-    <p class="form-validation-error"><%=error %></p>
-    <% }%>
+    <% if ( errors.length > 0 ) { %>
+      <div class="callout alert">
+        <p><%= errors %></p>
+      </div>
+    <% } %>
 
     <p>
     <form method="post" action="/login">

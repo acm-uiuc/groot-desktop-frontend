@@ -15,7 +15,9 @@
                 var sameDate = (
                     new Date(event.start_time).toISOString().split("T")[0] == 
                     new Date(event.end_time).toISOString().split("T")[0]
-                );               
+                );
+                var location = (event.place) ? "<li>" + event.place.name + "</li>": "";
+                
                 if (sameDate) {
                     var startDate = event.start_time.split(", ")[0];
                     startDate = startDate.splice(startDate.length - 5, 0, ",");
@@ -25,6 +27,7 @@
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
                             <ul> \
                                 <li>" + startDate + "<br/>" + startTime + "</li> \
+                                " + location + "\
                             </ul> \
                         </div>"
                     );
@@ -35,6 +38,7 @@
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
                             <ul> \
                                 <li>" + startDate + "</li> \
+                                " + location + "\
                             </ul> \
                         </div>"
                     );
