@@ -88,43 +88,43 @@
                                 </button>
                             </li>
                         </ul>
-                        <nav id="mobile-nav">
-                            <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-                                <li class="nav-loc">
-                                    <a href="/about"> About </a>
-                                </li>
-                                <li class="nav-loc">
-                                    <a href="/sigs">SIGs</a>
-                                </li>
-                                <li class="nav-loc">
-                                    <a href="/conference">Reflections|Projections</a>
-                                </li>
-                                <li class="nav-loc">
-                                    <a href="/hackillinois">HackIllinois</a>
-                                </li>
-                                <li class="nav-loc">
-                                    <a href="/sponsors">Sponsors</a>
-                                </li>
-                                <% if (!authenticated) { %>
-                                <li class="nav-loc">
-                                    <a href="/join">Join</a>
-                                </li>
-                                <% } else { %>
-                                <li class="nav-loc">
-                                    <a href="/intranet">Intranet</a>
-                                </li>
-                                <% } %>
-                                <% if (!authenticated) { %>
-                                <li>
-                                    <a id="nav-login" href="/login">Login</a>
-                                </li>
-                                <% } else { %>
-                                <li>
-                                    <a id="nav-login" href="/logout">Logout</a>
-                                </li>
-                                <% } %>
-                            </ul>
-                        </nav>
                 </div>
             </div>
+            <nav id="mobile-nav">
+                <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
+                    <li class="nav-loc">
+                        <a href="/about"> About </a>
+                    </li>
+                    <li class="nav-loc">
+                        <a href="/sigs">SIGs</a>
+                    </li>
+                    <li class="nav-loc">
+                        <a href="/conference">Reflections|Projections</a>
+                    </li>
+                    <li class="nav-loc">
+                        <a href="/hackillinois">HackIllinois</a>
+                    </li>
+                    <li class="nav-loc">
+                        <a href="/sponsors">Sponsors</a>
+                    </li>
+                    <% if (!authenticated) { %>
+                    <li class="nav-loc">
+                        <a href="/join">Join</a>
+                    </li>
+                    <% } else { %>
+                    <li class="nav-loc">
+                        <a href="/intranet">Intranet</a>
+                    </li>
+                    <% } %>
+                    <% if (!authenticated) { %>
+                    <li>
+                        <a id="nav-login" href="/login">Login</a>
+                    </li>
+                    <% } else { %>
+                    <li>
+                        <a id="nav-login" href="/logout">Logout</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
         </div>

@@ -77,8 +77,9 @@
 }
 
 #mobile-nav {
-    display: none;
+    //display: none;
 }
+
 
 @media screen and (min-width: 640px) {
     .mobile {
@@ -86,6 +87,9 @@
     }
     .desktop {
         display: block;
+    }
+    #mobile-nav {
+        display: none;
     }
 }
 
@@ -95,6 +99,15 @@
     }
     .desktop {
         display: none;
+    }
+    #mobile-nav {
+        display: inline-block;
+            margin: 0 auto; 
+    }
+ 
+    #mobile-nav li a {
+       display: inline-block;
+        width: 100%;
     }
 }
 
