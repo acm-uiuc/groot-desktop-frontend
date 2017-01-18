@@ -18,7 +18,7 @@ const session = require('client-sessions');
 const request = require('request');
 const utils = require('./etc/utils.js');
 const flash = require('express-flash');
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
 // require('request-debug')(request); // for debugging of outbound requests
 
@@ -26,13 +26,13 @@ require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
-var smtpConfig = {
+const smtpConfig = {
 	host: 'express-smtp.cites.uiuc.edu',
 	port: 25,
 	secure: false,
 	ignoreTLS: true,
 };
-var transporter = nodemailer.createTransport(smtpConfig);
+const transporter = nodemailer.createTransport(smtpConfig);
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
