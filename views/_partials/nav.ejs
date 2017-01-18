@@ -9,4 +9,14 @@ $('#menu').on('touchstart click', function() {
         open = true;
     }
 });
+
+var resize = function() {
+    if ($(window).width() > 1250) {
+        document.getElementById('mobile-nav').style.display = 'none';
+        open = false;
+    }
+};
+
+$(window).resize(resize);
+
 </script>
