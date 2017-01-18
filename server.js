@@ -353,6 +353,7 @@ app.get('/login', function(req, res) {
 	
 	res.render('login', {
 		authenticated: false,
+		errors: req.flash('error')
 	});
 });
 
