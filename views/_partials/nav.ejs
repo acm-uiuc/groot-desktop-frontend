@@ -1,6 +1,6 @@
 <script>
 var open = false;
-$('#menu').click(function() {
+$('#menu').on('touchstart click', function() {
     if (open) {
         document.getElementById('mobile-nav').style.display = 'none';
         open = false;
