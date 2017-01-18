@@ -91,37 +91,37 @@
                 </div>
             </div>
             <nav id="mobile-nav">
-                <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-                    <li class="nav-loc">
+                <ul class="side-nav">
+                    <li class="nav-loc-side">
                         <a href="/about"> About </a>
                     </li>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/sigs">SIGs</a>
                     </li>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/conference">Reflections|Projections</a>
                     </li>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/hackillinois">HackIllinois</a>
                     </li>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/sponsors">Sponsors</a>
                     </li>
                     <% if (!authenticated) { %>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/join">Join</a>
                     </li>
                     <% } else { %>
-                    <li class="nav-loc">
+                    <li class="nav-loc-side">
                         <a href="/intranet">Intranet</a>
                     </li>
                     <% } %>
                     <% if (!authenticated) { %>
-                    <li>
+                    <li class="nav-loc-side">
                         <a id="nav-login" href="/login">Login</a>
                     </li>
                     <% } else { %>
-                    <li>
+                    <li class="nav-loc-side">
                         <a id="nav-login" href="/logout">Logout</a>
                     </li>
                     <% } %>
