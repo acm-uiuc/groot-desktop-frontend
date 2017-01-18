@@ -73,13 +73,55 @@
 
 #menu img {
     height: 30px;
+    bottom: 10px;
 }
 
-@media screen and (min-width: 480px) {
-    #mobile {
+#mobile-nav {
+    display: none;
+}
+
+@media screen and (min-width: 640px) {
+    .mobile {
         display: none;
     }
-    #desktop {
+    .desktop {
         display: block;
+    }
+}
+
+@media screen and (max-width: 1250px) {
+    .mobile {
+        display: block;
+    }
+    .desktop {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .html {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    .mobile {
+        display: inline;
+        width: 100%;
+    }
+    .desktop {
+        display: none;
+    }
+    #we-are {
+        display: none;
+    }
+    .mobile-right {
+        //margin-left: 50% !important;
+        width: 50% !important;
+    }
+    #menu-container {
+        float: right;
+    }
+    .mobile-left {
+        width: 50% !important;
+        float: left;
     }
 }
