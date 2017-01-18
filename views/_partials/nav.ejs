@@ -1,6 +1,16 @@
 <script>
 var open = false;
-$('#menu').on('touchstart click', function() {
+$('#menu').on('click', function() {
+    if (open) {
+        document.getElementById('mobile-nav').style.display = 'none';
+        open = false;
+    } else {
+        document.getElementById('mobile-nav').style.display = 'inline';
+        open = true;
+    }
+});
+
+$('#menu-close').on('click', function() {
     if (open) {
         document.getElementById('mobile-nav').style.display = 'none';
         open = false;
