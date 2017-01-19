@@ -4,7 +4,8 @@
   "description": "The Official ACM@UIUC Website",
   "author": "Groot Development Team <acm@illinois.edu>",
   "scripts": {
-    "start": "mkdirp public/css && lessc public/less/main.less > public/css/main.css && node server.js"
+    "start": "npm build && node server.js",
+    "build": "mkdirp public/css && lessc public/less/main.less" 
   },
   "license": "NCSA",
   "repository": {
