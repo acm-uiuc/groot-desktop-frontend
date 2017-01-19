@@ -19,6 +19,8 @@ const request = require('request');
 const utils = require('./etc/utils.js');
 const flash = require('express-flash');
 const nodemailer = require('nodemailer');
+const winston = require('winston');
+const expressWinston = require('express-winston');
 
 // require('request-debug')(request); // for debugging of outbound requests
 
@@ -48,7 +50,13 @@ app.use(session({
 	secure: true, // cookie can only be used over HTTPS
 	ephemeral: true // Deletes cookie when browser closes.
 }));
-
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console()
+  ],
+  meta: false, // don't log metadata about requests (produces very messy logs if true)
+  expressFormat: true, // Use the default Express/morgan request formatting.
+}));
 app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
 	if(!req.session.roles) {
 		req.session.roles = {

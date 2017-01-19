@@ -19,12 +19,14 @@
     "express": "4.13.x",
     "express-fileupload": "0.0.5",
     "express-flash": "0.0.2",
+    "express-winston": "^2.1.2",
     "forever": "0.15.x",
     "graceful-fs": "^4.1.10",
     "moment": "^2.17.1",
     "nodemailer": "^2.7.0",
     "path": "^0.12.7",
-    "request": "^2.75.0"
+    "request": "^2.75.0",
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "eslint": "^3.7.1",
