@@ -18,6 +18,7 @@ const session = require('client-sessions');
 const request = require('request');
 const utils = require('./etc/utils.js');
 const flash = require('express-flash');
+const nodemailer = require('nodemailer');
 
 // require('request-debug')(request); // for debugging of outbound requests
 
@@ -25,6 +26,13 @@ require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const smtpConfig = {
+	host: 'express-smtp.cites.uiuc.edu',
+	port: 25,
+	secure: false,
+	ignoreTLS: true,
+};
+const transporter = nodemailer.createTransport(smtpConfig);
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -1541,6 +1549,28 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 	});
 });
 
+process.on('uncaughtException', function (err) {
+	if(process.env.EXCEPTION_FROM_EMAIL && process.env.EXCEPTION_TO_EMAIL){
+		var mailOptions = {
+			from: process.env.EXCEPTION_FROM_EMAIL, 
+			to: process.env.EXCEPTION_TO_EMAIL,  
+			subject: '[Groot-desktop-frontend] Fatal Error: ' + (new Date).toLocaleTimeString(), 
+			text: 'Uncaught Exception: Groot Desktop Frontend\n' + err.stack,
+		};
+
+		transporter.sendMail(mailOptions, function(error, info){
+			if(error){
+				console.log(error);
+			}else{
+				console.log('Message sent: ' + info.response);
+			}
+		console.error((new Date).toLocaleTimeString() + ' uncaughtException:', err.message)
+		console.error(err.stack)
+		process.exit(1);
+
+		});
+	}
+});
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
