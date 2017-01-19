@@ -557,8 +557,8 @@ app.get('/sigs', function(req, res) {
         }
 
         sigs = JSON.parse(body);
-        sigs_a = sigs.slice(0, sigs.length / 2);
-        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length - 1);
+		sigs_a = sigs.slice(0, (sigs.length / 2) + 1);
+        sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length);
         res.render('sigs', {
             authenticated: isAuthenticated(req),
             sig_col_a: sigs_a,
