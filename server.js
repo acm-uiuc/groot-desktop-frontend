@@ -436,7 +436,7 @@ app.get('/hackillinois', function(req, res) {
 
 app.get('/intranet', function(req, res) {
 	if(!isAuthenticated(req)) {
-		return res.redirect('login');
+		return res.redirect('/login');
 	}
 	
 	res.render('intranet', {
@@ -447,7 +447,7 @@ app.get('/intranet', function(req, res) {
 
 app.get('/intranet/users', function(req, res){
 	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
-		res.redirect('login');
+		res.redirect('/login');
 	}
 
 	request({
@@ -478,7 +478,7 @@ app.get('/intranet/users', function(req, res){
 
 app.get('/intranet/users/:approvedUserNetID', function(req, res){
 	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
-		return res.redirect('login');
+		return res.redirect('/login');
 	}
 
 	request({
