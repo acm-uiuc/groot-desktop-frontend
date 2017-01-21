@@ -445,7 +445,7 @@ app.get('/intranet', function(req, res) {
 	});
 });
 
-app.get('/intranet/userApproval', function(req, res){
+app.get('/intranet/users', function(req, res){
 	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
 		res.redirect('login');
 	}
@@ -465,7 +465,7 @@ app.get('/intranet/userApproval', function(req, res){
 			console.log(err);
 			return res.status(500).send("Sorry, there was a server error.  Please try again.");
 		}
-		res.render('userApproval', {
+		res.render('users_index', {
 			authenticated: isAuthenticated(req),
 			session:req.session,
 			premembers: body,
@@ -476,7 +476,7 @@ app.get('/intranet/userApproval', function(req, res){
 });
 
 
-app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
+app.get('/intranet/users/:approvedUserNetID', function(req, res){
 	if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
 		return res.redirect('login');
 	}
@@ -499,7 +499,7 @@ app.get('/intranet/userApproval/:approvedUserNetID', function(req, res){
 			req.flash('success', "The member was added successfully!");
 		}
 
-		res.redirect('/intranet/userApproval');
+		res.redirect('/intranet/users');
 	});
 });
 
@@ -519,13 +519,13 @@ app.post('/join', function(req, res) {
         body: userData,
         json: true
     }, function(err, response, body) {
-		if(err || !response || response.statusCode != 200) {
-			req.flash('error', err || body);
-		} else {
-			req.flash('success', "Added as a premember");
-		}
-		res.redirect('/join');
-	});
+	if(err || !response || response.statusCode != 200) {
+		req.flash('error', err || body.error);
+	} else {
+		req.flash('success', "Added as a premember");
+	}
+	res.redirect('/join');
+    });
 });
 
 app.get('/join', function(req, res) {
