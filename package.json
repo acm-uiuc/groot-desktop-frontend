@@ -1,6 +1,6 @@
 {
   "name": "groot_desktop_frontend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "The Official ACM@UIUC Website",
   "author": "Groot Development Team <acm@illinois.edu>",
   "scripts": {
