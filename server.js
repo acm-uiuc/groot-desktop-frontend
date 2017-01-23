@@ -1560,7 +1560,7 @@ app.post('/memes/admin/:meme_id', function(req, res) {
 		return res.redirect('/memes');
 	});
 });
-
+/*
 process.on('uncaughtException', function (err) {
 	if(process.env.EXCEPTION_FROM_EMAIL && process.env.EXCEPTION_TO_EMAIL){
 		var mailOptions = {
@@ -1583,7 +1583,7 @@ process.on('uncaughtException', function (err) {
 		});
 	}
 });
-
+*/
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
