@@ -1114,6 +1114,10 @@ app.get('/resumes/new', function(req, res) {
 				body.data.graduation_date = moment(body.data.graduation_date).format('MMMM YYYY');
 				sponsorsScope.student = body.data;
 			}
+			var error_message;
+			if (response.statusCode != 200) {
+				error_message = (body && body.error) ? body.error : error;
+			}
 
 			return res.render('resume_book', {
 				authenticated: isAuthenticated(req),
@@ -1122,7 +1126,7 @@ app.get('/resumes/new', function(req, res) {
 				grad: sponsorsScope.grad,
 				student: sponsorsScope.student,
 				success: null,
-				error: body.error
+				error: error_message
 			});
 		});
 	}
