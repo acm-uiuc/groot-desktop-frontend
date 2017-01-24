@@ -1115,7 +1115,7 @@ app.get('/resumes/new', function(req, res) {
 				sponsorsScope.student = body.data;
 			}
 			var error_message;
-			if (response.statusCode != 200) {
+			if (response && response.statusCode != 200) {
 				error_message = (body && body.error) ? body.error : error;
 			}
 
