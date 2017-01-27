@@ -21,6 +21,7 @@ const flash = require('express-flash');
 const nodemailer = require('nodemailer');
 const winston = require('winston');
 const expressWinston = require('express-winston');
+const strings_for_404 = require('./etc/404_strings.json');
 
 // require('request-debug')(request); // for debugging of outbound requests
 
@@ -1586,6 +1587,13 @@ process.on('uncaughtException', function (err) {
 */
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
+
+app.use(function (req, res, next) {
+	res.status(404).render('404', {
+		message: strings_for_404[Math.floor(Math.random()*strings_for_404.length)],
+		authenticated: isAuthenticated(req)
+	});
+});
 
 // Start server and logs port as a callback
 app.listen(PORT, function() {
