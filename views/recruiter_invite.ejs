@@ -11,8 +11,10 @@ this license in a file with the distribution.
 <%- include('_partials/header') -%>
 <div id="container">
     <div class="row">
-      <% if (error) { %>
-        <p class="form-validation-error"><%- error %></p>
+      <% if ( errors.length > 0 ) { %>
+        <div class="callout alert">
+          <p><%= errors %></p>
+        </div>
       <% } %>
       
       <h3>Invite <%= recruiter.first_name %>, a <%= recruiter.type %> recruiter from <%= recruiter.company_name %></h3>
