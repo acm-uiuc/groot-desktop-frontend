@@ -644,7 +644,7 @@ module.exports = function(app) {
   });
 
   app.post('/sponsors/reset_password', function(req, res) {
-    if (isAuthenticated(req)) {
+    if (utils.isAuthenticated(req)) {
       return res.redirect('intranet');
     }
 

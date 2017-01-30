@@ -132,7 +132,7 @@ module.exports = function(app) {
   });
 
   app.delete('/intranet/quotes/:quoteId', function(req, res) {
-    if (!validApprovalAuth(req)) {
+    if (!utils.validApprovalAuth(req)) {
       return res.redirect('/intranet');
     }
 

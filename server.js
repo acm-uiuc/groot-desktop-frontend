@@ -10,7 +10,6 @@
 
 const path = require("path");
 const express = require('express');
-const moment = require('moment');
 const app = express();
 const bodyParser = require('body-parser');
 const session = require('client-sessions');
@@ -23,8 +22,6 @@ const expressWinston = require('express-winston');
 
 require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 const PORT = process.env.PORT || 5000;
-const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
-const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const smtpConfig = {
 	host: 'express-smtp.cites.uiuc.edu',
 	port: 25,
@@ -145,7 +142,7 @@ app.get('/intranet', function(req, res) {
 
 app.get('/sponsors/jobs', function(req, res) {
 	res.render('new_job_post', {
-		authenticated: isAuthenticated(req),
+		authenticated: utils.isAuthenticated(req),
 		messages: req.flash('success'),
 		errors: req.flash('error')
 	});
