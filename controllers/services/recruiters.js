@@ -555,10 +555,10 @@ module.exports = function(app) {
         
         res.render('resume_filter', {
           authenticated: utils.isAuthenticated(req),
-          job: sponsorsScope.job,
-          degree: sponsorsScope.degree,
-          grad: sponsorsScope.grad,
-          student: sponsorsScope.student,
+          job: utils.sponsorsScope.job,
+          degree: utils.sponsorsScope.degree,
+          grad: utils.sponsorsScope.grad,
+          student: utils.sponsorsScope.student,
           resumes: body.data,
           defaults: {}
         });
@@ -604,10 +604,10 @@ module.exports = function(app) {
 
         res.render('resume_filter', {
           authenticated: utils.isAuthenticated(req),
-          job: sponsorsScope.job,
-          degree: sponsorsScope.degree,
-          grad: sponsorsScope.grad,
-          student: sponsorsScope.student,
+          job: utils.sponsorsScope.job,
+          degree: utils.sponsorsScope.degree,
+          grad: utils.sponsorsScope.grad,
+          student: utils.sponsorsScope.student,
           resumes: body.data,
           defaults: req.body
         });
