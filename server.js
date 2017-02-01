@@ -223,7 +223,7 @@ app.use('/sponsors', express.static(__dirname + '/public'));
 app.use(function (req, res, next) {
 	res.status(404).render('404', {
 		message: strings_for_404[Math.floor(Math.random()*strings_for_404.length)],
-		authenticated: isAuthenticated(req)
+		authenticated: utils.isAuthenticated(req)
 	});
 });
 

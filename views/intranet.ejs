@@ -22,7 +22,7 @@ this license in a file with the distribution.
         <% } else if (session.roles.isAdmin) { %>
         <p>You are an admin</p>
         <% } else if (session.roles.isRecruiter) { %>
-        <p>You are a recruiter at <%= session.recruiter.company_name %></p>
+        <p>You are a '<%= session.recruiter.type %>' recruiter at <%= session.recruiter.company_name %></p>
         <% } else if (session.roles.isCorporate) { %>
         <p>You're a member of the corporate committee.</p>
         <% } else { %>
