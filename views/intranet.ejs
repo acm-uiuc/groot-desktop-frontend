@@ -64,7 +64,7 @@ this license in a file with the distribution.
         </div>
       </div>
     <% } %>    
-    <% if (session.roles.isRecruiter) { %>
+    <% if (session.roles.isRecruiter && session.recruiter.is_sponsor) { %>
       <div id="links-top" class="row">
         <div id="main-left" class="small-12 medium-12 large-4 columns">
           <h3>Resume Database</h3>
@@ -82,6 +82,14 @@ this license in a file with the distribution.
           <h3>Beats by ACM</h3>
           <p>Control the Beats music system.</p><a href="https://www-s.acm.illinois.edu/beats/1104/">
           <button class="button">Go</button></a>
+        </div>
+      </div>
+    <% } else if (session.roles.isRecruiter) { %>
+      <div id="links-top" class="row">
+        <div id="main-left" class="small-12 medium-12 large-12 columns">
+          <h3>Register for the career fair!</h3>
+          <p>Click to register for the career fair</p><a href="fairs/register">
+          <button class="button">Register</button></a>
         </div>
       </div>
     <% } %>
