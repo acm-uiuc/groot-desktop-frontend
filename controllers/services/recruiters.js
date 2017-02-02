@@ -485,6 +485,9 @@ module.exports = function(app) {
         url: `${SERVICES_URL}/students/` + req.session.student.netid,
         method: "GET",
         json: true,
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN
+        },
         body: {}
       }, function(error, response, body) {
         if (body && body.data) {
