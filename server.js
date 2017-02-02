@@ -9,6 +9,7 @@
 **/
 
 const path = require("path");
+require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -21,7 +22,6 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const strings_for_404 = require('./etc/404_strings.json');
 
-require('dotenv').config({path: path.resolve(__dirname) + '/.env'});
 const PORT = process.env.PORT || 5000;
 const smtpConfig = {
 	host: 'express-smtp.cites.uiuc.edu',
