@@ -21,12 +21,16 @@ this license in a file with the distribution.
         <p> You are part of Top 4 </p>
         <% } else if (session.roles.isAdmin) { %>
         <p>You are an admin</p>
+        <% } else if (session.roles.isRecruiter && session.recruiter.is_sponsor) { %>
+        <p>You are a recruiter at <%= session.recruiter.company_name %></p>
         <% } else if (session.roles.isRecruiter) { %>
-        <p>You are a '<%= session.recruiter.type %>' recruiter at <%= session.recruiter.company_name %></p>
+        <p>
+          You've been invited to attend ACM Career Week 2017! </br>
+          Please register below :D
+        </p>
         <% } else if (session.roles.isCorporate) { %>
         <p>You're a member of the corporate committee.</p>
         <% } else { %>
-       
         <% } %>
       </div>
     </div>
@@ -88,7 +92,7 @@ this license in a file with the distribution.
       <div id="links-top" class="row">
         <div id="main-left" class="small-12 medium-12 large-12 columns">
           <h3>Register for the career fair!</h3>
-          <p>Click to register for the career fair</p><a href="fairs/register">
+          <p>Click to register for the career fair</p><a href="/corporate/careerweek/2017">
           <button class="button">Register</button></a>
         </div>
       </div>

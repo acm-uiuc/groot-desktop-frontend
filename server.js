@@ -184,7 +184,7 @@ app.get('/sponsors/reset_password', function(req, res) {
 	});
 });
 
-app.get('/fairs/register', function(req, res) { 
+app.get('/corporate/careerweek/2017', function(req, res) { 
 	if (!utils.isAuthenticated(req)) {
 		res.redirect('/sponsors/login');
 	} else if (!req.session.roles.isRecruiter || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor)) {
@@ -192,7 +192,8 @@ app.get('/fairs/register', function(req, res) {
 	}
 
 	res.render('careerfair', {
-		authenticated: true
+		authenticated: true,
+		recruiter: req.session.recruiter
 	});
 });
 

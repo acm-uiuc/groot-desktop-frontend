@@ -537,7 +537,7 @@ module.exports = function(app) {
   });
 
   app.get('/corporate/resumes', function(req, res) {
-    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+    if(!(req.session.roles.isCorporate || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor))) {
       res.redirect('/sponsors/login');
     }
 
@@ -579,7 +579,7 @@ module.exports = function(app) {
   });
 
   app.post('/corporate/resumes', function(req, res) {
-    if(!(req.session.roles.isCorporate || req.session.roles.isRecruiter)) {
+    if(!(req.session.roles.isCorporate || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor))) {
       return res.redirect('/sponsors/login');
     }
 
