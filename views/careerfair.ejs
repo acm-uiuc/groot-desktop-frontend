@@ -1,0 +1,40 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div class="row">
+  <% if (recruiter.type == "Jobfair") { %>
+  <a name="form530423040" id="formAnchor530423040"></a>
+  <script type="text/javascript" src="https://fs6.formsite.com/include/form/embedManager.js?530423040"></script>
+  <script type="text/javascript">
+  EmbedManager.embed({
+    key: "https://fs6.formsite.com/res/showFormEmbed?EParam=0f3EXAbWkRyOWvWrn2%2FGggu6XIz9Q7%2FY&530423040",
+    width: "100%",
+    mobileResponsive: true
+  });
+  </script>
+
+  <% } else if (recruiter.type == "Startup") { %>
+      <a name="form2132960365" id="formAnchor2132960365"></a>
+      <script type="text/javascript" src="https://fs6.formsite.com/include/form/embedManager.js?2132960365"></script>
+      <script type="text/javascript">
+        EmbedManager.embed({
+          key: "https://fs6.formsite.com/res/showFormEmbed?EParam=0f3EXAbWkRyOWvWrn2%2FGgiZHDPR8SZ4t&2132960365",
+          width: "100%",
+          mobileResponsive: true
+        });
+      </script>
+  <% } %>
+</div>
+<div class="row" style="margin-top: 5em">
+</div>
+
+<%- include('_partials/footer') -%>

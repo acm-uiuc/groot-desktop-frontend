@@ -184,6 +184,19 @@ app.get('/sponsors/reset_password', function(req, res) {
 	});
 });
 
+app.get('/corporate/careerweek/2017', function(req, res) { 
+	if (!utils.isAuthenticated(req)) {
+		res.redirect('/sponsors/login');
+	} else if (!req.session.roles.isRecruiter || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor)) {
+		res.redirect('/intranet');
+	}
+
+	res.render('careerfair', {
+		authenticated: true,
+		recruiter: req.session.recruiter
+	});
+});
+
 require('./controllers/services/events.js')(app);
 require('./controllers/services/groups.js')(app);
 require('./controllers/services/memes.js')(app);
