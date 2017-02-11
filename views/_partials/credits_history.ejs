@@ -10,10 +10,10 @@
     </thead>
     <% for (var t of transactions) { %>
       <tr class="transaction">
-        <td> "<%= t.id %>" </td>
-        <td> <%= t.amount %> </td>
+        <td> <%= t.id %> </td>
+        <td> <%= (t.amount > 0 ? '$' : '-$') + Math.abs(t.amount).toFixed(2) %> </td>
         <td> <%= t.created_at %> </td>
-        <td> <%= t.description %> </td>
+        <td> <%= t.description ? t.description : "No description" %> </td>
       </tr>
     <% } %>
   </table>

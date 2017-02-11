@@ -11,6 +11,8 @@
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const request = require('request');
+const moment = require('moment');
+
 
 module.exports = function(app){
   app.get('/credits', function(req, res) {
@@ -31,10 +33,14 @@ module.exports = function(app){
       }
     }, function(error, response, body) {
       if (response && response.statusCode == 200) {
+        for(var t of body.transactions){
+          t.created_at = moment(t.created_at)
+            .format('MMMM Do YYYY, h:mm:ss a');
+        }
         return res.render('credits', {
           authenticated: true,
           transactions: body.transactions,
-          balance: body.balance
+          balance: body.balance.toFixed(2)
         })
       }
       res.sendStatus(500);
@@ -44,6 +50,11 @@ module.exports = function(app){
 
   });
   app.get('/credits/addFunds', function(req, res) {
-
+    if (!req.session.roles.isStudent) {
+      return res.redirect('/intranet');
+    }
+    res.render('credits_add_funds', {
+      authenticated: true
+    });
   });
 }

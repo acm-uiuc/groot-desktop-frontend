@@ -1,0 +1,66 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div id="meme-upload-container">
+  <div class="row col-centered small-12 medium-4 large-4 login-form">
+    <h3>Refill Credits Balance</h3>
+    <form data-abide id='credits_form' novalidate>
+      <div class="amount-field">
+        <label>Balance Refill Amount <small>required</small>
+          <input id="refill_amount_input" type="number" required data-validator="credits_balance" pattern="number" placeholder="5.00">
+        </label>
+        <small class="error">Balance refill amount is required and must be a number between 5 and 50.</small>
+      </div>
+      <button type="submit" class="button">Make Payment</button>
+    </form>
+    <script src="https://checkout.stripe.com/checkout.js"></script>
+    <script>
+    window.addEventListener('load', function() {
+      $(document).foundation();
+      Foundation.Abide.defaults.validators['credits_balance'] =
+      function($el,required,parent) {
+        if (!required) return true;
+        var val = Number($el.val());
+        return (val >= 5 && val <= 50)
+      };
+      $(document).on("submit", function(ev) {
+        ev.preventDefault();
+        var balance = Number($('#refill_amount_input').val()).toFixed(2);
+        var balanceInCents = parseInt(balance * 100);
+        handler.open({
+          name: 'ACM @ Illinois',
+          description: 'Balance Refill',
+          amount: balanceInCents
+        });
+      });
+    });
+    var handler = StripeCheckout.configure({
+      key: 'pk_test_sPQQFJppKqoJjR25V057kOY7',
+      image: 'http://acm.illinois.edu/images/acm-logo-flat-og.png',
+      locale: 'auto',
+      token: function(token) {
+        // You can access the token ID with `token.id`.
+        // Get the token ID to your server-side code for use.
+        $('input#stripeToken').val(token.id);
+        $('form').submit();
+      }
+    });
+
+    // Close Checkout on page navigation:
+    window.addEventListener('popstate', function() {
+      handler.close();
+    });
+    </script>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>
