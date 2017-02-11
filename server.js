@@ -194,6 +194,7 @@ require('./controllers/services/memes.js')(app);
 require('./controllers/services/quotes.js')(app);
 require('./controllers/services/recruiters.js')(app);
 require('./controllers/services/users.js')(app);
+require('./controllers/services/credits.js')(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));

@@ -1,0 +1,22 @@
+<% if (transactions && transactions.length != 0) { %>
+  <table id="transactions-table" class="dynatable-container">
+    <thead>
+      <tr>
+        <th> Id </th>
+        <th> Amount </th>
+        <th> Time </th>
+        <th> Description </th>
+      </tr>
+    </thead>
+    <% for (var t of transactions) { %>
+      <tr class="transaction">
+        <td> "<%= t.id %>" </td>
+        <td> <%= t.amount %> </td>
+        <td> <%= t.created_at %> </td>
+        <td> <%= t.description %> </td>
+      </tr>
+    <% } %>
+  </table>
+<% } else { %>
+  <h5>There are no transactions.</h5>
+<% } %>
