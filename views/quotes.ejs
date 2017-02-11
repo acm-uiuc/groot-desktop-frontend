@@ -12,16 +12,8 @@ this license in a file with the distribution.
 
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-12 large-12 columns">
-    <% if ( messages.length > 0 ) { %>
-      <div class="callout secondary">
-        <p><%= messages %></p>
-      </div>
-    <% } %>
-    <% if ( errors.length > 0 ) { %>
-      <div class="callout alert">
-        <p><%= errors %></p>
-      </div>
-    <% } %>
+    
+    <%- include('_partials/flash') -%>
 
     <h3>Add Quote</h3>
     <form ref="uploadForm" method="post" action="/intranet/quotes/new">

@@ -21,8 +21,7 @@ module.exports = function(app){
     }
 
     request({
-      url: 'http://127.0.0.1:8765/credits/transactions',
-      // url: `${SERVICES_URL}/credits/transactions`,
+      url: `${SERVICES_URL}/credits/transactions`,
       method: "GET",
       json: true,
       headers: {
@@ -40,7 +39,9 @@ module.exports = function(app){
         return res.render('credits', {
           authenticated: true,
           transactions: body.transactions,
-          balance: body.balance.toFixed(2)
+          balance: body.balance.toFixed(2),
+          messages: req.flash('success'),
+          errors: req.flash('error')
         })
       }
       res.sendStatus(500);
@@ -55,6 +56,37 @@ module.exports = function(app){
     }
     res.render('credits_add_funds', {
       authenticated: true
+    });
+  });
+  app.post('/credits/addFunds', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.redirect('/login');
+    }
+    console.log(req.body)
+    request({
+      url: `${SERVICES_URL}/payment`,
+      method: "POST",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true,
+      body: {
+        netid: req.session.student.netid,
+        amount: req.body.amount,
+        token: req.body.token,
+        description: "Balance refill"
+      }
+    }, function(err, response, body){
+      if(err) {
+        return res.status(500).send(err)
+      }
+      if(response.statusCode != 200 || !body.successful){
+        req.flash('error', "Something went wrong. Talk to someone in ACM Admin.")
+      }
+      else {
+        req.flash('success', "Success! Your payment is being processed.")
+      }
+      return res.redirect('/credits');
     });
   });
 }
