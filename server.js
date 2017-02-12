@@ -67,6 +67,8 @@ app.get('/logout', function(req, res) {
 app.get('/', function(req, res) {
   res.render('home', {
     authenticated: utils.isAuthenticated(req),
+		messages: req.flash('success'),
+		errors: req.flash('error')
   });
 });
 
@@ -150,7 +152,9 @@ app.get('/intranet', function(req, res) {
 			return res.render('intranet', {
 				authenticated: utils.isAuthenticated(req),
 				session: req.session,
-				creditsBalance: balance
+				creditsBalance: balance,
+				messages: req.flash('success'),
+				errors: req.flash('error')
 			});
 	});
 });

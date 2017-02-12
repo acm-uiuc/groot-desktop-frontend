@@ -56,7 +56,41 @@ module.exports = function(app){
     })
   });
   app.post('/credits/purchaseMembership', function(req, res) {
-    res.redirect('/intranet')
+    // TODO: Redirect if not a 'pre-member'
+
+    // Sanity checks
+    if(!req.body.stripeToken) {
+      return res.sendStatus(500);
+    }
+    // Send payment details to groot-credits-service for processing
+    request({
+      url: `${SERVICES_URL}/payment`,
+      method: "POST",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true,
+      body: {
+        netid: req.session.student.netid,
+        amount: 4150, // Membership fee + Stripe processing fee
+        token: req.body.stripeToken,
+        description: "Membership purchase",
+        adjust_balance: false // Don't give the user credit for this transaction
+      }
+    }, function(err, response, body){
+      if(err) {
+        return res.status(500).send(err)
+      }
+      if(response.statusCode != 200 || !body.successful){
+        req.flash('error', "Something went wrong. Talk to someone in ACM Admin.")
+        return res.redirect('/');
+      }
+      else {
+        // TODO: Make user a paid user
+        req.flash('success', "Success! Your membership fee is being processed.")
+        res.redirect('/intranet')
+      }
+    });
   });
   app.get('/credits/addFunds', function(req, res) {
     if (!req.session.roles.isStudent) {
@@ -76,7 +110,7 @@ module.exports = function(app){
       req.flash('error', "Invalid balance adjustment amount.")
       return res.redirect('/credits');
     }
-    else if(!req.token) {
+    else if(!req.body.token) {
       req.flash('error', "Payment token not found. Talk to someone in ACM Admin.")
       return res.redirect('/credits');
     }
