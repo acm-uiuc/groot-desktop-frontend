@@ -50,6 +50,9 @@ module.exports = function(app){
   app.get('/credits/purchaseMembership', function(req, res) {
 
   });
+  app.post('/credits/purchaseMembership', function(req, res) {
+
+  });
   app.get('/credits/addFunds', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/intranet');
@@ -62,7 +65,16 @@ module.exports = function(app){
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
-    console.log(req.body)
+    // Sanity checks
+    if(req.body.amount < 5 || req.body.amount > 50) {
+      req.flash('error', "Invalid balance adjustment amount.")
+      return res.redirect('/credits');
+    }
+    else if(!req.token) {
+      req.flash('error', "Payment token not found. Talk to someone in ACM Admin.")
+      return res.redirect('/credits');
+    }
+    // Send payment details to groot-credits-service for processing
     request({
       url: `${SERVICES_URL}/payment`,
       method: "POST",
