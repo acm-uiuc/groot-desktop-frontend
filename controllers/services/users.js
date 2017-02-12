@@ -12,6 +12,7 @@ const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const path = require('path');
 const request = require('request');
+const ejs = require('ejs');
 const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
@@ -31,19 +32,14 @@ module.exports = function(app) {
       },
       json: true
     }, function(err, response, body) {
-<<<<<<< HEAD
       if(err) {
         return res.status(500).send("Sorry, there was a server error.  Please try again.");
-=======
-      if (err || !response || response.statusCode != 200) {
-        req.flash('error', (body && body.error) || err);
-        return res.status(500).send("Sorry, there was a server error. Please try again.");
->>>>>>> Set up more user routes
       }
 
       res.render('users_index', {
         authenticated: utils.isAuthenticated(req),
-        premembers: body.data
+        premembers: body.data,
+        me: req.session.student
       });
     });
   });
@@ -61,18 +57,10 @@ module.exports = function(app) {
         "Authorization": GROOT_ACCESS_TOKEN,
         "Netid": req.session.student.netid
       },
-<<<<<<< HEAD
       json: true
-    }, function(err) {
-      if(err) {
-        req.flash('error', "There was an issue, and the member may not have been added. Please contact someone from the Admin committee.");
-=======
-      json: true,
-      body: {}
-    }, function(error, response, body) {
+    }, function(err, response, body) {
       if (response && response.statusCode == 200 && body) {
         res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
->>>>>>> Set up more user routes
       } else {
         res.status(response.statusCode).send(body.error);
       }
@@ -96,7 +84,7 @@ module.exports = function(app) {
       body: {}
     }, function(error, response, body) {
       if (response && response.statusCode == 200 && body) {
-        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data, me: req.session.student } ));
       } else {
         res.status(response.statusCode).send(body.error);
       }
@@ -104,15 +92,6 @@ module.exports = function(app) {
   });
 
   app.post('/join', function(req, res) {
-<<<<<<< HEAD
-    var userData = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      netid: req.body.netid,
-      uin: req.body.uin
-    };
-=======
->>>>>>> Set up more user routes
     request({
       url: `${SERVICES_URL}/users`,
       method: "POST",

@@ -13,7 +13,9 @@ this license in a file with the distribution.
 <div id="home-container" class="row">
 	<div id="main-container" class="small-12 medium-12 large-12 columns">
 		<div id="links-top" class="row">
-			 <%- include('_partials/users', { users: premembers }) %>
+			<div id="unapproved-users-partial">
+			 	<%- include('_partials/users', { users: premembers }) %>
+			 </div>
 		</div>
 	</div>
 </div>
@@ -32,12 +34,12 @@ this license in a file with the distribution.
         url: "/intranet/users/" + netid + "/paid",
         method: "PUT",
         success: function(response) {
-					$('#user-approval-table').html(response);
-					$("#user-approval-table").dynatable({
-						dataset: {
-								perPageDefault: 20
-						}
-					});
+			$('#unapproved-users-partial').html(response);
+			$("#user-approval-table").dynatable({
+				dataset: {
+					perPageDefault: 20
+				}
+			});
         }
     });
 	}
@@ -47,12 +49,12 @@ this license in a file with the distribution.
         url: "/intranet/users/" + netid,
         method: "DELETE",
         success: function(response) {
-					$('#user-approval-table').html(response);
-					$("#user-approval-table").dynatable({
-						dataset: {
-								perPageDefault: 20
-						}
-					});
+			$('#unapproved-users-partial').html(response);
+			$("#user-approval-table").dynatable({
+				dataset: {
+					perPageDefault: 20
+				}
+			});
         }
     });
 	}
