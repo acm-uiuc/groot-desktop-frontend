@@ -97,51 +97,32 @@ module.exports = function(app) {
   });
 
   app.post('/login', function(req, res){
-    var netid = req.body.netid, pass = req.body.password;
-    var options = {
-      url: `${SERVICES_URL}/session?username=${netid}`,
+    request({
+      url: `${SERVICES_URL}/users/login`,
       method: "POST",
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
-      body: {
-        "username" : netid,
-        "password" : pass,
-        "validation-factors" : {
-          "validationFactors" : [{
-            "name" : "remote_address",
-            "value" : "127.0.0.1"
-          }]
-        }
-      }
-    };
-
-    function callback(error, response, body) {
-      if(!body || !body["token"]) {
-        return res.render('login', {
-          authenticated: false,
-          errors: 'Invalid email or password.'
-        });
-      }
-      
-      if (!error && response && response.statusCode == 200) {
+      body: req.body
+    }, function(err, response, body) {
+      if(err || !response || response.statusCode != 200) {
+        req.flash('error', (body && body.error) || err);
+        res.redirect('/login');
+      } else {
         req.session.student = {
-          netid: netid,
-          token: body["token"],
-          email: netid + "@illinois.edu"
+          first_name: body.data.first_name,
+          last_name: body.data.last_name,
+          token: body.data.token,
+          netid: body.data.netid
         };
+        req.session.username = req.session.student.first_name;
         req.session.roles.isStudent = true;
 
         utils.setAuthentication(req, res, function(req, res) {
-          utils.getUserData(req, res, function(req, res){
-            res.redirect('/intranet');
-          });
+          res.redirect('/intranet');
         });
-      } else {
-        res.status(response.statusCode).send(error);
       }
-    }
-    request(options, callback);
+    });
   });
 };
