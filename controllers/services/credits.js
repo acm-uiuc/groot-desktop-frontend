@@ -13,7 +13,7 @@ const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || "TEMP_STRING";
 const request = require('request');
 const moment = require('moment');
-
+const utils = require('../../etc/utils.js');
 
 module.exports = function(app){
   app.get('/credits', function(req, res) {
@@ -82,13 +82,15 @@ module.exports = function(app){
         return res.status(500).send(err)
       }
       if(response.statusCode != 200 || !body.successful){
-        req.flash('error', "Something went wrong. Talk to someone in ACM Admin.")
+        req.flash('error', "Something went wrong with your payment. Talk to someone in ACM Admin.")
         return res.redirect('/');
       }
       else {
-        // TODO: Make user a paid user
-        req.flash('success', "Success! Your membership fee is being processed.")
-        res.redirect('/intranet')
+        // Make user a paid user
+        utils.nextSteps(req, res, function() {
+          req.flash('success', "Success! Your membership fee is being processed.");
+          res.redirect('/intranet');
+        });
       }
     });
   });
