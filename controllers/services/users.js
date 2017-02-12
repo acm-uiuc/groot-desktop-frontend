@@ -10,6 +10,7 @@
 
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const path = require('path');
 const request = require('request');
 const utils = require('../../etc/utils.js');
 
@@ -20,8 +21,8 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/users/pre`,
-      method: "POST",
+      url: `${SERVICES_URL}/users`,
+      method: "GET",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
@@ -30,67 +31,101 @@ module.exports = function(app) {
       },
       json: true
     }, function(err, response, body) {
+<<<<<<< HEAD
       if(err) {
         return res.status(500).send("Sorry, there was a server error.  Please try again.");
+=======
+      if (err || !response || response.statusCode != 200) {
+        req.flash('error', (body && body.error) || err);
+        return res.status(500).send("Sorry, there was a server error. Please try again.");
+>>>>>>> Set up more user routes
       }
+
       res.render('users_index', {
         authenticated: utils.isAuthenticated(req),
-        session:req.session,
-        premembers: body,
-        messages: req.flash('success')
+        premembers: body.data
       });
     });
-
   });
 
-
-  app.get('/intranet/users/:approvedUserNetID', function(req, res){
+  app.put('/intranet/users/:netid/paid', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
-      return res.redirect('/login');
+      res.redirect('/login');
     }
 
+    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
     request({
-      url: `${SERVICES_URL}/users/paid`,
-      method: "POST",
+      url: `${SERVICES_URL}/users/` + req.params.netid + `/paid`,
+      method: "PUT",
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid
       },
-      body: {
-        "token" : req.session.student.token,
-        "netid" : req.params["approvedUserNetID"],
-      },
+<<<<<<< HEAD
       json: true
     }, function(err) {
       if(err) {
         req.flash('error', "There was an issue, and the member may not have been added. Please contact someone from the Admin committee.");
+=======
+      json: true,
+      body: {}
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200 && body) {
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
+>>>>>>> Set up more user routes
       } else {
-        req.flash('success', "The member was added successfully!");
+        res.status(response.statusCode).send(body.error);
       }
+    });
+  });
 
-      res.redirect('/intranet/users');
+  app.delete('/intranet/users/:netid', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/login');
+    }
+
+    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
+    request({
+      url: `${SERVICES_URL}/users/` + req.params.netid,
+      method: "DELETE",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid
+      },
+      json: true,
+      body: {}
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200 && body) {
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
+      } else {
+        res.status(response.statusCode).send(body.error);
+      }
     });
   });
 
   app.post('/join', function(req, res) {
+<<<<<<< HEAD
     var userData = {
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       netid: req.body.netid,
       uin: req.body.uin
     };
+=======
+>>>>>>> Set up more user routes
     request({
-      url: `${SERVICES_URL}/users/newUser`,
+      url: `${SERVICES_URL}/users`,
       method: "POST",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
-      body: userData,
+      body: req.body,
       json: true
     }, function(err, response, body) {
       if(err || !response || response.statusCode != 200) {
-        req.flash('error', err || body.error);
+        req.flash('error', (body && body.error) || err);
       } else {
-        req.flash('success', "Added as a premember");
+        req.flash('success', body.message);
       }
       res.redirect('/join');
     });
