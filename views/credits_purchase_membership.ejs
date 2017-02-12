@@ -1,0 +1,35 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('_partials/header') -%>
+
+<div id="meme-upload-container">
+  <div class="row col-centered small-12 medium-4 large-4">
+    <h3>Purchase ACM Membership</h3>
+    <ul>
+      <li>$40.00 - ACM Membership Cost</li>
+      <li>$1.50 - Stripe Processing Fee</li>
+      <li><b>$41.50</b> - Total Charge </li>
+    </ul>
+    <form action="/credits/purchaseMembership" method="POST">
+    <script
+      src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+      data-key='<%= stripePublishableKey %>'
+      data-amount="4150"
+      data-name="ACM @ Illinois"
+      data-description="ACM Membership"
+      data-image="http://acm.illinois.edu/images/acm-logo-flat-og.png"
+      data-locale="auto">
+    </script>
+  </form>
+  </div>
+</div>
+
+<%- include('_partials/footer') -%>

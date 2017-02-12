@@ -10,6 +10,7 @@
 
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || "TEMP_STRING";
 const request = require('request');
 const moment = require('moment');
 
@@ -48,17 +49,22 @@ module.exports = function(app){
     });
   });
   app.get('/credits/purchaseMembership', function(req, res) {
-
+    // TODO: Redirect if not a 'pre-member'
+    res.render('credits_purchase_membership', {
+      authenticated: true,
+      stripePublishableKey: STRIPE_PUBLISHABLE_KEY
+    })
   });
   app.post('/credits/purchaseMembership', function(req, res) {
-
+    res.redirect('/intranet')
   });
   app.get('/credits/addFunds', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/intranet');
     }
     res.render('credits_add_funds', {
-      authenticated: true
+      authenticated: true,
+      stripePublishableKey: STRIPE_PUBLISHABLE_KEY
     });
   });
   app.post('/credits/addFunds', function(req, res) {

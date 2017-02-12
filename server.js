@@ -21,6 +21,8 @@ const expressWinston = require('express-winston');
 const strings_for_404 = require('./etc/404_strings.json');
 
 const PORT = process.env.PORT || 5000;
+const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
+const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -37,11 +39,11 @@ app.use(session({
   ephemeral: true // Deletes cookie when browser closes.
 }));
 app.use(expressWinston.logger({
-  transports: [
-    new winston.transports.Console()
-  ],
-  meta: false, // don't log metadata about requests (produces very messy logs if true)
-  expressFormat: true, // Use the default Express/morgan request formatting.
+	transports: [
+		new winston.transports.Console()
+	],
+	meta: false, // don't log metadata about requests (produces very messy logs if true)
+	expressFormat: true, // Use the default Express/morgan request formatting.
 }));
 app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
   if(!req.session.roles) {
@@ -58,8 +60,8 @@ app.use(function(req, res, next){ //mainly for the inital load, setting initial 
 
 // reset session when user logs out
 app.get('/logout', function(req, res) {
-  req.session.reset();
-  res.redirect('/');
+	req.session.reset();
+	res.redirect('/');
 });
 
 app.get('/', function(req, res) {
@@ -125,11 +127,32 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
-  
-  res.render('intranet', {
-    authenticated: utils.isAuthenticated(req),
-    session: req.session
-  });
+
+	request({
+			url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
+			method: "GET",
+			json: true,
+			headers: {
+				"Authorization": GROOT_ACCESS_TOKEN
+			}
+		}, function(error, response, body) {
+			console.log("hello")
+			console.log(error)
+			console.log(body)
+			console.log(response.statusCode)
+			var balance;
+			if(error || response.statusCode != 200) {
+				balance = 0;
+			}
+			else {
+				balance = body.balance;
+			}
+			return res.render('intranet', {
+				authenticated: utils.isAuthenticated(req),
+				session: req.session,
+				creditsBalance: balance
+			});
+	});
 });
 
 app.get('/sponsors/jobs', function(req, res) {

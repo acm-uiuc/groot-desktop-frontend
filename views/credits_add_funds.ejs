@@ -53,7 +53,7 @@ this license in a file with the distribution.
       });
     });
     var handler = StripeCheckout.configure({
-      key: 'pk_test_sPQQFJppKqoJjR25V057kOY7',
+      key: '<%= stripePublishableKey %>',
       image: 'http://acm.illinois.edu/images/acm-logo-flat-og.png',
       locale: 'auto',
       token: function(token) {
