@@ -91,7 +91,7 @@ module.exports = function(app) {
         "Token": req.session.student.token
       },
       body: {}
-    }, function(error, response, body) {
+    }, function(error, response) {
       res.sendStatus(response.statusCode);
     });
   });
@@ -111,7 +111,7 @@ module.exports = function(app) {
         "Token": req.session.student.token
       },
       body: {}
-    }, function(error, response, body) {
+    }, function(error, response) {
       res.sendStatus(response.statusCode);
     });
   });
@@ -165,4 +165,4 @@ module.exports = function(app) {
       }
     });
   });
-}
+};

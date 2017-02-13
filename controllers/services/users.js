@@ -31,7 +31,6 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if(err) {
-        console.log(err);
         return res.status(500).send("Sorry, there was a server error.  Please try again.");
       }
       res.render('users_index', {
@@ -61,7 +60,7 @@ module.exports = function(app) {
         "netid" : req.params["approvedUserNetID"],
       },
       json: true
-    }, function(err, response, body) {
+    }, function(err) {
       if(err) {
         req.flash('error', "There was an issue, and the member may not have been added. Please contact someone from the Admin committee.");
       } else {
@@ -74,10 +73,10 @@ module.exports = function(app) {
 
   app.post('/join', function(req, res) {
     var userData = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        netid: req.body.netid,
-        uin: req.body.uin
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      netid: req.body.netid,
+      uin: req.body.uin
     };
     request({
       url: `${SERVICES_URL}/users/newUser`,
@@ -145,4 +144,4 @@ module.exports = function(app) {
     }
     request(options, callback);
   });
-}
+};

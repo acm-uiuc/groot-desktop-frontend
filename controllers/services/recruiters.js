@@ -525,18 +525,18 @@ module.exports = function(app) {
   });
 
   app.post('/resumes/new', function(req, res) {
-      request({
-          url: `${SERVICES_URL}/students`,
-          method: "POST",
-          headers: {
-              "Authorization": GROOT_ACCESS_TOKEN
-          },
-          json: true,
-          body: req.body
-      }, function(err, response, body) {
-        // Because the resume needed to be serialized, this should return json instead (to serialize_resume.js).
-        res.status(response.statusCode).send(body);
-      });
+    request({
+      url: `${SERVICES_URL}/students`,
+      method: "POST",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      json: true,
+      body: req.body
+    }, function(err, response, body) {
+      // Because the resume needed to be serialized, this should return json instead (to serialize_resume.js).
+      res.status(response.statusCode).send(body);
+    });
   });
 
   app.get('/corporate/resumes', function(req, res) {
@@ -675,7 +675,7 @@ module.exports = function(app) {
       body: payload
     }, function(error, response, body) {
       if (response.statusCode != 200 || body.error) {
-        req.flash('error', body.error || "Something went wrong...")
+        req.flash('error', body.error || "Something went wrong...");
       }
       else {
         req.flash('success', body.message);
@@ -728,4 +728,4 @@ module.exports = function(app) {
       });
     });
   });
-}
+};

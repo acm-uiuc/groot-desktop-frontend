@@ -39,26 +39,26 @@ module.exports = function(app) {
   });
 
   app.get('/sigs', function(req, res) {
-      request({
-          url: `${SERVICES_URL}/groups/sigs`,
-    headers: {
-      "Authorization": GROOT_ACCESS_TOKEN
-    },
-          method: "GET",
-      }, function(err, response, body) {
-          if (err || !response || !response.statusCode) {
-              return res.status(500).send(err);
-          }
+    request({
+      url: `${SERVICES_URL}/groups/sigs`,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      method: "GET",
+    }, function(err, response, body) {
+      if (err || !response || !response.statusCode) {
+        return res.status(500).send(err);
+      }
 
-          sigs = JSON.parse(body);
-      sigs_a = sigs.slice(0, (sigs.length / 2) + 1);
-          sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length);
-          res.render('sigs', {
-              authenticated: utils.isAuthenticated(req),
-              sig_col_a: sigs_a,
-              sig_col_b: sigs_b,
-          });
+      var sigs = JSON.parse(body);
+      var sigs_a = sigs.slice(0, (sigs.length / 2) + 1);
+      var sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length);
+      res.render('sigs', {
+        authenticated: utils.isAuthenticated(req),
+        sig_col_a: sigs_a,
+        sig_col_b: sigs_b,
       });
+    });
   });
 
   app.get('/about', function(req, res) {
@@ -79,4 +79,4 @@ module.exports = function(app) {
       });
     });
   });
-}
+};
