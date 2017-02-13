@@ -36,7 +36,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if(err || body.error || !body.memes) {
-        return res.status(500).send("Couldn't fetch memes. :'(")
+        return res.status(500).send("Couldn't fetch memes. :'(");
       }
       var memes = body.memes.map(function(meme) {
         meme.created_at = moment(meme.created_at).fromNow();
@@ -81,13 +81,13 @@ module.exports = function(app) {
       }
     }, function(err, response, body){
       if(err) {
-        return res.status(500).send(err)
+        return res.status(500).send(err);
       }
       if(response.statusCode != 200 || body.error){
-        req.flash('error', body.error || "Something went wrong... :'(")
+        req.flash('error', body.error || "Something went wrong... :'(");
       }
       else {
-        req.flash('success', "Meme uploaded! Waiting on admin approval.")
+        req.flash('success', "Meme uploaded! Waiting on admin approval.");
       }
       res.redirect('/memes');
     });
@@ -108,7 +108,7 @@ module.exports = function(app) {
       body: {}
     }, function(err, response, body){
       if(err || body.error) {
-        return req.status(500).send(err || body.error)
+        return req.status(500).send(err || body.error);
       }
       return res.sendStatus(200);
     });
@@ -130,23 +130,22 @@ module.exports = function(app) {
       json: true
     };
     switch(req.query.action) {
-      case 'approve':
-        opts.method = "PUT";
-        opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}/approve`
-        opts.body = {}
-        break;
-      case 'reject':
-        opts.method = "DELETE";
-        opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}`
-        break;
-      default:
-        return req.status(400).send("Invalid action.");
+    case 'approve':
+      opts.method = "PUT";
+      opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}/approve`;
+      opts.body = {};
+      break;
+    case 'reject':
+      opts.method = "DELETE";
+      opts.url = `${SERVICES_URL}/memes/${req.params.meme_id}`;
+      break;
+    default:
+      return req.status(400).send("Invalid action.");
     }
     request(opts, function(err, response, body){
-      console.log(body)
       if(err) return res.status(500).send(err);
       if(body.error) return res.status(500).send(body.error);
       return res.redirect('/memes');
     });
   });
-}
+};
