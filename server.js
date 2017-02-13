@@ -17,6 +17,7 @@ const session = require('client-sessions');
 const utils = require('./etc/utils.js');
 const flash = require('express-flash');
 const winston = require('winston');
+const request = require('request');
 const expressWinston = require('express-winston');
 const strings_for_404 = require('./etc/404_strings.json');
 
@@ -39,11 +40,11 @@ app.use(session({
   ephemeral: true // Deletes cookie when browser closes.
 }));
 app.use(expressWinston.logger({
-	transports: [
-		new winston.transports.Console()
-	],
-	meta: false, // don't log metadata about requests (produces very messy logs if true)
-	expressFormat: true, // Use the default Express/morgan request formatting.
+  transports: [
+    new winston.transports.Console()
+  ],
+  meta: false, // don't log metadata about requests (produces very messy logs if true)
+  expressFormat: true, // Use the default Express/morgan request formatting.
 }));
 app.use(function(req, res, next){ //mainly for the inital load, setting initial values for the session
   if(!req.session.roles) {
@@ -60,15 +61,15 @@ app.use(function(req, res, next){ //mainly for the inital load, setting initial 
 
 // reset session when user logs out
 app.get('/logout', function(req, res) {
-	req.session.reset();
-	res.redirect('/');
+  req.session.reset();
+  res.redirect('/');
 });
 
 app.get('/', function(req, res) {
   res.render('home', {
     authenticated: utils.isAuthenticated(req),
-		messages: req.flash('success'),
-		errors: req.flash('error')
+    messages: req.flash('success'),
+    errors: req.flash('error')
   });
 });
 
@@ -130,29 +131,29 @@ app.get('/intranet', function(req, res) {
     return res.redirect('/login');
   }
 
-	request({
-			url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
-			method: "GET",
-			json: true,
-			headers: {
-				"Authorization": GROOT_ACCESS_TOKEN
-			}
-		}, function(error, response, body) {
-			var balance;
-			if(error || response.statusCode != 200) {
-				balance = 0;
-			}
-			else {
-				balance = body.balance;
-			}
-			return res.render('intranet', {
-				authenticated: utils.isAuthenticated(req),
-				session: req.session,
-				creditsBalance: balance,
-				messages: req.flash('success'),
-				errors: req.flash('error')
-			});
-	});
+  request({
+    url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
+    method: "GET",
+    json: true,
+    headers: {
+      "Authorization": GROOT_ACCESS_TOKEN
+    }
+  }, function(error, response, body) {
+    var balance;
+    if(error || response.statusCode != 200) {
+      balance = 0;
+    }
+    else {
+      balance = body.balance;
+    }
+    return res.render('intranet', {
+      authenticated: utils.isAuthenticated(req),
+      session: req.session,
+      creditsBalance: balance,
+      messages: req.flash('success'),
+      errors: req.flash('error')
+    });
+  });
 });
 
 app.get('/sponsors/jobs', function(req, res) {

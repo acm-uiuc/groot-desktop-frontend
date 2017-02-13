@@ -43,7 +43,7 @@ module.exports = function(app){
           balance: body.balance.toFixed(2),
           messages: req.flash('success'),
           errors: req.flash('error')
-        })
+        });
       }
       res.sendStatus(500);
     });
@@ -53,7 +53,7 @@ module.exports = function(app){
     res.render('credits_purchase_membership', {
       authenticated: true,
       stripePublishableKey: STRIPE_PUBLISHABLE_KEY
-    })
+    });
   });
   app.post('/credits/purchaseMembership', function(req, res) {
     // TODO: Redirect if not a 'pre-member'
@@ -79,10 +79,10 @@ module.exports = function(app){
       }
     }, function(err, response, body){
       if(err) {
-        return res.status(500).send(err)
+        return res.status(500).send(err);
       }
       if(response.statusCode != 200 || !body.successful){
-        req.flash('error', "Something went wrong with your payment. Talk to someone in ACM Admin.")
+        req.flash('error', "Something went wrong with your payment. Talk to someone in ACM Admin.");
         return res.redirect('/');
       }
       else {
@@ -109,11 +109,11 @@ module.exports = function(app){
     }
     // Sanity checks
     if(req.body.amount < 5 || req.body.amount > 50) {
-      req.flash('error', "Invalid balance adjustment amount.")
+      req.flash('error', "Invalid balance adjustment amount.");
       return res.redirect('/credits');
     }
     else if(!req.body.token) {
-      req.flash('error', "Payment token not found. Talk to someone in ACM Admin.")
+      req.flash('error', "Payment token not found. Talk to someone in ACM Admin.");
       return res.redirect('/credits');
     }
     // Send payment details to groot-credits-service for processing
@@ -132,15 +132,15 @@ module.exports = function(app){
       }
     }, function(err, response, body){
       if(err) {
-        return res.status(500).send(err)
+        return res.status(500).send(err);
       }
       if(response.statusCode != 200 || !body.successful){
-        req.flash('error', "Something went wrong. Talk to someone in ACM Admin.")
+        req.flash('error', "Something went wrong. Talk to someone in ACM Admin.");
       }
       else {
-        req.flash('success', "Success! Your payment is being processed.")
+        req.flash('success', "Success! Your payment is being processed.");
       }
       return res.redirect('/credits');
     });
   });
-}
+};
