@@ -138,10 +138,6 @@ app.get('/intranet', function(req, res) {
 				"Authorization": GROOT_ACCESS_TOKEN
 			}
 		}, function(error, response, body) {
-			console.log("hello")
-			console.log(error)
-			console.log(body)
-			console.log(response.statusCode)
 			var balance;
 			if(error || response.statusCode != 200) {
 				balance = 0;

@@ -18,8 +18,40 @@ this license in a file with the distribution.
       <h5 style="display:inline; float:left; padding-top:20px" class="balance">Current Balance: <b class="balance_amount">$<%= balance %></b></h5>
       <a class="button" name="refill" href="/credits/addFunds" style="float:right">Refill Balance</a>
     </div>
-    <%- include('_partials/credits_history') -%>
+    <% if (transactions && transactions.length != 0) { %>
+      <table id="transactions-table" class="dynatable-container">
+        <thead>
+          <tr>
+            <th> Id </th>
+            <th> Amount </th>
+            <th> Time </th>
+            <th> Description </th>
+          </tr>
+        </thead>
+        <% for (var t of transactions) { %>
+          <tr class="transaction">
+            <td> <%= t.id %> </td>
+            <td> <%= (t.amount > 0 ? '$' : '-$') + Math.abs(t.amount).toFixed(2) %> </td>
+            <td> <%= t.created_at %> </td>
+            <td> <%= t.description ? t.description : "No description" %> </td>
+          </tr>
+          <% } %>
+        </table>
+    <% } else { %>
+      <h5>There are no transactions.</h5>
+    <% } %>
   </div>
 </div>
+
+<script type="text/javascript">
+  window.addEventListener('load', function() {
+    $('#transactions-table').dynatable({
+      features: {
+        search: false,
+        perPageSelect: false
+      }
+    });
+  })
+</script>
 
 <%- include('_partials/footer') -%>
