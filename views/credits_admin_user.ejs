@@ -60,22 +60,22 @@ this license in a file with the distribution.
   </button>
 </div>
 
+<%- include('_partials/footer') -%>
+
 <script type="text/javascript">
-  window.addEventListener('load', function() {
-    $(document).foundation();
-    $('#transactions-table').dynatable({
-      features: {
-        search: false,
-        perPageSelect: false
-      }
-    });
-    Foundation.Abide.defaults.validators['balance_adjustment'] =
-      function($el,required,parent) {
-        if (!required) return true;
-        var val = Number($el.val());
-        return (val >= 0)
-    };
+  $(document).foundation();
+  $('#transactions-table').dynatable({
+    features: {
+      search: false,
+      perPageSelect: false
+    }
   });
+  Foundation.Abide.defaults.validators['balance_adjustment'] =
+    function($el,required,parent) {
+      if (!required) return true;
+      var val = Number($el.val());
+      return (val >= 0)
+  };
   function deleteTransaction(id) {
     $.ajax({
       url: "/credits/admin/transactions/" + id,
@@ -99,7 +99,4 @@ this license in a file with the distribution.
       success: location.reload
     });
   }
-  
 </script>
-
-<%- include('_partials/footer') -%>

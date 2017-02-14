@@ -13,7 +13,22 @@ const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || "TEMP_STRING";
 const request = require('request');
 const moment = require('moment');
-const utils = require('../../etc/utils.js');
+
+function makeUserPaid(req, res, nextSteps) {
+  request({
+    method:"GET",
+    url: `${SERVICES_URL}/users/${req.session.student.netid}/paid`,
+    headers: {
+      "Authorization": GROOT_ACCESS_TOKEN
+    }
+  }, function(error) {
+    if(error) {
+      req.flash('error', "Unable to make user a paid user. Talk to someone in ACM Admin.");
+      return req.redirect("/");
+    }
+    nextSteps(req, res);
+  });
+}
 
 module.exports = function(app){
   app.get('/credits', function(req, res) {
@@ -179,7 +194,7 @@ module.exports = function(app){
       }
       else {
         // Make user a paid user
-        utils.nextSteps(req, res, function() {
+        makeUserPaid(req, res, function() {
           req.flash('success', "Success! Your membership fee is being processed.");
           res.redirect('/intranet');
         });

@@ -35,12 +35,9 @@ this license in a file with the distribution.
         return (val >= 5 && val <= 50)
       };
       $(document).on("submit", function(ev) {
-        console.log("val: " + $('input#stripeToken').val())
         if($('input#stripeToken').val()) {
-          console.log("returning")
           return;
         }
-        console.log("not returning")
         ev.preventDefault();
         var balance = Number($('#refill_amount_input').val()).toFixed(2);
         var balanceInCents = parseInt(balance * 100);

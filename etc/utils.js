@@ -177,19 +177,3 @@ if (m > 6) {
 }
 
 exports.sponsorsScope = sponsorsScope;
-
-exports.makeUserPaid = function(req, res, nextSteps) {
-	request({
-		method:"GET",
-		url: `${SERVICES_URL}/users/${req.session.student.netid}/paid`,
-		headers: {
-			"Authorization": GROOT_ACCESS_TOKEN
-		}
-	}, function(error, response, body) {
-		if(error) {
-			req.flash('error', "Unable to make user a paid user. Talk to someone in ACM Admin.")
-			return req.redirect("/")
-		}
-		nextSteps(req, res);
-	});
-}

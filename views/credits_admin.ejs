@@ -36,14 +36,12 @@ this license in a file with the distribution.
   </div>
 </div>
 
-<script type="text/javascript">
-  window.addEventListener('load', function() {
-    $('#transactions-table').dynatable({
-      features: {
-        perPageSelect: false
-      }
-    });
-  })
-</script>
-
 <%- include('_partials/footer') -%>
+
+<script type="text/javascript">
+  $('#transactions-table').dynatable({
+    features: {
+      perPageSelect: false
+    }
+  });
+</script>
