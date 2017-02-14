@@ -48,6 +48,98 @@ module.exports = function(app){
       res.sendStatus(500);
     });
   });
+  app.get('/credits/admin', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/users`,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200) {
+        return res.render('credits_admin', {
+          authenticated: true,
+          users: body
+        });
+      }
+      res.sendStatus(500);
+    });
+  });
+  app.get('/credits/admin/:netid', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/transactions`,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      qs: {
+        netid: req.params.netid
+      }
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200) {
+        for(var t of body.transactions){
+          t.created_at = moment(t.created_at)
+            .format('MMMM Do YYYY, h:mm:ss a');
+        }
+        return res.render('credits_admin_user', {
+          authenticated: true,
+          transactions: body.transactions,
+          balance: body.balance,
+          netid: req.params.netid
+        });
+      }
+      res.sendStatus(500);
+    });
+  });
+  app.post('/credits/admin/:netid', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/transactions`,
+      method: "POST",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      body: {
+        description: "Balance adjustment by " + req.session.student.netid,
+        amount: req.body.amount,
+        netid: req.params.netid
+      }
+    }, function(error, response) {
+      if (response && response.statusCode == 200) {
+        return res.redirect('/credits/admin/' + req.params.netid);
+      }
+      res.sendStatus(500);
+    });
+  });
+  app.delete('/credits/admin/transactions/:id', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/transactions/${req.params.id}`,
+      method: "DELETE",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response) {
+      if (response && response.statusCode == 200) {
+        return res.sendStatus(200);
+      }
+      res.sendStatus(500);
+    });
+  });
   app.get('/credits/purchaseMembership', function(req, res) {
     // TODO: Redirect if not a 'pre-member'
     res.render('credits_purchase_membership', {
