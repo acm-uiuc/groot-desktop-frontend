@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm build && node server.js",
     "build": "mkdirp public/css && lessc public/less/main.less",
-    "lint": "node_modules/eslint/bin/eslint.js server.js controllers/services/*.js"
+    "lint": "node_modules/eslint/bin/eslint.js server.js controllers/services/*.js etc/utils.js"
   },
   "license": "NCSA",
   "repository": {
