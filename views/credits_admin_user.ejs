@@ -46,12 +46,12 @@ this license in a file with the distribution.
 </div>
 
 <div class="reveal" id="exampleModal1" data-reveal>
-  <form data-abide id='credits_form' novalidate method="post" action="/credits/admin/<%= netid %>">
+  <form data-abide id='credits_form' novalidate action="#" onsubmit="adjustBalance()">
     <div class="amount-field">
-      <label>Balance Adjustment Amount <small>required</small>
-        <input name="amount" type="number" required data-validator="balance_adjustment" pattern="number" placeholder="5.00">
+      <label>New Balance<small>  required</small>
+        <input id="amount_field" name="amount" type="number" required data-validator="balance_adjustment" pattern="number" placeholder="5.00">
       </label>
-      <small class="error">Balance adjustment amount is required and must be a number between -50 and 50. A positive adjustment amount will increase the user balance, a negative amount will lower the user balance.</small>
+      <small class="error">Enter the desired new balance of the user. Must be greater than or equal to $0.</small>
     </div>
     <button type="submit" class="button">Make Adjustment</button>
   </form>
@@ -73,7 +73,7 @@ this license in a file with the distribution.
       function($el,required,parent) {
         if (!required) return true;
         var val = Number($el.val());
-        return (val >= -50 && val <= 50)
+        return (val >= 0)
     };
   });
   function deleteTransaction(id) {
@@ -83,6 +83,20 @@ this license in a file with the distribution.
       success: function() {
         location.reload();
       }
+    });
+  }
+  function adjustBalance() {
+    var curr = <%= balance %>;
+    var new_bal = $('#amount_field').val();
+    var adjust_amount = new_bal - curr;
+    $.ajax({
+      url: "/credits/admin/<%= netid %>",
+      method: "POST",
+      data: JSON.stringify({
+        amount: adjust_amount
+      }),
+      contentType: "application/json; charset=utf-8",
+      success: location.reload
     });
   }
   
