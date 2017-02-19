@@ -31,31 +31,31 @@ this license in a file with the distribution.
 
 	function makeACMMember(netid) {
 		$.ajax({
-        url: "/intranet/users/" + netid + "/paid",
-        method: "PUT",
-        success: function(response) {
-			$('#unapproved-users-partial').html(response);
-			$("#user-approval-table").dynatable({
-				dataset: {
-					perPageDefault: 20
-				}
-			});
-        }
-    });
+			url: "/intranet/users/" + netid + "/paid",
+			method: "PUT",
+			success: function(response) {
+				$('#unapproved-users-partial').html(response);
+				$("#user-approval-table").dynatable({
+					dataset: {
+						perPageDefault: 20
+					}
+				});
+			}
+		});
 	}
 
 	function deleteACMMember(netid) {
 		$.ajax({
-        url: "/intranet/users/" + netid,
-        method: "DELETE",
-        success: function(response) {
-			$('#unapproved-users-partial').html(response);
-			$("#user-approval-table").dynatable({
-				dataset: {
-					perPageDefault: 20
-				}
-			});
-        }
+			url: "/intranet/users/" + netid,
+			method: "DELETE",
+			success: function(response) {
+				$('#unapproved-users-partial').html(response);
+				$("#user-approval-table").dynatable({
+					dataset: {
+						perPageDefault: 20
+					}
+				});
+			}
     });
 	}
 </script>

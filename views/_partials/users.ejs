@@ -7,7 +7,7 @@
         <th>Netid</th>
         <th>First Name</th>
         <th>Last Name</th>
-        <th>Submitted</th>
+        <th>A Member Since</th>
       <tr>
     </thead>
     <tbody>
@@ -17,6 +17,8 @@
             <% if (!user.is_member && user.netid != me.netid) { %>
               <a class="button" onClick="makeACMMember('<%= user.netid %>')">Paid</a>
               <a class="button" onClick="deleteACMMember('<%= user.netid %>')">Delete</a>
+            <% } else { %>
+              <p>No action to take.</p>
             <% } %>
           </td>
           <td><%= user.netid %></td>
