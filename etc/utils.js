@@ -117,7 +117,7 @@ var sponsorsScope = {
     }, {
       name: 'Co-Op'
     }, {
-      name: 'Full Time'
+      name: 'Full-Time'
     }],
   },
   degree: {
