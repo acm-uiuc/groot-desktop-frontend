@@ -123,7 +123,8 @@ module.exports = function(app){
       method: "POST",
       json: true,
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Credits-Token": req.session.student.token
       },
       body: {
         description: "Balance adjustment by " + req.session.student.netid,
@@ -146,7 +147,8 @@ module.exports = function(app){
       method: "DELETE",
       json: true,
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Credits-Token": req.session.student.token
       }
     }, function(error, response) {
       if (response && response.statusCode == 200) {
