@@ -25,7 +25,9 @@ module.exports = function(app) {
       url: `${SERVICES_URL}/users`,
       method: "GET",
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token
       },
       body: {
         "token": req.session.student.token,
@@ -55,7 +57,8 @@ module.exports = function(app) {
       method: "PUT",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Netid": req.session.student.netid
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token  
       },
       json: true
     }, function(err, response, body) {
@@ -78,7 +81,8 @@ module.exports = function(app) {
       method: "DELETE",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Netid": req.session.student.netid
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token 
       },
       json: true,
       body: {}
