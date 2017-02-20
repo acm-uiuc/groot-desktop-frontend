@@ -12,6 +12,7 @@ this license in a file with the distribution.
 
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-9 large-9 columns">
+    <%- include('_partials/flash') -%>
     <div id="links-top" class="row">
       <div id="main-left" class="small-12 medium-12 large-12 columns">
         <h3>Your information</h3>
@@ -126,6 +127,18 @@ this license in a file with the distribution.
             <button class="button">View jobs</button>
           </a>
         </div>
+      <div id="main-center" class="small-12 medium-12 large-4 columns">
+          <h3>Credits</h3>
+          <p>View and refill your ACM credits balance</p>
+          <a href="/credits">
+            <button class="button">View credits</button>
+          </a>
+          <% if(session.roles.isAdmin) { %>
+            <a href="/credits/admin">
+              <button class="button">Admin View</button>
+            </a>
+          <% } %>
+        </div>
       </div>
     <% } %>
   </div>
@@ -149,6 +162,23 @@ this license in a file with the distribution.
         <div class="event">
           <ul class="dashed">
             <li><a href="https://www.facebook.com/groups/uiucacm/">ACM FB Group</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="events-title" class="row">
+      <h2>Credits</h2>
+    </div>
+    <div id="events" class="row">
+      <div class="event">
+        <div class="event">
+          <ul class="dashed">
+            <li><b>Balance:</b> $<%= creditsBalance.toFixed(2) %></li>
+          </ul>
+        </div>
+        <div class="event">
+          <ul class="dashed">
+            <li><a href="/credits">View Details</a></li>
           </ul>
         </div>
       </div>

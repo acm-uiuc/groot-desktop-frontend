@@ -17,10 +17,13 @@ const session = require('client-sessions');
 const utils = require('./etc/utils.js');
 const flash = require('express-flash');
 const winston = require('winston');
+const request = require('request');
 const expressWinston = require('express-winston');
 const strings_for_404 = require('./etc/404_strings.json');
 
 const PORT = process.env.PORT || 5000;
+const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
+const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 
 app.set('views', path.resolve(__dirname) + '/views');
 app.set('view engine', 'ejs');
@@ -65,6 +68,8 @@ app.get('/logout', function(req, res) {
 app.get('/', function(req, res) {
   res.render('home', {
     authenticated: utils.isAuthenticated(req),
+    messages: req.flash('success'),
+    errors: req.flash('error')
   });
 });
 
@@ -125,10 +130,29 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
-  
-  res.render('intranet', {
-    authenticated: utils.isAuthenticated(req),
-    session: req.session
+
+  request({
+    url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
+    method: "GET",
+    json: true,
+    headers: {
+      "Authorization": GROOT_ACCESS_TOKEN
+    }
+  }, function(error, response, body) {
+    var balance;
+    if(error || response.statusCode != 200) {
+      balance = 0;
+    }
+    else {
+      balance = body.balance;
+    }
+    return res.render('intranet', {
+      authenticated: utils.isAuthenticated(req),
+      session: req.session,
+      creditsBalance: balance,
+      messages: req.flash('success'),
+      errors: req.flash('error')
+    });
   });
 });
 
@@ -194,6 +218,7 @@ require('./controllers/services/memes.js')(app);
 require('./controllers/services/quotes.js')(app);
 require('./controllers/services/recruiters.js')(app);
 require('./controllers/services/users.js')(app);
+require('./controllers/services/credits.js')(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));

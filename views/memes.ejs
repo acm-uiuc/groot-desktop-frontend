@@ -24,16 +24,8 @@ this license in a file with the distribution.
       <a class='meme-order-link' href='?order=unapproved'>Unapproved</a>
     <% } %>
 
-    <% if ( messages.length > 0 ) { %>
-    <div class="callout secondary">
-      <p><%= messages %></p>
-    </div>
-    <% } %>
-    <% if ( errors.length > 0 ) { %>
-    <div class="callout alert">
-      <p><%= errors %></p>
-    </div>
-    <% } %>
+    <%- include('_partials/flash') -%>
+
   </div>
   <div class="meme-card-container row">
     <% for (var i = 0; i < memes.length; i++) { %>
