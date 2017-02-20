@@ -25,15 +25,14 @@ module.exports = function(app) {
       url: `${SERVICES_URL}/users`,
       method: "GET",
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
-      },
-      body: {
-        "token": req.session.student.token,
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token
       },
       json: true
     }, function(err, response, body) {
       if(err) {
-        return res.status(500).send("Sorry, there was a server error.  Please try again.");
+        return res.status(500).send("Sorry, there was a server error. Please try again.");
       }
 
       res.render('users_index', {
@@ -55,7 +54,8 @@ module.exports = function(app) {
       method: "PUT",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Netid": req.session.student.netid
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token  
       },
       json: true
     }, function(err, response, body) {
@@ -78,7 +78,8 @@ module.exports = function(app) {
       method: "DELETE",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Netid": req.session.student.netid
+        "Netid": req.session.student.netid,
+        "Token": req.session.student.token 
       },
       json: true,
       body: {}
