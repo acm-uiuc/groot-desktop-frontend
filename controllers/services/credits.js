@@ -47,7 +47,7 @@ module.exports = function(app){
         netid: req.session.student.netid
       }
     }, function(error, response, body) {
-      if (response && response.statusCode == 200) {
+      if (response && response.statusCode == 200 && body.transactions) {
         for(var t of body.transactions){
           t.created_at = moment(t.created_at)
             .format('MMMM Do YYYY, h:mm:ss a');
