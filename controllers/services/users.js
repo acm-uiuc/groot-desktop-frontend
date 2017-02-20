@@ -10,7 +10,9 @@
 
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
+const path = require('path');
 const request = require('request');
+const ejs = require('ejs');
 const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
@@ -20,8 +22,8 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/users/pre`,
-      method: "POST",
+      url: `${SERVICES_URL}/users`,
+      method: "GET",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
@@ -33,115 +35,108 @@ module.exports = function(app) {
       if(err) {
         return res.status(500).send("Sorry, there was a server error.  Please try again.");
       }
+
       res.render('users_index', {
         authenticated: utils.isAuthenticated(req),
-        session:req.session,
-        premembers: body,
-        messages: req.flash('success')
+        premembers: body.data,
+        me: req.session.student
       });
     });
-
   });
 
-
-  app.get('/intranet/users/:approvedUserNetID', function(req, res){
+  app.put('/intranet/users/:netid/paid', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
-      return res.redirect('/login');
+      res.redirect('/login');
     }
 
+    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
     request({
-      url: `${SERVICES_URL}/users/paid`,
-      method: "POST",
+      url: `${SERVICES_URL}/users/` + req.params.netid + `/paid`,
+      method: "PUT",
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
-      },
-      body: {
-        "token" : req.session.student.token,
-        "netid" : req.params["approvedUserNetID"],
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid
       },
       json: true
-    }, function(err) {
-      if(err) {
-        req.flash('error', "There was an issue, and the member may not have been added. Please contact someone from the Admin committee.");
+    }, function(err, response, body) {
+      if (response && response.statusCode == 200 && body) {
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
       } else {
-        req.flash('success', "The member was added successfully!");
+        res.status(response.statusCode).send(body.error);
       }
+    });
+  });
 
-      res.redirect('/intranet/users');
+  app.delete('/intranet/users/:netid', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/login');
+    }
+
+    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
+    request({
+      url: `${SERVICES_URL}/users/` + req.params.netid,
+      method: "DELETE",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+        "Netid": req.session.student.netid
+      },
+      json: true,
+      body: {}
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200 && body) {
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data, me: req.session.student } ));
+      } else {
+        res.status(response.statusCode).send(body.error);
+      }
     });
   });
 
   app.post('/join', function(req, res) {
-    var userData = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      netid: req.body.netid,
-      uin: req.body.uin
-    };
     request({
-      url: `${SERVICES_URL}/users/newUser`,
+      url: `${SERVICES_URL}/users`,
       method: "POST",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
-      body: userData,
+      body: req.body,
       json: true
     }, function(err, response, body) {
       if(err || !response || response.statusCode != 200) {
-        req.flash('error', err || body.error);
+        req.flash('error', (body && body.error) || err);
       } else {
-        req.flash('success', "Added as a premember");
+        req.flash('success', body.message);
       }
       res.redirect('/join');
     });
   });
 
   app.post('/login', function(req, res){
-    var netid = req.body.netid, pass = req.body.password;
-    var options = {
-      url: `${SERVICES_URL}/session?username=${netid}`,
+    request({
+      url: `${SERVICES_URL}/users/login`,
       method: "POST",
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
-      body: {
-        "username" : netid,
-        "password" : pass,
-        "validation-factors" : {
-          "validationFactors" : [{
-            "name" : "remote_address",
-            "value" : "127.0.0.1"
-          }]
-        }
-      }
-    };
-
-    function callback(error, response, body) {
-      if(!body || !body["token"]) {
-        return res.render('login', {
-          authenticated: false,
-          errors: 'Invalid email or password.'
-        });
-      }
-      
-      if (!error && response && response.statusCode == 200) {
+      body: req.body
+    }, function(err, response, body) {
+      if(err || !response || response.statusCode != 200) {
+        req.flash('error', (body && body.error) || err);
+        res.redirect('/login');
+      } else {
         req.session.student = {
-          netid: netid,
-          token: body["token"],
-          email: netid + "@illinois.edu"
+          first_name: body.data.first_name,
+          last_name: body.data.last_name,
+          token: body.data.token,
+          netid: body.data.netid
         };
+        req.session.username = req.session.student.first_name;
         req.session.roles.isStudent = true;
 
         utils.setAuthentication(req, res, function(req, res) {
-          utils.getUserData(req, res, function(req, res){
-            res.redirect('/intranet');
-          });
+          res.redirect('/intranet');
         });
-      } else {
-        res.status(response.statusCode).send(error);
       }
-    }
-    request(options, callback);
+    });
   });
 };

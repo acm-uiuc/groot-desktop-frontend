@@ -1,0 +1,34 @@
+<% if (users && users.length != 0) { %>
+  <h2>Members</h2>
+  <table class="table table-striped" id="user-approval-table" class="dynatable-container">
+    <thead>
+      <tr>
+        <th>Action</th> 
+        <th>Netid</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>A Member Since</th>
+      <tr>
+    </thead>
+    <tbody>
+      <% for (var user of users) { %>
+        <tr>
+          <td>
+            <% if (!user.is_member && user.netid != me.netid) { %>
+              <a class="button" onClick="makeACMMember('<%= user.netid %>')">Paid</a>
+              <a class="button" onClick="deleteACMMember('<%= user.netid %>')">Delete</a>
+            <% } else { %>
+              <p>No action to take.</p>
+            <% } %>
+          </td>
+          <td><%= user.netid %></td>
+          <td><%= user.first_name %></td>
+          <td><%= user.last_name %></td>
+          <td><%= new Date(user.created_at).toLocaleString() %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+<% } else { %>			
+  <h5>You have no users. That's a problem.</h5>
+<% } %>

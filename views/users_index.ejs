@@ -13,30 +13,9 @@ this license in a file with the distribution.
 <div id="home-container" class="row">
 	<div id="main-container" class="small-12 medium-12 large-12 columns">
 		<div id="links-top" class="row">
-			<h2>Pre Members</h2>
-			
-			<table class="table table-striped" id="user-approval-table" class="dynatable-container">
-				<thead>
-					<tr>
-						<th>Mark Paid</th> 
-						<th>Netid</th>
-						<th>First Name</th>
-						<th>Last Name</th>
-						<th>Submitted</th>
-					<tr>
-				</thead>
-				<tbody>
-					<% for (var preuser of premembers) { %>
-					<tr>
-						<td><a href="/intranet/users/<%=preuser.netid%>" class="btn">Paid</a>
-						<td><%=preuser.netid%></td>
-						<td><%=preuser.first_name%></td>
-						<td><%=preuser.last_name%></td>
-						<td><%=new Date(preuser.created_at).toLocaleString() %></td>
-					</tr>
-					<% } %>
-				</tbody>
-			</table>
+			<div id="unapproved-users-partial">
+			 	<%- include('_partials/users', { users: premembers }) %>
+			 </div>
 		</div>
 	</div>
 </div>
@@ -49,4 +28,34 @@ this license in a file with the distribution.
         perPageDefault: 20
     }
   });
+
+	function makeACMMember(netid) {
+		$.ajax({
+			url: "/intranet/users/" + netid + "/paid",
+			method: "PUT",
+			success: function(response) {
+				$('#unapproved-users-partial').html(response);
+				$("#user-approval-table").dynatable({
+					dataset: {
+						perPageDefault: 20
+					}
+				});
+			}
+		});
+	}
+
+	function deleteACMMember(netid) {
+		$.ajax({
+			url: "/intranet/users/" + netid,
+			method: "DELETE",
+			success: function(response) {
+				$('#unapproved-users-partial').html(response);
+				$("#user-approval-table").dynatable({
+					dataset: {
+						perPageDefault: 20
+					}
+				});
+			}
+    });
+	}
 </script>
