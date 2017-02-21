@@ -142,24 +142,18 @@ app.get('/intranet', function(req, res) {
   }
 
   request({
-    url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
+    url: `${SERVICES_URL}/merch/users/${req.session.student.netid}`,
     method: "GET",
     json: true,
     headers: {
       "Authorization": GROOT_ACCESS_TOKEN
     }
   }, function(error, response, body) {
-    var balance;
-    if(error || response.statusCode != 200) {
-      balance = 0;
-    }
-    else {
-      balance = body.balance;
-    }
     return res.render('desktop/intranet', {
       authenticated: utils.isAuthenticated(req),
       session: req.session,
-      creditsBalance: balance,
+      pin: body.data.pin,
+      creditsBalance: body.data.balance,
       messages: req.flash('success'),
       errors: req.flash('error')
     });
