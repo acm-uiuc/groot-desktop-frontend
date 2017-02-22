@@ -45,7 +45,7 @@ module.exports = function(app) {
         }
       }, function(s_error, s_response, s_body) {
         if (s_response && s_response.statusCode == 200 && s_body && body) {
-          res.render('corporate_manager', {
+          res.render('recruiters/corporate_manager', {
             unapproved_resumes: s_body.data,
             job_listings: body.data,
             authenticated: true,
@@ -108,7 +108,7 @@ module.exports = function(app) {
       },
     }, function(error, response, body) {
       if (!error && response && response.statusCode == 200 && body) {
-        res.render('account_manager', {
+        res.render('recruiters/account_manager', {
           recruiters: body.data,
           authenticated: true,
           recruiter_types: utils.sponsorsScope.recruiter,
@@ -176,7 +176,7 @@ module.exports = function(app) {
         return res.redirect('/corporate/accounts');
       }
 
-      res.render('recruiter_invite', {
+      res.render('recruiters/recruiter_invite', {
         authenticated: true,
         emailTemplate: body.data,
         from_email: req.session.student.email,
@@ -333,7 +333,7 @@ module.exports = function(app) {
       json: true
     }, function(error, response, body) {
       if (response && response.statusCode == 200 && body) {
-        res.render('edit_recruiter', {
+        res.render('recruiters/edit_recruiter', {
           authenticated: true,
           recruiter: body.data,
           recruiter_types: utils.sponsorsScope.recruiter,
@@ -392,7 +392,7 @@ module.exports = function(app) {
         return res.redirect('/corporate/accounts');
       }
       
-      res.render('edit_recruiter', {
+      res.render('recruiters/edit_recruiter', {
         authenticated: true,
         recruiter: req.body,
         recruiter_types: utils.sponsorsScope.recruiter,
@@ -500,7 +500,7 @@ module.exports = function(app) {
           error_message = (body && body.error) ? body.error : error;
         }
 
-        return res.render('resume_book', {
+        return res.render('recruiters/resume_book', {
           authenticated: utils.isAuthenticated(req),
           job: utils.sponsorsScope.job,
           degree: utils.sponsorsScope.degree,
@@ -513,7 +513,7 @@ module.exports = function(app) {
     }
 
     utils.sponsorsScope.student = {};
-    return res.render('resume_book', {
+    return res.render('recruiters/resume_book', {
       authenticated: utils.isAuthenticated(req),
       job: utils.sponsorsScope.job,
       degree: utils.sponsorsScope.degree,
@@ -566,7 +566,7 @@ module.exports = function(app) {
           resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
         }
         
-        res.render('resume_filter', {
+        res.render('recruiters/resume_filter', {
           authenticated: utils.isAuthenticated(req),
           job: utils.sponsorsScope.job,
           degree: utils.sponsorsScope.degree,
@@ -615,7 +615,7 @@ module.exports = function(app) {
           resume.graduation_date = utils.formatGraduationDate(resume.graduation_date);
         }
 
-        res.render('resume_filter', {
+        res.render('recruiters/resume_filter', {
           authenticated: utils.isAuthenticated(req),
           job: utils.sponsorsScope.job,
           degree: utils.sponsorsScope.degree,
@@ -649,7 +649,7 @@ module.exports = function(app) {
         
         return res.redirect('/intranet');
       }
-      res.render('recruiter_login', {
+      res.render('recruiters/recruiter_login', {
         authenticated: false,
         errors: body.error
       });
@@ -722,7 +722,7 @@ module.exports = function(app) {
         approved: true
       }
     }, function(error, response, body) {
-      res.render('job_index', {
+      res.render('recruiters/job_index', {
         authenticated: true,
         jobs: body.data
       });

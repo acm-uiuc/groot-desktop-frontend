@@ -29,7 +29,7 @@ module.exports = function(app) {
       if (err || !response || response.statusCode != 200) {
         return res.status(500).send(err);
       }
-      res.render('join', {
+      res.render('users/join', {
         authenticated: false,
         sigs: JSON.parse(body),
         messages: req.flash('success'),
@@ -53,7 +53,7 @@ module.exports = function(app) {
       var sigs = JSON.parse(body);
       var sigs_a = sigs.slice(0, (sigs.length / 2) + 1);
       var sigs_b = sigs.slice(sigs.length / 2 + 1, sigs.length);
-      res.render('sigs', {
+      res.render('groups/sigs', {
         authenticated: utils.isAuthenticated(req),
         sig_col_a: sigs_a,
         sig_col_b: sigs_b,
@@ -73,7 +73,7 @@ module.exports = function(app) {
         return res.status(404).send("Error:\nThis page will be implemented soon!");
       }
 
-      res.render('about', {
+      res.render('desktop/about', {
         authenticated: utils.isAuthenticated(req),
         committees: JSON.parse(body),
       });

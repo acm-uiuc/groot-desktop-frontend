@@ -8,7 +8,7 @@ Illinois/NCSA Open Source License.  You should have received a copy of
 this license in a file with the distribution.
 -->
 
-<%- include('_partials/header') -%>
+<%- include('../_partials/header') -%>
 <div id="resume-container">
   <div class="row">
     <% if ( messages.length > 0 ) { %>
@@ -76,12 +76,12 @@ this license in a file with the distribution.
 
     <h3>All Recruiters</h3>
     <div id="recruiters-partial">
-        <%- include('_partials/recruiters', { recruiters: recruiters }) %>
+        <%- include('../_partials/recruiters', { recruiters: recruiters }) %>
     </div>
   </div>
 </div>
 
-<%- include('_partials/footer') -%>
+<%- include('../_partials/footer') -%>
 
 <script>
   function renewRecruiter(recruiterId) {

@@ -52,7 +52,7 @@ module.exports = function(app){
           t.created_at = moment(t.created_at)
             .format('MMMM Do YYYY, h:mm:ss a');
         }
-        return res.render('credits', {
+        return res.render('credits/credits', {
           authenticated: true,
           transactions: body.transactions,
           balance: body.balance.toFixed(2),
@@ -76,7 +76,7 @@ module.exports = function(app){
       }
     }, function(error, response, body) {
       if (response && response.statusCode == 200) {
-        return res.render('credits_admin', {
+        return res.render('credits/credits_admin', {
           authenticated: true,
           users: body
         });
@@ -104,7 +104,7 @@ module.exports = function(app){
           t.created_at = moment(t.created_at)
             .format('MMMM Do YYYY, h:mm:ss a');
         }
-        return res.render('credits_admin_user', {
+        return res.render('credits/credits_admin_user', {
           authenticated: true,
           transactions: body.transactions,
           balance: body.balance,
@@ -159,7 +159,7 @@ module.exports = function(app){
   });
   app.get('/credits/purchaseMembership', function(req, res) {
     // TODO: Redirect if not a 'pre-member'
-    res.render('credits_purchase_membership', {
+    res.render('credits/credits_purchase_membership', {
       authenticated: true,
       stripePublishableKey: STRIPE_PUBLISHABLE_KEY
     });
@@ -207,7 +207,7 @@ module.exports = function(app){
     if (!req.session.roles.isStudent) {
       return res.redirect('/intranet');
     }
-    res.render('credits_add_funds', {
+    res.render('credits/credits_add_funds', {
       authenticated: true,
       stripePublishableKey: STRIPE_PUBLISHABLE_KEY
     });

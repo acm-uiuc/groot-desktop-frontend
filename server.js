@@ -66,7 +66,7 @@ app.get('/logout', function(req, res) {
 });
 
 app.get('/', function(req, res) {
-  res.render('home', {
+  res.render('desktop/home', {
     authenticated: utils.isAuthenticated(req),
     messages: req.flash('success'),
     errors: req.flash('error')
@@ -78,14 +78,14 @@ app.get('/login', function(req, res) {
     return res.redirect('intranet');
   }
   
-  res.render('login', {
+  res.render('users/login', {
     authenticated: false,
     errors: req.flash('error')
   });
 });
 
 app.get('/conference', function(req, res) {
-  res.render('conference', {
+  res.render('desktop/conference', {
     authenticated: utils.isAuthenticated(req),
     editions: [
       { year: '2016', path: 'https://www-s.acm.illinois.edu/conference/2016' },
@@ -115,7 +115,7 @@ app.get('/conference', function(req, res) {
 });
 
 app.get('/hackillinois', function(req, res) {
-  res.render('hackillinois', {
+  res.render('desktop/hackillinois', {
     authenticated: utils.isAuthenticated(req),
     editions: [
       { year: '2017', path: 'https://hackillinois.org' }, 
@@ -146,7 +146,7 @@ app.get('/intranet', function(req, res) {
     else {
       balance = body.balance;
     }
-    return res.render('intranet', {
+    return res.render('desktop/intranet', {
       authenticated: utils.isAuthenticated(req),
       session: req.session,
       creditsBalance: balance,
@@ -157,7 +157,7 @@ app.get('/intranet', function(req, res) {
 });
 
 app.get('/sponsors/jobs', function(req, res) {
-  res.render('new_job_post', {
+  res.render('recruiters/new_job_post', {
     authenticated: utils.isAuthenticated(req),
     messages: req.flash('success'),
     errors: req.flash('error')
@@ -169,20 +169,20 @@ app.get('/sponsors/login', function(req, res) {
     return res.redirect('/intranet');
   }
 
-  res.render('recruiter_login', {
+  res.render('recruiters/recruiter_login', {
     authenticated: false,
     errors: req.flash('error')
   });
 });
 
 app.get('/sponsors', function(req, res) {
-  res.render('sponsors', {
+  res.render('desktop/sponsors', {
     authenticated: utils.isAuthenticated(req),
   });
 });
 
 app.get('/sponsors/sponsors_list', function(req, res) {
-  res.render('sponsor_list', {
+  res.render('desktop/sponsor_list', {
     authenticated: utils.isAuthenticated(req),
   });
 });
@@ -192,7 +192,7 @@ app.get('/sponsors/reset_password', function(req, res) {
     return res.redirect('intranet');
   }
 
-  res.render('reset_password', {
+  res.render('recruiters/reset_password', {
     authenticated: false,
     messages: req.flash('success'),
     errors: req.flash('error')
@@ -206,7 +206,7 @@ app.get('/corporate/careerweek/2017', function(req, res) {
     res.redirect('/intranet');
   }
 
-  res.render('careerfair', {
+  res.render('desktop/careerfair', {
     authenticated: true,
     recruiter: req.session.recruiter
   });
@@ -224,7 +224,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
 
 app.use(function (req, res) {
-  res.status(404).render('404', {
+  res.status(404).render('desktop/404', {
     message: strings_for_404[Math.floor(Math.random()*strings_for_404.length)],
     authenticated: utils.isAuthenticated(req)
   });

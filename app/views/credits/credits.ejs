@@ -8,11 +8,11 @@ Illinois/NCSA Open Source License.  You should have received a copy of
 this license in a file with the distribution.
 -->
 
-<%- include('_partials/header') -%>
+<%- include('../_partials/header') -%>
 
 <div id="credits-container">
   <div class="row col-centered small-12 medium-6 large-6">
-    <%- include('_partials/flash') -%>
+    <%- include('../_partials/flash') -%>
     <h3>Credits</h3>
     <div>
       <h5 style="display:inline; float:left; padding-top:20px" class="balance">Current Balance: <b class="balance_amount">$<%= Number(balance).toFixed(2) %></b></h5>
@@ -43,7 +43,7 @@ this license in a file with the distribution.
   </div>
 </div>
 
-<%- include('_partials/footer') -%>
+<%- include('../_partials/footer') -%>
 
 <script type="text/javascript">
   $('#transactions-table').dynatable({

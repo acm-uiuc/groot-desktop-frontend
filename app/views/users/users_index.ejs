@@ -8,19 +8,19 @@ Illinois/NCSA Open Source License.  You should have received a copy of
 this license in a file with the distribution.
 -->
 
-<%- include('_partials/header') -%>
+<%- include('../_partials/header') -%>
 
 <div id="home-container" class="row">
 	<div id="main-container" class="small-12 medium-12 large-12 columns">
 		<div id="links-top" class="row">
 			<div id="unapproved-users-partial">
-			 	<%- include('_partials/users', { users: premembers }) %>
+			 	<%- include('../_partials/users', { users: premembers }) %>
 			 </div>
 		</div>
 	</div>
 </div>
 
-<%- include('_partials/footer') -%>
+<%- include('../_partials/footer') -%>
 
 <script>
   $("#user-approval-table").dynatable({

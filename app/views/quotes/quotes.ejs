@@ -8,12 +8,12 @@ Illinois/NCSA Open Source License.  You should have received a copy of
 this license in a file with the distribution.
 -->
 
-<%- include('_partials/header') -%>
+<%- include('../_partials/header') -%>
 
 <div id="home-container" class="row">
   <div id="main-container" class="small-12 medium-12 large-12 columns">
     
-    <%- include('_partials/flash') -%>
+    <%- include('../_partials/flash') -%>
 
     <h3>Add Quote</h3>
     <form ref="uploadForm" method="post" action="/intranet/quotes/new">
@@ -45,12 +45,12 @@ this license in a file with the distribution.
     </form>
     <h3>All Quotes</h3>
     <div id="quotes-partial">
-      <%- include('_partials/quotes', { quotes: quotes }) %>
+      <%- include('../_partials/quotes', { quotes: quotes }) %>
     </div>
   </div>
 </div>
 
-<%- include('_partials/footer') -%>
+<%- include('../_partials/footer') -%>
 
 <script>
   $('#quotes-table').dynatable();

@@ -32,7 +32,7 @@ module.exports = function(app) {
       }
     }, function(error, response, body) {
       if (!error && response && response.statusCode == 200 && body) {
-        res.render('quotes', {
+        res.render('quotes/quotes', {
           authenticated: true,
           isAdmin: utils.validApprovalAuth(req),
           quotes: body.data,
