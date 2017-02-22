@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 
-app.set('views', path.resolve(__dirname) + '/views');
+app.set('views', path.resolve(__dirname) + '/app/views');
 app.set('view engine', 'ejs');
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -212,13 +212,13 @@ app.get('/corporate/careerweek/2017', function(req, res) {
   });
 });
 
-require('./controllers/services/events.js')(app);
-require('./controllers/services/groups.js')(app);
-require('./controllers/services/memes.js')(app);
-require('./controllers/services/quotes.js')(app);
-require('./controllers/services/recruiters.js')(app);
-require('./controllers/services/users.js')(app);
-require('./controllers/services/credits.js')(app);
+require('./app/controllers/events.js')(app);
+require('./app/controllers/groups.js')(app);
+require('./app/controllers/memes.js')(app);
+require('./app/controllers/quotes.js')(app);
+require('./app/controllers/recruiters.js')(app);
+require('./app/controllers/users.js')(app);
+require('./app/controllers/credits.js')(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
