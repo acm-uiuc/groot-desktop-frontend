@@ -121,7 +121,7 @@ module.exports = function(app) {
       res.redirect('/intranet');
     }
 
-    var absQuotesPath = path.resolve(__dirname + '/../../views/_partials/quotes.ejs');
+    var absQuotesPath = path.resolve(__dirname + '/../views/_partials/quotes.ejs');
     request({
       url: `${SERVICES_URL}/quotes/` + req.params.quoteId + `/approve`,
       method: "PUT",
@@ -146,7 +146,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absQuotesPath = path.resolve(__dirname + '/../../views/_partials/quotes.ejs');
+    var absQuotesPath = path.resolve(__dirname + '/../views/_partials/quotes.ejs');
     request({
       url: `${SERVICES_URL}/quotes/` + req.params.quoteId,
       method: "DELETE",
