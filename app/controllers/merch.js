@@ -15,7 +15,7 @@ const moment = require('moment');
 const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
-  app.get('/intranet/merch', function(req, res) {
+  app.get('/intranet/merch/items', function(req, res) {
     request({
       url: `${SERVICES_URL}/merch/items`,
       method: "GET",
@@ -24,20 +24,18 @@ module.exports = function(app) {
         "Authorization": GROOT_ACCESS_TOKEN
       }
     }, function(error, response, body) {
-      if (error || !response || response.statusCode != 200) {
-        return res.status(500).send("Error: " + error);
-      }
-
       res.render('merch/index.ejs', {
         authenticated: utils.isAuthenticated(req),
-        items: body.data
+        items: body.data,
+        success: req.flash('success'),
+        errors: req.flash('error')
       });
     });
   });
 
-  app.post('/intranet/merch', function(req, res) {
+  app.post('/intranet/merch/items', function(req, res) {
     request({
-      url: `${SERVICES_URL}/merch/items`,
+      url: `${SERVICES_URL}/merch/items/`,
       method: "POST",
       json: true,
       headers: {
@@ -45,16 +43,18 @@ module.exports = function(app) {
       },
       body: req.body
     }, function(error, response, body) {
+      console.log(body);
       if (error || !response) {
         return res.status(500).send("Error: " + error);
       }
-      
+
       if (response.statusCode == 200) {
         req.flash('success', body.message);
       } else {
         req.flash('error', body.message);
       }
-      res.redirect('/intranet/merch');
+      
+      res.redirect('/intranet/merch/items');
     });
   });
 };
