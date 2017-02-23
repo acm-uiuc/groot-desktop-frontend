@@ -42,7 +42,7 @@ module.exports = function(app) {
         meme.created_at = moment(meme.created_at).fromNow();
         return meme;
       });
-      return res.render('memes', {
+      return res.render('memes/memes', {
         authenticated: utils.isAuthenticated(req),
         messages: req.flash('success'),
         errors: req.flash('error'),
@@ -58,7 +58,7 @@ module.exports = function(app) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
-    res.render('meme_upload', {
+    res.render('memes/meme_upload', {
       authenticated: utils.isAuthenticated(req)
     });
   });

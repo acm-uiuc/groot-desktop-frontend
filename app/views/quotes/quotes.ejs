@@ -1,0 +1,96 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="home-container" class="row">
+  <div id="main-container" class="small-12 medium-12 large-12 columns">
+    
+    <%- include('../_partials/flash') -%>
+
+    <h3>Add Quote</h3>
+    <form ref="uploadForm" method="post" action="/intranet/quotes/new">
+      <div class="field-group required">
+        <label for="text" class="field-albe">Quote </label>
+        <div class="field">
+          <textarea id="text" rows="2" name="text"></textarea>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <input id="author" type="hidden" name="author" maxlength="9" value="<%= netid %>" />
+        </div>
+      </div>
+
+      <div class="field-group required">
+        <label for="source" class="field-albe">Source </label>
+        <div class="field">
+          <input id="source" type="text" name="source" maxlength="9" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="button">Add Quote</button>
+        </div>
+      </div>
+    </form>
+    <h3>All Quotes</h3>
+    <div id="quotes-partial">
+      <%- include('../_partials/quotes', { quotes: quotes }) %>
+    </div>
+  </div>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script>
+  $('#quotes-table').dynatable();
+
+  function voteQuote(quote_id) {
+    var quoteID = quote_id;
+    var action = $('#vote-icon-'+quoteID).hasClass("voted") ? "DELETE" : "POST";
+    var currentVotes = parseInt($('#quote-counter-'+quoteID).text());
+    $.ajax({
+        url: "/intranet/quotes/" + quote_id + "/vote",
+        method: action, // becomes POST or DELETE on server side
+        success: function(response) {
+          $('#vote-icon-'+quoteID).toggleClass('fa-thumbs-up voted', action === "POST");
+          $('#vote-icon-'+quoteID).toggleClass('fa-thumbs-o-up', action === "DELETE");
+
+          var voteChange = (action === "POST") ? 1 : -1;
+          $('#quote-counter-'+quoteID).text(currentVotes + voteChange);
+        }
+    });
+  }
+
+  function approveQuote(quote_id) {
+    $.ajax({
+        url: "/intranet/quotes/" + quote_id + "/approve",
+        method: "PUT",
+        success: function(response) {
+          $("#quotes-partial").html(response);
+          $('#quotes-table').dynatable();
+        }
+    });
+  }
+
+  function deleteQuote(quote_id) {
+    $.ajax({
+      url: "/intranet/quotes/" + quote_id,
+      method: "DELETE",
+      success: function(response) {
+        $("#quotes-partial").html(response);
+        $('#quotes-table').dynatable();
+      }
+    });
+  }
+</script>

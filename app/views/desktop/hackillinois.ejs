@@ -1,0 +1,38 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div class="conference-container">
+<div class="row">
+  <div class="img-container small-12 medium-12 large-12 column col-centered"><img class="center_img" width="200px" src="../images/hackillinois.png"/></div>
+</div>
+<div class="row">
+  <p>
+    Since 2014, HackIllinois has been running as UIUC's very own Hackathon. With 1200+ attendees in 2015, HackIllinois has grown to one of the nations largest and well regarded college hackathons. 
+    This year, we're proud to welcome you to the 4th annual HackIllinois from Feb 24-26th, 2017, at the Urbana-Champaign campus.
+    For more information, please visit the website: <a href="https://hackillinois.org">https://hackillinois.org</a>.
+  </p>
+</div>
+<div class="row title"><span>Past Editions:</span></div>
+<div>
+  <div class="top-bar nav">
+    <ul class="h-list">
+      <% for (var n of editions) { %>
+        <li class="nav-loc">
+           <a href= <%= n.path %> > | <%= n.year %> |
+        </li>
+      <% } %>
+    </ul>
+  </div>
+</div>
+</div>
+
+<%- include('../_partials/footer') -%>

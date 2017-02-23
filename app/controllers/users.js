@@ -35,7 +35,7 @@ module.exports = function(app) {
         return res.status(500).send("Sorry, there was a server error. Please try again.");
       }
 
-      res.render('users_index', {
+      res.render('users/users_index', {
         authenticated: utils.isAuthenticated(req),
         premembers: body.data,
         me: req.session.student

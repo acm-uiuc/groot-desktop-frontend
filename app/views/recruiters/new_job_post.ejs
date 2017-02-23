@@ -1,0 +1,84 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="resume-container">
+  <div class="row">
+    <% if ( messages.length > 0 ) { %>
+    <div class="callout secondary">
+      <p><%= messages %></p>
+    </div>
+    <% } %>
+    <% if ( errors.length > 0 ) { %>
+    <div class="callout alert">
+      <p><%= errors %></p>
+    </div>
+    <% } %>
+    
+    <h2>Job Posting</h2>
+    <p>Looking to hire? Use this simple form to submit your job posting and it will be included in a weekly mailing to ACM members looking for employment. All fields are required. If you have any questions <a href="mailto:corporate@acm.illinois.edu">email us</a>.</p>
+    <form ref="uploadForm" method="post" action="/sponsors/jobs">
+      <div class="field-group required">
+        <label for="job_title" class="field-label">Job Title</label>
+        <div class="field">
+          <input id="job_title" type="text" name="job_title" ng-model="job.title"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="organization" class="field-label">Organization</label>
+        <div class="field">
+          <input id="organization" type="text" name="organization" ng-model="job.organization"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact_name" class="field-label">Contact Name</label>
+        <div class="field">
+          <input id="contact_name" type="text" name="contact_name" ng-model="job.contact.name"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact_email" class="field-label">Contact Email</label>
+        <div class="field">
+          <input id="contact_email" type="text" name="contact_email" ng-model="job.contact.email"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="contact_phone" class="field-label">Contact Phone</label>
+        <div class="field">
+          <input id="contact_phone" type="text" name="contact_phone" ng-model="job.contact.phone"/>
+        </div>
+      </div>
+      <div class="field-group required">
+        <label for="type" class="field-label">Job Type:</label>
+        <label for="full_time">Full-Time
+          <input id="full_time" type="radio" name="job_type" value="Full-Time" ng-model="job.type.full_time"/>
+        </label>
+        <label for="part_time">Part-Time
+          <input id="part_time" type="radio" name="job_type" value="Part-Time" ng-model="job.type.part_time"/>
+        </label>
+        <label for="intern">Intern/Co-op
+          <input id="intern" type="radio" name="job_type" value="Intern" ng-model="job.type.intern"/>
+        </label>
+      </div>
+      <div class="field-group required">
+        <label for="type" class="field-label">Description</label>
+        <textarea id="description" rows="15" name="description" ng-model="job.description"></textarea>
+      </div><br/>
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="button">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../_partials/footer') -%>

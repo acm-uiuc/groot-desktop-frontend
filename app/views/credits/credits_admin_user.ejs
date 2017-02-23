@@ -1,0 +1,102 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="credits-container">
+  <div class="row col-centered small-12 medium-6 large-6">
+    <h3>Credits Admin</h3>
+    <h4>User: <%= netid %></h4>
+    <div>
+      <h5 style="display:inline; float:left; padding-top:20px" class="balance">User Balance: <b class="balance_amount">$<%= balance.toFixed(2) %></b></h5>
+      <a class="button" name="refill" data-open="exampleModal1" style="float:right">Adjust Balance</a>
+    </div>
+    <% if (transactions && transactions.length != 0) { %>
+      <table id="transactions-table" class="dynatable-container">
+        <thead>
+          <tr>
+            <th> Id </th>
+            <th> Amount </th>
+            <th> Time </th>
+            <th> Description </th>
+            <th> Action </th>
+          </tr>
+        </thead>
+        <% for (var t of transactions) { %>
+          <tr class="transaction">
+            <td> <%= t.id %> </td>
+            <td> <%= (t.amount > 0 ? '$' : '-$') + Math.abs(t.amount).toFixed(2) %> </td>
+            <td> <%= t.created_at %> </td>
+            <td> <%= t.description ? t.description : "No description" %> </td>
+            <td> <a href="#" onClick="deleteTransaction(<%= t.id %>)" class="button">Delete</a></td>
+          </tr>
+          <% } %>
+        </table>
+    <% } else { %>
+      <h5>There are no transactions.</h5>
+    <% } %>
+  </div>
+</div>
+
+<div class="reveal" id="exampleModal1" data-reveal>
+  <form data-abide id='credits_form' novalidate action="#" onsubmit="adjustBalance()">
+    <div class="amount-field">
+      <label>New Balance<small>  required</small>
+        <input id="amount_field" name="amount" type="number" required data-validator="balance_adjustment" pattern="number" placeholder="5.00">
+      </label>
+      <small class="error">Enter the desired new balance of the user. Must be greater than or equal to $0.</small>
+    </div>
+    <button type="submit" class="button">Make Adjustment</button>
+  </form>
+  <button class="close-button" data-close aria-label="Close modal" type="button">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script type="text/javascript">
+  $(document).foundation();
+  $('#transactions-table').dynatable({
+    features: {
+      search: false,
+      perPageSelect: false
+    }
+  });
+  Foundation.Abide.defaults.validators['balance_adjustment'] =
+    function($el,required,parent) {
+      if (!required) return true;
+      var val = Number($el.val());
+      return (val >= 0)
+  };
+  function deleteTransaction(id) {
+    $.ajax({
+      url: "/credits/admin/transactions/" + id,
+      method: "DELETE",
+      success: function() {
+        location.reload();
+      }
+    });
+  }
+  function adjustBalance() {
+    var curr = <%= balance %>;
+    var new_bal = $('#amount_field').val();
+    var adjust_amount = new_bal - curr;
+    $.ajax({
+      url: "/credits/admin/<%= netid %>",
+      method: "POST",
+      data: JSON.stringify({
+        amount: adjust_amount
+      }),
+      contentType: "application/json; charset=utf-8",
+      success: location.reload
+    });
+  }
+</script>

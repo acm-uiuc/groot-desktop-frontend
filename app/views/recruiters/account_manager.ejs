@@ -1,0 +1,134 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+<div id="resume-container">
+  <div class="row">
+    <% if ( messages.length > 0 ) { %>
+        <div class="callout secondary">
+        <p><%= messages %></p>
+        </div>
+    <% } %>
+    <% if ( errors.length > 0 ) { %>
+        <div class="callout alert">
+        <p><%= errors %></p>
+        </div>
+    <% } %>
+    
+    <h2>Corporate Manager</h2>
+    <h3>Account Manager</h3>
+    <form ref="uploadForm" method="post" action="/corporate/accounts">
+      <div class="field-group required">
+        <label for="company_name" class="field-albe">Company Name </label>
+        <div class="field">
+          <input id="company_name" type="text" name="company_name" maxlength="16" />
+      </div>
+      <div class="field-group required">
+          <label for="first_name" class="field-label">First Name</label>
+          <div class="field">
+              <input id="first_name" type="text" name="first_name" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="last_name" class="field-label">Last Name</label>
+          <div class="field">
+              <input id="last_name" type="text" name="last_name" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="recruiter_email" class="field-label">Contact Email</label>
+          <div class="field">
+              <input id="recruiter_email" type="text" name="recruiter_email" />
+          </div>
+      </div>
+      <div class="field-group required">
+        <label for="recruiter_type" class="field-label">Recruiter Type</label>
+        <select id="recruiter_type" name="type">
+          <% for (var option of recruiter_types.types) { %>
+            <option value= "<%= option.name %>"> <%= option.name %> </option>
+          <% } %>
+        </select>
+      </div>
+      <div class="controls">
+          <button type="submit" class="button">Create Account</button>
+      </div>
+    </form>
+
+    <h3>Invitation Reset</h3>
+    <p>
+        Note that pressing this button will reset all invitations to recruiters, allowing you to email recruiters again for career fairs.
+
+        This CANNOT be undone.
+    </p>
+
+    <form method="post" action="/corporate/accounts/reset">
+        <div class="controls">
+          <button type="submit" class="button">Reset Recruiter Invitations</button>
+      </div>
+    </form>
+
+    <h3>All Recruiters</h3>
+    <div id="recruiters-partial">
+        <%- include('../_partials/recruiters', { recruiters: recruiters }) %>
+    </div>
+  </div>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script>
+  function renewRecruiter(recruiterId) {
+      $.ajax({
+        url: "/corporate/accounts/" + recruiterId + "/renew",
+        method: "PUT",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
+        }
+    });
+  }
+
+  function deleteRecruiter(recruiterId) {
+      $.ajax({
+        url: "/corporate/accounts/" + recruiterId,
+        method: "DELETE",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
+        }
+    });
+  }
+
+  function upgradeRecruiter(recruiterId) {
+      $.ajax({
+        url: "/corporate/accounts/" + recruiterId + "/UPGRADE/DOWNGRADE",
+        method: "PUT",
+        success: function(response) {
+            $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
+        }
+    });
+  }
+
+  function resetRecruiters() {
+      $.ajax({
+          url: "/corporate/accounts/reset",
+          method: "POST",
+          success: function(response) {
+            $("#recruiters-partial").html(response);
+            $("#accounts-table").dynatable();
+          }
+      });
+  }
+
+  $(document).ready(function() {
+      $("#accounts-table").dynatable();
+  });
+</script>

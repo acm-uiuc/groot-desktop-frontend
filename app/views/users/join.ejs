@@ -1,0 +1,91 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+<div class="container main row">
+	<header>
+		<h1>Joining ACM@UIUC</h1>
+	</header>
+	<!-- current text on the join page for liquid  -->
+	<p>
+		If you are interested in getting involved with ACM, the best way is to start showing up at events. There are many events every week, and you do not need to be a member to attend. Also, note that ACM, its executive board, and all of its SIGs have mailing lists. Mailing lists are a great way to stay informed on what ACM and SIGs are doing.
+		<br/>
+		Once you've found your niche in ACM or one of its SIGs, becoming an official member is easy. To become an official member, you need to fill out the quick and easy form below. The cost is $40 for a lifetime membership. Benefits of membership include an account on the ACM cluster and eligibility for ACM officer positions. Sign up below, then drop by the ACM office any time between 9:00 AM and 5:00 PM with your $40 in cash or check
+	</p>
+
+	<% if ( messages.length > 0 ) { %>
+		<div class="callout secondary">
+			<p><%= messages %></p>
+		</div>
+	<% } %>
+	<% if ( errors.length > 0 ) { %>
+		<div class="callout alert">
+			<p><%= errors %></p>
+		</div>
+	<% } %>
+
+	<form method="post" action="/join" id="join">
+		<div class="field-group required">
+			<label for="id_first_name" class="field-label">First Name
+				<div class="field">
+					<input id="first_name" type="text" name="first_name" maxlength="32"/>
+				</div>
+			</label>
+		</div>
+		<div class="field-group required">
+			<label for="last_name" class="field-label">Last Name
+				<div class="field">
+					<input id="last_name" type="text" name="last_name" maxlength="32"/>
+				</div>
+			</label>
+		</div>
+		<div class="field-group required">
+			<label for="netid" class="field-label">NetID
+				<div class="field">
+					<input id="netid" type="text" name="netid" maxlength="15"/>
+				</div>
+			</label>
+		</div>
+		<div class="field-group required">
+			<label for="uin" class="field-label">UIN
+				<div class="field">
+					<input id="uin" type="text" name="uin" maxlength="9"/>
+				</div>
+			</label>
+		</div>
+		<p>Lifetime Membership $40</p>
+		<div class="field-group">
+			<p>What Special Interest Groups (SIGs) are you interested in? (This will add you to the selected SIGs' mailing lists)
+				<div ng-controller="SIGController" class="sig-container">
+					<ul class="sigs">
+						<% for (var sig of sigs) { %>
+							<li>
+								<label class="checkbox">
+									<input type="checkbox" name= <%= sig.name %> />
+									<%= sig.name %>
+								</label>
+							</li>
+						<% } %>
+					</ul>
+				</div>
+			</p>
+		</div>
+		<div class="control-group row">
+			<div class="controls">
+				<button type="submit" class="button">Join</button>
+			</div>
+		</div>
+	</form>
+	<div class="form-buffer">
+	</div>
+</div>
+
+
+<%- include('../_partials/footer') -%>

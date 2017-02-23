@@ -1,0 +1,67 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+<div id="container">
+    <div class="row">
+      <% if ( errors.length > 0 ) { %>
+        <div class="callout alert">
+          <p><%= errors %></p>
+        </div>
+      <% } %>
+      
+      <h3>Invite <%= recruiter.first_name %>, a <%= recruiter.type %> recruiter from <%= recruiter.company_name %></h3>
+      <form method="post">
+        <div class="field-group required">
+          <label for="from" class="field-label">From</label>
+          <div class="field">
+            <input id="from" type="text" name="from" ng-model="composer.from" value="<%= from_email %>" readonly />
+          </div>
+        </div>
+
+        <div class="field-group required">
+          <label for="to" class="field-label">To</label>
+          <div class="field">
+            <input id="to" type="text" name="to" ng-model="composer.to" value="<%= emailTemplate.to %>" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="ccs" class="field-label">CC (enter emails separated by commas)</label>
+          <div class="field">
+            <input id="ccs" type="text" name="ccs" ng-model="composer.to" value="<%= from_email %>" />
+          </div>
+        </div>
+
+        <div class="field-group required">
+          <label for="subject" class="field-label">Subject</label>
+          <div class="field">
+            <input id="subject" type="text" name="subject" ng-model="composer.subject" value="<%= emailTemplate.subject %>" />
+          </div>
+        </div>
+
+        <div class="field-group required">
+          <label for="body" class="field-label">Message</label>
+          <div class="field">
+            <textarea id="body" type="text" name="body" rows="20" ng-model="composer.body">
+              <%= emailTemplate.body %>
+            </textarea>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="button">Email</button>
+          </div>
+        </div>
+      </form>
+    </div>
+</div>
+<%- include('../_partials/footer') -%>

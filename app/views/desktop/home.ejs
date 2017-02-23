@@ -1,0 +1,63 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="head-img"></div>
+<div id="home-container" class="row">
+<div id="welcome" class="row">
+  <div id="we-are">
+    acm@uiuc$
+    &nbsp;<span id="qualities"></span>
+  </div>
+</div>
+  <div id="main-container" class="small-12 medium-12 large-9 columns">
+    <%- include('../_partials/flash') -%>
+    <div id="main-feed" class="row">
+      <h4>Welcome to ACM@UIUC</h4>
+      <p>The Association for Computing Machinery (ACM) is a student group consisting of a variety of people with diverse backgrounds who share a common interest in computers.</p>
+      <h4>Reflections|Projections</h4>
+      <p>One of the largest student tech conferences in the midwest, Reflections|Projections is an annual event that includes a job fair and programming competition.</p>
+      <h4>ACM Open House</h4>
+      <p>Held at the beginning of Spring and Fall semesters, this is a great opportunity to learn more about ACM and its various Special Interest Groups (SIGs).</p>
+      <p></p>
+    </div>
+    <div id="involvement" class="row">
+      <div id="main-left" class="small-12 medium-12 large-4 columns">
+        <h3>Join ACM</h3>
+        <p>As an ACM member you get access to our compute cluster, free black and white printing, Beats by ACM, Caffeine, and many other member perks.</p><a href="/join">
+          <button class="button">Join Us</button></a>
+      </div>
+      <div id="main-center" class="small-12 medium-12 large-4 columns">
+        <h3>Special Interest Groups</h3>
+        <p>ACM has many Special Interest Groups (SIGs) that work on projects in a wide variety of areas. All SIGs are open to all students, no previous knowledge required!</p><a href="/sigs">
+          <button class="button">Learn More</button></a>
+      </div>
+      <div id="main-right" class="small-12 medium-12 large-4 columns">
+        <h3>Sponsors</h3>
+        <p>The best way to get involved with ACM@UIUC is to become a part of our corporate sponsorship program!</p><a href="/sponsors">
+          <button class="button">Get Involved</button></a>
+      </div>
+    </div>
+  </div>
+  <div id="events-container" class="small-12 medium-12 large-3 columns">
+    <div id="events-title" class="row">
+      <h2>Events</h2>
+    </div>
+    <div id="events" class="fb_events row">
+      <div class="event">
+        <h5>No Events Scheduled Currently</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer_padding">
+</div>
+<%- include('../_partials/footer') -%>
