@@ -59,6 +59,7 @@ this license in a file with the distribution.
     <table id="item-table" class="dynatable-container">
         <thead>
             <tr>
+            <th> Item ID </th>
             <th> Image </th>
             <th> Name </th>
             <th> Price </th>
@@ -68,6 +69,7 @@ this license in a file with the distribution.
         </thead>
         <% for (var item of items) { %>
         <tr>
+            <td><%= item.id %></td>
             <td><img src="<%= item.image %>" width="100"></img></td>
             <td><%= item.name %></td>
             <td><%= item.price %></td>
