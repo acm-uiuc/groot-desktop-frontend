@@ -179,7 +179,7 @@ module.exports = function(app) {
       res.render('recruiters/recruiter_invite', {
         authenticated: true,
         emailTemplate: body.data,
-        from_email: req.session.student.email,
+        from_email: req.session.student.netid + "@illinois.edu",
         recruiter: body.data.recruiter,
         errors: req.flash('error')
       });
