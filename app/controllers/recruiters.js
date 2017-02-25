@@ -170,7 +170,7 @@ module.exports = function(app) {
         username: req.session.username
       }
     }, function(error, response, body) {
-      if (response.statusCode != 200) {
+      if (response && response.statusCode != 200) {
         res.status(response.statusCode).send(body.error);
       } else if (body.data == null || body.data.recruiter == null || body.data.recruiter.invited) {
         return res.redirect('/corporate/accounts');

@@ -130,6 +130,16 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
+  
+  if (req.session.roles.isRecruiter) {
+    return res.render('desktop/intranet', {
+      authenticated: utils.isAuthenticated(req),
+      session: req.session,
+      creditsBalance: 0,
+      messages: req.flash('success'),
+      errors: req.flash('error')
+    });
+  }
 
   request({
     url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
