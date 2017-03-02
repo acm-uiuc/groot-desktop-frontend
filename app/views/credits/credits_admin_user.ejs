@@ -15,7 +15,7 @@ this license in a file with the distribution.
     <h3>Credits Admin</h3>
     <h4>User: <%= netid %></h4>
     <div>
-      <h5 style="display:inline; float:left; padding-top:20px" class="balance">User Balance: <b class="balance_amount">ℂ<%= balance.toFixed(2) %></b></h5>
+      <h5 style="display:inline; float:left; padding-top:20px" class="balance">User Balance: <b class="balance_amount"><%= balance.toFixed(2) %>ℂ</b></h5>
       <a class="button" name="refill" data-open="exampleModal1" style="float:right">Adjust Balance</a>
     </div>
     <% if (transactions && transactions.length != 0) { %>
@@ -32,7 +32,7 @@ this license in a file with the distribution.
         <% for (var t of transactions) { %>
           <tr class="transaction">
             <td> <%= t.id %> </td>
-            <td> <%= (t.amount > 0 ? 'ℂ' : '-ℂ') + Math.abs(t.amount).toFixed(2) %> </td>
+            <td> <%= t.amount.toFixed(2) + 'ℂ' %> </td>
             <td> <%= t.created_at %> </td>
             <td> <%= t.description ? t.description : "No description" %> </td>
             <td> <a href="#" onClick="deleteTransaction(<%= t.id %>)" class="button">Delete</a></td>
@@ -51,7 +51,7 @@ this license in a file with the distribution.
       <label>New Balance<small>  required</small>
         <input id="amount_field" name="amount" type="number" required data-validator="balance_adjustment" pattern="number" placeholder="5.00">
       </label>
-      <small class="error">Enter the desired new balance of the user. Must be greater than or equal to ℂ0.</small>
+      <small class="error">Enter the desired new balance of the user. Must be greater than or equal to 0ℂ.</small>
     </div>
     <button type="submit" class="button">Make Adjustment</button>
   </form>
