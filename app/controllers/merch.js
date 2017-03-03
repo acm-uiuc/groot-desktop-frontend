@@ -16,6 +16,10 @@ const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
   app.get('/intranet/merch/items', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+
     request({
       url: `${SERVICES_URL}/merch/items/`,
       method: "GET",
@@ -34,6 +38,10 @@ module.exports = function(app) {
   });
 
   app.post('/intranet/merch/items', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+
     request({
       url: `${SERVICES_URL}/merch/items/`,
       method: "POST",
@@ -58,6 +66,10 @@ module.exports = function(app) {
   });
 
   app.get('/intranet/merch/items/:id', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+
     request({
       url: `${SERVICES_URL}/merch/items/` + req.params.id,
       method: "GET",
@@ -76,6 +88,10 @@ module.exports = function(app) {
   });
 
   app.post('/intranet/merch/items/:id', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+
     request({
       url: `${SERVICES_URL}/merch/items/` + req.params.id,
       method: "PUT",
@@ -96,6 +112,10 @@ module.exports = function(app) {
   });
 
   app.delete('/intranet/merch/items/:id', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+    
     request({
       url: `${SERVICES_URL}/merch/items/` + req.params.id,
       method: "DELETE",
