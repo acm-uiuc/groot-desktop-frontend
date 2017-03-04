@@ -48,7 +48,7 @@ module.exports = function(app) {
       res.redirect('/login');
     }
 
-    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
+    var absUsersPath = path.resolve(__dirname + '/../views/_partials/users.ejs');
     request({
       url: `${SERVICES_URL}/users/` + req.params.netid + `/paid`,
       method: "PUT",
@@ -57,6 +57,7 @@ module.exports = function(app) {
         "Netid": req.session.student.netid,
         "Token": req.session.student.token  
       },
+      body: {},
       json: true
     }, function(err, response, body) {
       if (response && response.statusCode == 200 && body) {
@@ -72,7 +73,7 @@ module.exports = function(app) {
       res.redirect('/login');
     }
 
-    var absUsersPath = path.resolve(__dirname + '/../../views/_partials/users.ejs');
+    var absUsersPath = path.resolve(__dirname + '/../views/_partials/users.ejs');
     request({
       url: `${SERVICES_URL}/users/` + req.params.netid,
       method: "DELETE",
