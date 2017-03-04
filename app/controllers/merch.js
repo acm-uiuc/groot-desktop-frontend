@@ -16,7 +16,7 @@ const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
   app.get('/intranet/merch/items', function(req, res) {
-    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
 
@@ -38,7 +38,7 @@ module.exports = function(app) {
   });
 
   app.post('/intranet/merch/items', function(req, res) {
-    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
 
@@ -88,7 +88,7 @@ module.exports = function(app) {
   });
 
   app.post('/intranet/merch/items/:id', function(req, res) {
-    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
 
@@ -112,7 +112,7 @@ module.exports = function(app) {
   });
 
   app.delete('/intranet/merch/items/:id', function(req, res) {
-    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
     

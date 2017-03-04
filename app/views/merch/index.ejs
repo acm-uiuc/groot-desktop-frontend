@@ -11,16 +11,7 @@ this license in a file with the distribution.
 <%- include('../_partials/header') -%>
 <div id="resume-container">
   <div class="row">
-    <% if ( messages.length > 0 ) { %>
-        <div class="callout secondary">
-        <p><%= messages %></p>
-        </div>
-    <% } %>
-    <% if ( errors.length > 0 ) { %>
-        <div class="callout alert">
-        <p><%= errors %></p>
-        </div>
-    <% } %>
+    <%- include('../_partials/flash') -%>
     
     <h2>Merch Manager</h2>
     <h3>Add New Item</h3>
