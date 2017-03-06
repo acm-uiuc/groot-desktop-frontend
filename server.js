@@ -149,14 +149,18 @@ app.get('/intranet', function(req, res) {
       "Authorization": GROOT_ACCESS_TOKEN
     }
   }, function(error, response, body) {
-    return res.render('desktop/intranet', {
-      authenticated: utils.isAuthenticated(req),
-      session: req.session,
-      pin: body.data.pin,
-      creditsBalance: body.data.balance,
-      messages: req.flash('success'),
-      errors: req.flash('error')
-    });
+    if (body && response.statusCode == 200) {
+      return res.render('desktop/intranet', {
+        authenticated: utils.isAuthenticated(req),
+        session: req.session,
+        pin: body.data.pin,
+        creditsBalance: body.data.balance,
+        messages: req.flash('success'),
+        errors: req.flash('error')
+      });
+    } else {
+      return res.status(500).send(error);
+    }
   });
 });
 
