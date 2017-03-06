@@ -38,14 +38,16 @@ this license in a file with the distribution.
     <div class="intranet-card-container">
       <% if (session.roles.isAdmin || session.roles.isTop4) { %>
         <div class="intranet-card card">
-            <h3>Caffeine</h3>
-            <p>Caffeine vending machine placeholder text</p>
-            <a href="/caffeine"><button class="button">Manage</button></a>
+            <h3>Merch</h3>
+            <p>View and maintain available items</p>
+            <a href="/intranet/merch/items"><button class="button">Manage</button></a>
         </div>
         <div class="intranet-card card">
           <h3>User Manager</h3>
           <p>View and maintain current and pending ACM users</p>
           <a href="intranet/users"><button class="button">Manage</button></a>
+        </div>
+        <div class="intranet-card card">
         </div>
       <% } %>
 
@@ -164,6 +166,7 @@ this license in a file with the distribution.
         <div class="event">
           <ul class="dashed">
             <li><b>Balance:</b> <%= creditsBalance.toFixed(2) %>ℂ</li>
+            <li><b>PIN:</b> <%= pin %></li>
           </ul>
         </div>
         <div class="event">

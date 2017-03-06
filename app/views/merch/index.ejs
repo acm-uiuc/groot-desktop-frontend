@@ -1,0 +1,98 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+<div id="resume-container">
+  <div class="row">
+    <%- include('../_partials/flash') -%>
+    
+    <h2>Merch Manager</h2>
+    <h3>Add New Item</h3>
+    <form ref="uploadForm" method="post" action="/intranet/merch/items">
+      <div class="field-group required">
+        <label for="name" class="field-albe">Item Name </label>
+        <div class="field">
+          <input id="name" type="text" name="name" maxlength="16" />
+      </div>
+      <div class="field-group required">
+          <label for="price" class="field-label">Price</label>
+          <div class="field">
+              <input id="price" type="number" name="price"  />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="quantity" class="field-label">Quantity</label>
+          <div class="field">
+              <input id="quantity" type="number" name="quantity" maxlength="32" />
+          </div>
+      </div>
+      <div class="field-group required">
+          <label for="image_url" class="field-label">Image URL</label>
+          <div class="field">
+              <input id="image_url" type="text" name="image_url" />
+          </div>
+      </div>
+      <div class="controls">
+          <button type="submit" class="button">Add Item</button>
+      </div>
+    </form>
+
+
+    <h3>All Items</h3>
+    <% if (items && items.length != 0) { %>
+    <table id="item-table" class="dynatable-container">
+        <thead>
+            <tr>
+            <th> Item ID </th>
+            <th> Image </th>
+            <th> Name </th>
+            <th> Price </th>
+            <th> Quantity </th>
+            <th> Action </th>
+            </tr>
+        </thead>
+        <% for (var item of items) { %>
+        <tr>
+            <td><%= item.id %></td>
+            <td><img src="<%= item.image %>" width="100"></img></td>
+            <td><%= item.name %></td>
+            <td><%= item.price %></td>
+            <td><%= item.quantity %></td>
+            <td> 
+                <a class="button" href="/intranet/merch/items/<%= item.id %>">Edit</a> 
+                <a class="button" onclick="deleteItem('<%= item.id %>')">Delete Item</a>
+            </td>
+        </tr>
+        <% } %>
+    </table>
+    <% } else { %>
+        <h5>There are no items</h5>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script>
+    $(document).ready(function() {
+        $('#item-table').dynatable();
+    });
+
+    function deleteItem(id) {
+        $.ajax({
+            url: "/intranet/merch/items/" + id,
+            method: "DELETE",
+            success: function(response) {
+                location.reload();
+            }
+        })
+    }
+</script>
+

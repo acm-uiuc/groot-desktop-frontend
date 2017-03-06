@@ -142,24 +142,18 @@ app.get('/intranet', function(req, res) {
   }
 
   request({
-    url: `${SERVICES_URL}/credits/users/${req.session.student.netid}`,
+    url: `${SERVICES_URL}/merch/users/${req.session.student.netid}`,
     method: "GET",
     json: true,
     headers: {
       "Authorization": GROOT_ACCESS_TOKEN
     }
   }, function(error, response, body) {
-    var balance;
-    if(error || response.statusCode != 200) {
-      balance = 0;
-    }
-    else {
-      balance = body.balance;
-    }
     return res.render('desktop/intranet', {
       authenticated: utils.isAuthenticated(req),
       session: req.session,
-      creditsBalance: balance,
+      pin: body.data.pin,
+      creditsBalance: body.data.balance,
       messages: req.flash('success'),
       errors: req.flash('error')
     });
@@ -222,13 +216,14 @@ app.get('/corporate/careerweek/2017', function(req, res) {
   });
 });
 
+require('./app/controllers/credits.js')(app);
 require('./app/controllers/events.js')(app);
 require('./app/controllers/groups.js')(app);
+require('./app/controllers/merch.js')(app);
 require('./app/controllers/memes.js')(app);
 require('./app/controllers/quotes.js')(app);
 require('./app/controllers/recruiters.js')(app);
 require('./app/controllers/users.js')(app);
-require('./app/controllers/credits.js')(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
