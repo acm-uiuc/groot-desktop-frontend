@@ -1,5 +1,7 @@
 # Groot Desktop Frontend
 
+This is the repo for the frontend/website for groot. It's built desktop first and with a focus on a low barrier to entry for contributions. Good coding practices are encouraged as this repo should serve as an example on how to contribute to groot.
+
 Groot core development:
 
 [![Join the chat at https://gitter.im/acm-uiuc/groot-development](https://badges.gitter.im/acm-uiuc/groot-development.svg)](https://gitter.im/acm-uiuc/groot-development?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -7,9 +9,6 @@ Groot core development:
 Questions on how to add your app to Groot or use the Groot API:
 
 [![Join the chat at https://gitter.im/acm-uiuc/groot-users](https://badges.gitter.im/acm-uiuc/groot-users.svg)](https://gitter.im/acm-uiuc/groot-users?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-
-This is the repo for the frontend/website for groot. It's built desktop first and with a focus on a low barrier to entry for contributions. Good coding practices are encouraged as this repo should serve as an example on how to contribute to groot.
 
 ## Local Set Up
 
