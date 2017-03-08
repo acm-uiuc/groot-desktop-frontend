@@ -21,7 +21,7 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/merch/items/`,
+      url: `${SERVICES_URL}/merch/items`,
       method: "GET",
       json: true,
       headers: {
@@ -43,7 +43,7 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/merch/items/`,
+      url: `${SERVICES_URL}/merch/items`,
       method: "POST",
       json: true,
       headers: {
