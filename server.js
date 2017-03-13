@@ -167,7 +167,6 @@ app.get('/intranet', function(req, res) {
         messages: req.flash('success'),
         errors: req.flash('error')
       });
- //res.status(500).send(error);
     }
   });
 });
