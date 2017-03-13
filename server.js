@@ -159,7 +159,14 @@ app.get('/intranet', function(req, res) {
         errors: req.flash('error')
       });
     } else {
-      return res.status(500).send(error);
+      return res.render('desktop/intranet', {
+        authenticated: utils.isAuthenticated(req),
+        session: req.session,
+        pin: "",
+        creditsBalance: 0,
+        messages: req.flash('success'),
+        errors: req.flash('error')
+      });
     }
   });
 });
