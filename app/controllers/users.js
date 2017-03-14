@@ -61,7 +61,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if (response && response.statusCode == 200 && body) {
-        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data } ));
+        res.status(200).send(ejs.render("<%- include('" + absUsersPath + "') %>", { users : body.data, me: req.session.student } ));
       } else {
         res.status(response.statusCode).send(body.error);
       }
