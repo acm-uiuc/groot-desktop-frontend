@@ -1,0 +1,117 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+
+
+<div id="home-container" class="gig-container">
+  <div class="gig-header row">
+    <h2>Gigs</h2>
+    <br />
+    <a class='gig-order-link' href='?filter=active'>Active</a>
+    <a class='gig-order-link' href='?filter=mine'>Mine</a>
+    <a class='gig-order-link' href='?filter=claimed'>Claimed</a>
+    <%- include('../_partials/flash') -%>
+
+  </div>
+  <div class="gig-card-container row">
+    <% for (var i = 0; i < gigs.length; i++) { %>
+      <div id="gig-card-<%= gigs[i].id %>" class="gig-card card">
+        <div class="card-section gig-info">
+          <a class="gig-title" onclick="gigPopout(<%= gigs[i].id %>); return false;">
+            <%= gigs[i].title %>
+          </a>
+          <p class="gig-details"><%= gigs[i].details %></p>
+          <span class="gig-issuer">By: <%= gigs[i].issuer %></span>
+          <strong class="gig-credits"><%= gigs[i].credits.toFixed(2) %>ℂ</strong>
+        </div>
+        <% if(isAdmin && false) { %>
+          <div class="card-section gig-info">
+            <form action="/gigs/<%= gigs[i].id %>" method="delete" style="display:inline;">
+                <button class="button" type="submit" name="reject" style="float:right;">Delete</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+    <% if (gigs.length == 0) { %>
+      <div class="row">
+        <p>No gigs match the query.</p>
+      </div>
+    <% } %>
+  </div>
+  <div class="row">
+    <% if(prevPage) { %>
+      <a href="?page=<%= prevPage %>" class="button">Previous Page</a>
+    <% } %>
+    <% if(nextPage) { %>
+      <a href="?page=<%= nextPage %>" class="button" style="float:right;">Next Page</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="reveal card-section" id="gigViewModal" data-reveal>
+  <a id="view-modal-close" class="close-reveal-modal" style="float:right;"><i class="fa fa-times fa-2x" aria-hidden="true"></i></a>
+  <h5 id="gigViewModalTitle" class="gig-title"></h5>
+  <br />
+  <div class="card-divider gig-info">
+    <p id="gigViewModalDetails"></p>
+    <br />
+    <span id="gigViewModalIssuer"></span>
+    <strong style="float:right;" id="gigViewModalCredits"></strong>
+  </div>
+  <br />
+  <a style="float:right;" class="button">Claim</a>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script>
+$(document).foundation();
+$('#view-modal-close').click(function(){
+  $('#gigViewModal').foundation('close');
+});
+
+function gigClaim(id) {
+  var card = $('#gig-card-' + id);
+  var claim_span = card.find('.gig-votes');
+  var vote_icon = card.find('i');
+  if (vote_icon.hasClass('busy')) {
+    return; // Vote request already sent
+  }
+  var curr_count = parseInt(vote_span.text());
+  var url = '/gigs/vote/' + id;
+  if(vote_icon.hasClass('gig-voted')) {
+    url += '?action=unvote';
+  }
+  $.ajax({
+    url: url,
+    statusCode: {
+      200: function() {
+        vote_span.text(vote_icon.hasClass('gig-voted') ? curr_count - 1 : curr_count + 1);
+        vote_icon.toggleClass('gig-voted').toggleClass('busy');
+        vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
+      }
+    } 
+  });    
+}
+function gigPopout(id) {
+  $('#gigViewModal').foundation('destroy'); // Destroy any previous instantiations of modal
+  var popup = new Foundation.Reveal($('#gigViewModal'));
+  var card = $('#gig-card-' + id);
+  $('#gigViewModalTitle').text(card.find('.gig-title').text());
+  $('#gigViewModalIssuer').text(card.find('.gig-issuer').text());
+  $('#gigViewModalCredits').text(card.find('.gig-credits').text());
+  $('#gigViewModalDetails').text(card.find('.gig-details').text());
+  popup.open();
+}
+</script>
+

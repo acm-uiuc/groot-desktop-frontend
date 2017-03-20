@@ -235,6 +235,7 @@ require('./app/controllers/memes.js')(app);
 require('./app/controllers/quotes.js')(app);
 require('./app/controllers/recruiters.js')(app);
 require('./app/controllers/users.js')(app);
+require('./app/controllers/gigs.js')(app);
 
 app.use(express.static(__dirname + '/public'));
 app.use('/sponsors', express.static(__dirname + '/public'));
