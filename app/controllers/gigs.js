@@ -112,4 +112,17 @@ module.exports = function(app) {
       return res.redirect('/gigs')
     });
   });
+  app.get('/gigs/claims', function(req, res) {
+    request({
+      url: `${SERVICES_URL}/gigs/claims`,
+      method: "GET",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      qs: req.query,
+      json: true
+    }, function(err, response, body) {
+      return res.send(body);
+    });
+  });
 }

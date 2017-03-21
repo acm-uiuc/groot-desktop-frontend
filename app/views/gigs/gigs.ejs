@@ -71,7 +71,7 @@ this license in a file with the distribution.
     <strong style="float:right;" id="gigViewModalCredits"></strong>
   </div>
   <br />
-  <a id="gigViewModalClose" style="float:right;" class="button">Close</a>
+  <a id="gigViewModalCancel" style="float:right;" class="button">Cancel</a>
   <a id="gigViewModalClaim" style="float:right;" class="button">Claim</a>
   <span id="gigViewModalStatus" style="float:right"></span>
 </div>
@@ -156,14 +156,29 @@ function gigPopout(id) {
   $('#gigViewModalDetails').text(card.find('.gig-details').text());
   if(me == card.find('.gig-issuer').text()) {
     // User is the creator of the gig
-    $('#gigViewModalClose').show();
+    $('#gigViewModalCancel').show();
     $('#gigViewModalClaim').hide();
+    $('#gigViewModalStatus').hide();
     // TODO: Add ability to accept/reject claims
   }
   else{
-    $('#gigViewModalClose').hide();
+    $('#gigViewModalCancel').hide();
     $('#gigViewModalClaim').show();
-    // TODO: Add claim status of gig
+    $('#gigViewModalStatus').show();
+    $('#gigViewModalStatus').text('');
+
+    // Query claim status of gig
+    $.ajax({
+      url: '/gigs/claims/?gig_id=' + id + '&claimant=' + me,
+      success: function(data) {
+        if(data) {
+          var claim = data[0];
+          var message = claim.fulfilled ? "Claim accepted" : "Claim pending"
+          $('#gigViewModalStatus').text(message);
+          $('#gigViewModalClaim').hide();
+        }
+      }
+    });
   }
   popup.open();
 }
