@@ -54,6 +54,23 @@ function checkIfTop4(req, res, nextSteps) {
 }
 
 
+function getUserNamesNetids(req, res, nextSteps) {
+  request({
+    method:"GET",
+    url: `${SERVICES_URL}/users/`,
+    headers: {
+      "Authorization": GROOT_ACCESS_TOKEN
+    }
+  }, function(error, response, body) {
+    if(response && response.statusCode == 200) {
+      for(person in JSON.parse(body)[0])
+        req.session.users.push({"netid": person.netid, "name": person.first_name + " " + person.last_name});
+    }
+    nextSteps(req, res);
+  });
+}
+
+
 var exports = module.exports = {};
 exports.formatGraduationDate = function(date) {
   return moment(date).format("MMMM Y");
@@ -88,6 +105,7 @@ exports.isAuthenticated = function(req) {
 exports.checkIfAdmin = checkIfAdmin;
 exports.checkIfTop4 = checkIfTop4;
 exports.checkIfCorporate = checkIfCorporate;
+exports.getUserNamesNetids = getUserNamesNetids;
 
 exports.setAuthentication = function(req, res, nextSteps) {
   var netid = req.session.student.netid;

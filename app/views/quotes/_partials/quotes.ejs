@@ -13,9 +13,9 @@
       <% if (isAdmin || !isAdmin && q.approved) { %>
         <tr class="quote <%= q.approved? 'approved' : 'unapproved' %>">
           <td> "<%= q.text %>" </td>
-          <td> <%= q.source %> </td>
-          <td> <%= q.author %> </td>
-          <th> <%= q.created_at %> </td>
+          <td> <%= sessions.users ? sessions.users[q.source] : q.source %> </td>
+          <td> <%= sessions.users ? sessions.users[q.author] : q.source %> </td>
+          <td> <%= q.created_at %> </td>
           <td>
             <% if (q.approved) { %>
               <a href="#" onClick="voteQuote('<%= q.id %>'); return false;" style="background-color: rgba(0,0,0,0);">

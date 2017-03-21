@@ -36,6 +36,7 @@ this license in a file with the distribution.
           <input id="source" type="text" name="source" maxlength="9" />
         </div>
       </div>
+      <!-- PLUGIN NEEDS TO WORK HERE -->
 
       <div class="control-group">
         <div class="controls">
@@ -45,7 +46,7 @@ this license in a file with the distribution.
     </form>
     <h3>All Quotes</h3>
     <div id="quotes-partial">
-      <%- include('./_partials/quotes', { quotes: quotes }) %>
+      <%- include('../_partials/quotes', { quotes: quotes }) %>
     </div>
   </div>
 </div>
@@ -54,6 +55,26 @@ this license in a file with the distribution.
 
 <script>
   $('#quotes-table').dynatable();
+
+  var autocompleteOptions = {
+    data:[
+    <% for (person in session.users) {%>
+      {id: \"<%person.netid%>", name: "<%person.name + " (" + person.netid + ")"%>"},
+    <% } %>
+    ],
+    getValue: "name",
+    list: {
+      match: {
+        enabled: true;
+      },
+      sort: {
+        enabled: true;
+      }
+    }
+
+  };
+  
+  $("#template-desc").easyAutocomplete(options);
 
   function voteQuote(quote_id) {
     var quoteID = quote_id;
