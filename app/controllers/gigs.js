@@ -51,6 +51,53 @@ module.exports = function(app) {
     });
   });
   app.post('/gigs', function(req, res) {
-
+    if (!req.session.roles.isStudent) {
+      return res.redirect('/login');
+    }
+    request({
+      url: `${SERVICES_URL}/gigs`,
+      method: "POST",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      body: {
+        issuer: req.session.student.netid,
+        title: req.body.title,
+        details: req.body.details,
+        credits: req.body.credits,
+        admin_task: req.body.admin_task
+      },
+      json: true
+    }, function(err, response, body) {
+      if(err || !body || body.error) {
+        req.flash('error', 'Unable to create gig');
+      }
+      else {
+        req.flash('success', 'Gig created')
+      }
+      return res.redirect('/gigs')
+    });
+  });
+  app.post('/gigs/:gig_id/delete', function(req, res) {
+    if (!utils.validApprovalAuth(req)) {
+      req.flash('error', 'Not authorized to delete gig');
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+      method: "DELETE",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true
+    }, function(err, response, body) {
+      if(err || !body || body.error) {
+        req.flash('error', 'Unable to delete gig');
+      }
+      else {
+        req.flash('success', 'Gig deleted')
+      }
+      return res.redirect('/gigs')
+    });
   });
 }

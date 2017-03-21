@@ -19,8 +19,10 @@ this license in a file with the distribution.
     <a class='gig-order-link' href='?filter=active'>Active</a>
     <a class='gig-order-link' href='?filter=mine'>Mine</a>
     <a class='gig-order-link' href='?filter=claimed'>Claimed</a>
-    <%- include('../_partials/flash') -%>
-
+    <a class='button' style='float:right;' onclick="$('#gigCreateModal').foundation('open');">New Gig</a>
+  </div>
+  <div class="row">
+  <%- include('../_partials/flash') -%>
   </div>
   <div class="gig-card-container row">
     <% for (var i = 0; i < gigs.length; i++) { %>
@@ -33,10 +35,10 @@ this license in a file with the distribution.
           <span class="gig-issuer">By: <%= gigs[i].issuer %></span>
           <strong class="gig-credits"><%= gigs[i].credits.toFixed(2) %>ℂ</strong>
         </div>
-        <% if(isAdmin && false) { %>
+        <% if(isAdmin) { %>
           <div class="card-section gig-info">
-            <form action="/gigs/<%= gigs[i].id %>" method="delete" style="display:inline;">
-                <button class="button" type="submit" name="reject" style="float:right;">Delete</button>
+            <form action="/gigs/<%= gigs[i].id %>/delete" method="post" style="display:inline;">
+                <button class="button" type="submit" name="delete" style="float:right;">Delete</button>
             </form>
           </div>
         <% } %>
@@ -70,6 +72,44 @@ this license in a file with the distribution.
   </div>
   <br />
   <a style="float:right;" class="button">Claim</a>
+</div>
+
+<div class="reveal card-section" id="gigCreateModal" data-reveal>
+  <h3>New Gig</h3>
+  <form data-abide method="post" action="/gigs" novalidate>
+    <div class="field-group required">
+      <label for="title" class="field-label">Title
+        <div class="field">
+          <input type="text" name="title"/>
+        </div>
+      </label>
+    </div>
+    <div class="field-group required">
+      <label for="details" class="field-label">Details
+        <div class="field">
+          <input type="text" name="details"/>
+        </div>
+      </label>
+    </div>
+    <div class="field-group required">
+      <label for="credits" class="field-label">Credits Amount
+        <div class="field">
+          <input type="text" required pattern="number" name="credits"/>
+        </div>
+      </label>
+    </div>
+    <% if(isAdmin) { %>
+    <div class="card-divider field-group">
+      <input name="admin_gig" type="checkbox"><label for="checkbox1">Admin Gig</label>
+      <p class="help-text">If selected, will create credits upon completion of this gig instead of debiting your credits account.</p>
+    </div>
+    <% } %>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="button">Create</button>
+      </div>
+    </div>
+  </form>
 </div>
 
 <%- include('../_partials/footer') -%>
