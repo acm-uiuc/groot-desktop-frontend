@@ -1,0 +1,68 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="gigs-container">
+  <div class="row col-centered small-12 medium-6 large-6">
+    <%- include('../_partials/flash') -%>
+    <h3 style="display:inline;"><%= gig.title %></h3>
+    <a style="float:right;" href='/gigs'>Back to gigs</a>
+    <div class="callout">
+      <p><strong>Details:</strong> <%= gig.details %></p>
+      <p><strong>Created by:</strong> <%= gig.issuer %></p>
+      <p><strong>Value:</strong> <%= gig.credits.toFixed(2) %>ℂ</p>
+    </div>
+    <% if(gig.issuer == netid && claims.length) { %>
+    <div id="gigClaims" class="callout">
+      <table>
+        <thead>
+          <tr>
+            <th>Claimant</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% for (var i = 0; i < claims.length; i++) { %>
+          <tr>
+            <td><%= claims[i].claimant %></td>
+            <td>
+            <% if(!claims[i].fulfilled) { %>
+              <a href="#" class='button'>Accept</a>
+              <a href="#" class='button'>Reject</a>
+            <% } else { %>
+              <strong>Accepted</strong>
+            <% } %>
+            </td>
+          </tr>
+        <% } %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+    <div id="gigControls">
+      <% if(gig.active) { %>
+        <% if(gig.issuer == netid) { %>
+          <a onclick="" class="button">Close</a>
+        <% } else if(claims.length == 0) { %>   
+          <a onclick="" class="button">Claim</a>
+        <% } else { %>
+          <div class="callout <%= claims[0].fulfilled ? "success" : "warning" %>">
+            <span><strong>Claim Status:</strong> <%= claims[0].fulfilled ? "Accepted!" : "Pending" %>
+          </div>
+        <% } %>
+      <% } else { %>
+        <strong>Closed</strong>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../_partials/footer') -%>
+</script>

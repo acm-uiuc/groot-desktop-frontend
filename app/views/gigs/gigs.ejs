@@ -28,7 +28,7 @@ this license in a file with the distribution.
     <% for (var i = 0; i < gigs.length; i++) { %>
       <div id="gig-card-<%= gigs[i].id %>" class="gig-card card">
         <div class="card-section gig-info">
-          <a class="gig-title" onclick="gigPopout(<%= gigs[i].id %>); return false;">
+          <a class="gig-title" href="/gigs/<%= gigs[i].id %>">
             <%= gigs[i].title %>
           </a>
           <p class="gig-details"><%= gigs[i].details %></p>
@@ -58,23 +58,6 @@ this license in a file with the distribution.
       <a href="?page=<%= nextPage %>" class="button" style="float:right;">Next Page</a>
     <% } %>
   </div>
-</div>
-
-<div class="reveal card-section" id="gigViewModal" data-reveal>
-  <a id="view-modal-close" class="close-reveal-modal" style="float:right;"><i class="fa fa-times fa-2x" aria-hidden="true"></i></a>
-  <h5 id="gigViewModalTitle" class="gig-title"></h5>
-  <br />
-  <div class="card-divider gig-info">
-    <p id="gigViewModalDetails"></p>
-    <br />
-    <span>By: <span id="gigViewModalIssuer"></span></span>
-    <strong style="float:right;" id="gigViewModalCredits"></strong>
-  </div>
-  <br />
-  <a id="gigViewModalCancel" style="float:right;" class="button">Cancel</a>
-  <a id="gigViewModalClaim" style="float:right;" class="button">Claim</a>
-  <span id="gigViewModalStatus" style="float:right"></span>
-  <span id="gigViewModalId" style="display:none"></span>
 </div>
 
 <div class="reveal card-section" id="gigCreateModal" data-reveal>
@@ -119,60 +102,5 @@ this license in a file with the distribution.
 
 <script>
 $(document).foundation();
-$('#view-modal-close').click(function(){
-  $('#gigViewModal').foundation('close');
-});
-
-$('#gigViewModalCancel').click(function() {
-  var gig_id = $('#gigViewModalId').text();
-  $.ajax({
-    method: "PUT",
-    url: '/gigs/' + gig_id,
-    statusCode: {
-      200: function() {
-
-      }
-    }
-  });
-});
-
-function gigPopout(id) {
-  var me = "<%= netid %>";
-  $('#gigViewModal').foundation('destroy'); // Destroy any previous instantiations of modal
-  $('#gigViewModalId').text(id); // Save the current gig id
-  var popup = new Foundation.Reveal($('#gigViewModal'));
-  var card = $('#gig-card-' + id);
-  $('#gigViewModalTitle').text(card.find('.gig-title').text());
-  $('#gigViewModalIssuer').text(card.find('.gig-issuer').text());
-  $('#gigViewModalCredits').text(card.find('.gig-credits').text());
-  $('#gigViewModalDetails').text(card.find('.gig-details').text());
-  if(me == card.find('.gig-issuer').text()) {
-    // User is the creator of the gig
-    $('#gigViewModalCancel').show();
-    $('#gigViewModalClaim').hide();
-    $('#gigViewModalStatus').hide();
-    // TODO: Add ability to accept/reject claims
-  }
-  else{
-    $('#gigViewModalCancel').hide();
-    $('#gigViewModalClaim').show();
-    $('#gigViewModalStatus').show();
-    $('#gigViewModalStatus').text('');
-
-    // Query claim status of gig
-    $.ajax({
-      url: '/gigs/claims/?gig_id=' + id + '&claimant=' + me,
-      success: function(data) {
-        if(data) {
-          var claim = data[0];
-          var message = claim.fulfilled ? "Claim accepted" : "Claim pending"
-          $('#gigViewModalStatus').text(message);
-          $('#gigViewModalClaim').hide();
-        }
-      }
-    });
-  }
-  popup.open();
-}
 </script>
 

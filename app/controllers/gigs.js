@@ -90,6 +90,48 @@ module.exports = function(app) {
       return res.redirect('/gigs')
     });
   });
+  app.get('/gigs/:gig_id', function(req, res) {
+    request({
+      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true
+    }, function(err, response, gig) {
+      if(err || !gig || gig.error) {
+        req.flash('error', 'Unable to fetch gig');
+        return res.redirect('/gigs');
+      }
+      var query = {
+        gig_id: gig.id
+      };
+      if(gig.issuer != req.session.student.netid) {
+        query.claimant = req.session.student.netid;
+      }
+      request({
+        url: `${SERVICES_URL}/gigs/claims`,
+        qs: query,
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN,
+        },
+        json: true
+      }, function(err, response, claims) {
+        if(err || !claims || claims.error) {
+          req.flash('error', 'Unable to fetch claims');
+          return res.redirect('/gigs');
+        }
+        return res.render('gigs/gig_detail', {
+          authenticated: utils.isAuthenticated(req),
+          netid: req.session.student.netid,
+          messages: req.flash('success'),
+          errors: req.flash('error'),
+          gig: gig,
+          claims: claims,
+          isAdmin: utils.validApprovalAuth(req)
+        });
+      });
+    });
+  });
   app.post('/gigs/:gig_id/delete', function(req, res) {
     if (!utils.validApprovalAuth(req)) {
       req.flash('error', 'Not authorized to delete gig');
