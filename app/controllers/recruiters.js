@@ -222,7 +222,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absResumePath = path.resolve(__dirname + '/../views/_partials/unapproved_resumes.ejs');
+    var absResumePath = path.resolve(__dirname + '/../views/recruiters/_partials/unapproved_resumes.ejs');
     request({
       url: `${SERVICES_URL}/students/` + req.params.netid + `/approve`,
       method: "PUT",
@@ -247,7 +247,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absResumePath = path.resolve(__dirname + '/../views/_partials/unapproved_resumes.ejs');
+    var absResumePath = path.resolve(__dirname + '/../views/recruiters/_partials/unapproved_resumes.ejs');
     request({
       url: `${SERVICES_URL}/students/` + req.params.netid,
       method: "DELETE",
@@ -272,7 +272,7 @@ module.exports = function(app) {
       res.redirect('/intranet');
     }
     
-    var absJobPath = path.resolve(__dirname + '/../views/_partials/unapproved_jobs.ejs');
+    var absJobPath = path.resolve(__dirname + '/../views/recruiters/_partials/unapproved_jobs.ejs');
     request({
       url: `${SERVICES_URL}/jobs/` + req.params.jobId + `/approve`,
       method: "PUT",
@@ -297,7 +297,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absJobPath = path.resolve(__dirname + '/../views/_partials/unapproved_jobs.ejs');
+    var absJobPath = path.resolve(__dirname + '/../views/recruiters/_partials/unapproved_jobs.ejs');
     request({
       url: `${SERVICES_URL}/jobs/` + req.params.jobId,
       method: "DELETE",
@@ -406,7 +406,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absRecruiterPath = path.resolve(__dirname + '/../views/_partials/recruiters.ejs');
+    var absRecruiterPath = path.resolve(__dirname + '/../views/recruiters/_partials/recruiters.ejs');
     request({
       url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId + `/renew`,
       method: "PUT",
@@ -431,7 +431,7 @@ module.exports = function(app) {
       return res.redirect('/intranet');
     }
 
-    var absRecruiterPath = path.resolve(__dirname + '/../views/_partials/recruiters.ejs');
+    var absRecruiterPath = path.resolve(__dirname + '/../views/recruiters/_partials/recruiters.ejs');
     request({
       url: `${SERVICES_URL}/recruiters/` + req.params.recruiterId,
       method: "DELETE",
