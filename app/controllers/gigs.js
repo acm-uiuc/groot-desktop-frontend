@@ -10,7 +10,6 @@
 
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
-const path = require('path');
 const request = require('request');
 const moment = require('moment');
 const utils = require('../../etc/utils.js');
@@ -20,19 +19,19 @@ module.exports = function(app) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
-    args = {
+    var args = {
       page: req.query.page
-    }
+    };
     switch(req.query.filter) {
-      case 'active':
-        args.active = true;
-        break;
-      case 'mine':
-        args.issuer = req.session.student.netid;
-        break;
-      case 'claimed':
-        args.claimed_by = req.session.student.netid;
-        break;
+    case 'active':
+      args.active = true;
+      break;
+    case 'mine':
+      args.issuer = req.session.student.netid;
+      break;
+    case 'claimed':
+      args.claimed_by = req.session.student.netid;
+      break;
     }
     request({
       url: `${SERVICES_URL}/gigs`,
@@ -85,9 +84,9 @@ module.exports = function(app) {
         req.flash('error', 'Unable to create gig');
       }
       else {
-        req.flash('success', 'Gig created')
+        req.flash('success', 'Gig created');
       }
-      return res.redirect('/gigs')
+      return res.redirect('/gigs');
     });
   });
   app.get('/gigs/:gig_id', function(req, res) {
@@ -152,9 +151,9 @@ module.exports = function(app) {
         req.flash('error', 'Unable to delete gig');
       }
       else {
-        req.flash('success', 'Gig deleted')
+        req.flash('success', 'Gig deleted');
       }
-      return res.redirect('/gigs')
+      return res.redirect('/gigs');
     });
   });
   app.put('/gigs/:gig_id', function(req, res) {
@@ -187,7 +186,6 @@ module.exports = function(app) {
     if (!req.session.roles.isStudent) {
       return res.sendStatus(403);
     }
-    console.log(req.body)
     request({
       url: `${SERVICES_URL}/gigs/claims`,
       method: "POST",
@@ -199,7 +197,7 @@ module.exports = function(app) {
         gig_id: req.body.gig_id
       },
       json: true
-    }, function(err, response, body) {
+    }, function(err, response) {
       if(err || response.statusCode != 200) {
         req.flash('error', 'Unable to create claim');
       }
@@ -221,7 +219,7 @@ module.exports = function(app) {
       },
       body: {},
       json: true
-    }, function(err, response, body) {
+    }, function(err, response) {
       if(err || response.statusCode != 200) {
         req.flash('error', 'Unable to update claim');
       }
@@ -242,7 +240,7 @@ module.exports = function(app) {
         "Authorization": GROOT_ACCESS_TOKEN,
       },
       json: true
-    }, function(err, response, body) {
+    }, function(err, response) {
       if(err || response.statusCode != 200) {
         req.flash('error', 'Unable to reject claim');
       }
@@ -252,4 +250,4 @@ module.exports = function(app) {
       return res.sendStatus(response.statusCode);
     });
   });
-}
+};
