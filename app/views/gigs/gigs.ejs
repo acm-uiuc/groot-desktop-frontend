@@ -74,6 +74,7 @@ this license in a file with the distribution.
   <a id="gigViewModalCancel" style="float:right;" class="button">Cancel</a>
   <a id="gigViewModalClaim" style="float:right;" class="button">Claim</a>
   <span id="gigViewModalStatus" style="float:right"></span>
+  <span id="gigViewModalId" style="display:none"></span>
 </div>
 
 <div class="reveal card-section" id="gigCreateModal" data-reveal>
@@ -122,32 +123,23 @@ $('#view-modal-close').click(function(){
   $('#gigViewModal').foundation('close');
 });
 
-function gigClaim(id) {
-  var card = $('#gig-card-' + id);
-  var claim_span = card.find('.gig-votes');
-  var vote_icon = card.find('i');
-  if (vote_icon.hasClass('busy')) {
-    return; // Vote request already sent
-  }
-  var curr_count = parseInt(vote_span.text());
-  var url = '/gigs/vote/' + id;
-  if(vote_icon.hasClass('gig-voted')) {
-    url += '?action=unvote';
-  }
+$('#gigViewModalCancel').click(function() {
+  var gig_id = $('#gigViewModalId').text();
   $.ajax({
-    url: url,
+    method: "PUT",
+    url: '/gigs/' + gig_id,
     statusCode: {
       200: function() {
-        vote_span.text(vote_icon.hasClass('gig-voted') ? curr_count - 1 : curr_count + 1);
-        vote_icon.toggleClass('gig-voted').toggleClass('busy');
-        vote_icon.toggleClass('fa-thumbs-o-up').toggleClass('fa-thumbs-up');
+
       }
-    } 
-  });    
-}
+    }
+  });
+});
+
 function gigPopout(id) {
   var me = "<%= netid %>";
   $('#gigViewModal').foundation('destroy'); // Destroy any previous instantiations of modal
+  $('#gigViewModalId').text(id); // Save the current gig id
   var popup = new Foundation.Reveal($('#gigViewModal'));
   var card = $('#gig-card-' + id);
   $('#gigViewModalTitle').text(card.find('.gig-title').text());

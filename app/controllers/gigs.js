@@ -112,6 +112,19 @@ module.exports = function(app) {
       return res.redirect('/gigs')
     });
   });
+  app.put('/gigs/:gig_id', function(req, res) {
+    request({
+      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+      method: "PUT",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      json: true,
+      body: {}
+    }, function(err, response, body) {
+      return res.send(body);
+    });
+  });
   app.get('/gigs/claims', function(req, res) {
     request({
       url: `${SERVICES_URL}/gigs/claims`,
