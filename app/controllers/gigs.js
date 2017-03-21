@@ -91,6 +91,9 @@ module.exports = function(app) {
     });
   });
   app.get('/gigs/:gig_id', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.redirect('/login');
+    }
     request({
       url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
       headers: {
@@ -132,7 +135,7 @@ module.exports = function(app) {
       });
     });
   });
-  app.post('/gigs/:gig_id/delete', function(req, res) {
+  app.delete('/gigs/:gig_id/delete', function(req, res) {
     if (!utils.validApprovalAuth(req)) {
       req.flash('error', 'Not authorized to delete gig');
       return res.redirect('/intranet');
@@ -178,6 +181,75 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       return res.send(body);
+    });
+  });
+  app.post('/gigs/claims', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.sendStatus(403);
+    }
+    console.log(req.body)
+    request({
+      url: `${SERVICES_URL}/gigs/claims`,
+      method: "POST",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      body: {
+        claimant: req.session.student.netid,
+        gig_id: req.body.gig_id
+      },
+      json: true
+    }, function(err, response, body) {
+      if(err || response.statusCode != 200) {
+        req.flash('error', 'Unable to create claim');
+      }
+      else {
+        req.flash('success', 'Claim created');
+      }
+      return res.sendStatus(response.statusCode);
+    });
+  });
+  app.put('/gigs/claims/:claim_id', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.sendStatus(403);
+    }
+    request({
+      url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+      method: "PUT",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      body: {},
+      json: true
+    }, function(err, response, body) {
+      if(err || response.statusCode != 200) {
+        req.flash('error', 'Unable to update claim');
+      }
+      else {
+        req.flash('success', 'Claim accepted');
+      }
+      return res.sendStatus(response.statusCode);
+    });
+  });
+  app.delete('/gigs/claims/:claim_id', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.sendStatus(403);
+    }
+    request({
+      url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+      method: "DELETE",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true
+    }, function(err, response, body) {
+      if(err || response.statusCode != 200) {
+        req.flash('error', 'Unable to reject claim');
+      }
+      else {
+        req.flash('success', 'Claim deleted');
+      }
+      return res.sendStatus(response.statusCode);
     });
   });
 }

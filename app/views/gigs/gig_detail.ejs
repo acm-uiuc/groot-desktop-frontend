@@ -35,8 +35,8 @@ this license in a file with the distribution.
             <td><%= claims[i].claimant %></td>
             <td>
             <% if(!claims[i].fulfilled) { %>
-              <a href="#" class='button'>Accept</a>
-              <a href="#" class='button'>Reject</a>
+              <a onclick="acceptClaim(<%= claims[i].id %>); return false;" class='button'>Accept</a>
+              <a onclick="rejectClaim(<%= claims[i].id %>); return false;" class='button'>Reject</a>
             <% } else { %>
               <strong>Accepted</strong>
             <% } %>
@@ -50,9 +50,9 @@ this license in a file with the distribution.
     <div id="gigControls">
       <% if(gig.active) { %>
         <% if(gig.issuer == netid) { %>
-          <a onclick="" class="button">Close</a>
+          <a onclick="closeGig(); return false;" class="button">Close</a>
         <% } else if(claims.length == 0) { %>   
-          <a onclick="" class="button">Claim</a>
+          <a onclick="openClaim(); return false;" class="button">Claim</a>
         <% } else { %>
           <div class="callout <%= claims[0].fulfilled ? "success" : "warning" %>">
             <span><strong>Claim Status:</strong> <%= claims[0].fulfilled ? "Accepted!" : "Pending" %>
@@ -64,5 +64,46 @@ this license in a file with the distribution.
     </div>
   </div>
 </div>
+<script>
+function openClaim() {
+  $.ajax({
+    method: "POST",
+    url: '/gigs/claims',
+    dataType: 'json',
+    data: {
+      gig_id: <%= gig.id %>
+    }
+  }).always(function() {
+    location.reload();
+  });
+}
+
+function closeGig() {
+  $.ajax({
+    method: "PUT",
+    url: '/gigs/<%= gig.id %>'
+  }).always(function() {
+    location.reload();
+  });
+}
+
+function acceptClaim(id) {
+  $.ajax({
+    method: "PUT",
+    url: '/gigs/claims/' + id,
+  }).always(function() {
+    location.reload();
+  });
+}
+
+function rejectClaim(id) {
+  $.ajax({
+    method: "DELETE",
+    url: '/gigs/claims/' + id,
+  }).always(function() {
+    location.reload();
+  });
+}
+</script>
 <%- include('../_partials/footer') -%>
 </script>
