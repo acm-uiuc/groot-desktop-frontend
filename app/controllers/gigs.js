@@ -20,15 +20,26 @@ module.exports = function(app) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
+    args = {
+      page: req.query.page
+    }
+    switch(req.query.filter) {
+      case 'active':
+        args.active = true;
+        break;
+      case 'mine':
+        args.issuer = req.session.student.netid;
+        break;
+      case 'claimed':
+        args.claimed_by = req.session.student.netid;
+        break;
+    }
     request({
       url: `${SERVICES_URL}/gigs`,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
       },
-      qs: {
-        page: req.query.page,
-        filter: req.query.filter
-      },
+      qs: args,
       json: true
     }, function(err, response, body) {
       if(err || body.error || !body.gigs) {
