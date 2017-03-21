@@ -99,7 +99,7 @@ module.exports = function(app){
         netid: req.params.netid
       }
     }, function(error, response, body) {
-      if (response && response.statusCode == 200) {
+      if (response && response.statusCode == 200 && body.transactions) {
         for(var t of body.transactions){
           t.created_at = moment(t.created_at)
             .format('MMMM Do YYYY, h:mm:ss a');
@@ -111,7 +111,8 @@ module.exports = function(app){
           netid: req.params.netid
         });
       }
-      res.sendStatus(500);
+      req.flash('error', 'Something went wrong.')
+      return res.redirect('/credits')
     });
   });
   app.post('/credits/admin/:netid', function(req, res) {
