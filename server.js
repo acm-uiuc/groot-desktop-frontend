@@ -149,7 +149,7 @@ app.get('/intranet', function(req, res) {
       "Authorization": GROOT_ACCESS_TOKEN
     }
   }, function(error, response, body) {
-    if (body && response.statusCode == 200) {
+    if (body && body.data && response.statusCode == 200) {
       return res.render('desktop/intranet', {
         authenticated: utils.isAuthenticated(req),
         session: req.session,
