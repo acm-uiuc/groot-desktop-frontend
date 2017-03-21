@@ -20,6 +20,9 @@ module.exports = function(app) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/intranet');
     }
+    if (!req.session.users) {
+      utils.getUserNamesNetids();
+    }
 
     request({
       url: `${SERVICES_URL}/quotes`,
@@ -38,7 +41,8 @@ module.exports = function(app) {
           quotes: body.data,
           messages: req.flash('success'),
           errors: req.flash('error'),
-          netid: req.session.student.netid
+          netid: req.session.student.netid,
+          users: req.session.users
         });
       } else {
         res.status(500).send(error);
