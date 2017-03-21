@@ -32,7 +32,7 @@ this license in a file with the distribution.
             <%= gigs[i].title %>
           </a>
           <p class="gig-details"><%= gigs[i].details %></p>
-          <span class="gig-issuer">By: <%= gigs[i].issuer %></span>
+          <span>By: <span class="gig-issuer"><%= gigs[i].issuer %></span></span>
           <strong class="gig-credits"><%= gigs[i].credits.toFixed(2) %>ℂ</strong>
         </div>
         <% if(isAdmin) { %>
@@ -67,11 +67,13 @@ this license in a file with the distribution.
   <div class="card-divider gig-info">
     <p id="gigViewModalDetails"></p>
     <br />
-    <span id="gigViewModalIssuer"></span>
+    <span>By: <span id="gigViewModalIssuer"></span></span>
     <strong style="float:right;" id="gigViewModalCredits"></strong>
   </div>
   <br />
-  <a style="float:right;" class="button">Claim</a>
+  <a id="gigViewModalClose" style="float:right;" class="button">Close</a>
+  <a id="gigViewModalClaim" style="float:right;" class="button">Claim</a>
+  <span id="gigViewModalStatus" style="float:right"></span>
 </div>
 
 <div class="reveal card-section" id="gigCreateModal" data-reveal>
@@ -99,10 +101,10 @@ this license in a file with the distribution.
       </label>
     </div>
     <% if(isAdmin) { %>
-    <div class="card-divider field-group">
-      <input name="admin_gig" type="checkbox"><label for="checkbox1">Admin Gig</label>
-      <p class="help-text">If selected, will create credits upon completion of this gig instead of debiting your credits account.</p>
-    </div>
+      <div class="card-divider field-group">
+        <input name="admin_gig" type="checkbox"><label for="checkbox1">Admin Gig</label>
+        <p class="help-text">If selected, will create credits upon completion of this gig instead of debiting your credits account.</p>
+      </div>
     <% } %>
     <div class="control-group">
       <div class="controls">
@@ -144,6 +146,7 @@ function gigClaim(id) {
   });    
 }
 function gigPopout(id) {
+  var me = "<%= netid %>";
   $('#gigViewModal').foundation('destroy'); // Destroy any previous instantiations of modal
   var popup = new Foundation.Reveal($('#gigViewModal'));
   var card = $('#gig-card-' + id);
@@ -151,6 +154,17 @@ function gigPopout(id) {
   $('#gigViewModalIssuer').text(card.find('.gig-issuer').text());
   $('#gigViewModalCredits').text(card.find('.gig-credits').text());
   $('#gigViewModalDetails').text(card.find('.gig-details').text());
+  if(me == card.find('.gig-issuer').text()) {
+    // User is the creator of the gig
+    $('#gigViewModalClose').show();
+    $('#gigViewModalClaim').hide();
+    // TODO: Add ability to accept/reject claims
+  }
+  else{
+    $('#gigViewModalClose').hide();
+    $('#gigViewModalClaim').show();
+    // TODO: Add claim status of gig
+  }
   popup.open();
 }
 </script>

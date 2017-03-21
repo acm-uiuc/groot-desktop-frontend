@@ -41,6 +41,7 @@ module.exports = function(app) {
       });
       return res.render('gigs/gigs', {
         authenticated: utils.isAuthenticated(req),
+        netid: req.session.student.netid,
         messages: req.flash('success'),
         errors: req.flash('error'),
         gigs: gigs,
@@ -65,7 +66,7 @@ module.exports = function(app) {
         title: req.body.title,
         details: req.body.details,
         credits: req.body.credits,
-        admin_task: req.body.admin_task
+        admin_task: req.body.admin_gig
       },
       json: true
     }, function(err, response, body) {
