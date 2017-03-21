@@ -14,7 +14,7 @@
         <tr class="quote <%= q.approved? 'approved' : 'unapproved' %>">
           <td> "<%= q.text %>" </td>
           <td> <%= sessions.users ? sessions.users[q.source] : q.source %> </td>
-          <td> <%= sessions.users ? sessions.users[q.author] : q.source %> </td>
+          <td> <%= sessions.users ? sessions.users[q.author] : q.author %> </td>
           <td> <%= q.created_at %> </td>
           <td>
             <% if (q.approved) { %>
