@@ -42,7 +42,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if(err || body.error || !body.gigs) {
-        req.flash('error', 'Unable to fetch gigs');
+        req.flash('error', body.error || 'Unable to fetch gigs');
         return res.redirect('/intranet');
       }
       var gigs = body.gigs.map(function(gig) {
@@ -81,7 +81,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if(err || !body || body.error) {
-        req.flash('error', 'Unable to create gig');
+        req.flash('error', body.error || 'Unable to create gig');
       }
       else {
         req.flash('success', 'Gig created');
@@ -101,7 +101,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, gig) {
       if(err || !gig || gig.error) {
-        req.flash('error', 'Unable to fetch gig');
+        req.flash('error', gig.error || 'Unable to fetch gig');
         return res.redirect('/intranet/gigs');
       }
       var query = {
@@ -119,7 +119,7 @@ module.exports = function(app) {
         json: true
       }, function(err, response, claims) {
         if(err || !claims || claims.error) {
-          req.flash('error', 'Unable to fetch claims');
+          req.flash('error', claims.error || 'Unable to fetch claims');
           return res.redirect('/intranet/gigs');
         }
         return res.render('gigs/gig_detail', {
@@ -134,7 +134,7 @@ module.exports = function(app) {
       });
     });
   });
-  app.delete('/intranet/gigs/:gig_id/delete', function(req, res) {
+  app.delete('/intranet/gigs/:gig_id', function(req, res) {
     if (!utils.validApprovalAuth(req)) {
       req.flash('error', 'Not authorized to delete gig');
       return res.redirect('/intranet');
@@ -148,7 +148,7 @@ module.exports = function(app) {
       json: true
     }, function(err, response, body) {
       if(err || !body || body.error) {
-        req.flash('error', 'Unable to delete gig');
+        req.flash('error', body.error || 'Unable to delete gig');
       }
       else {
         req.flash('success', 'Gig deleted');
@@ -197,9 +197,9 @@ module.exports = function(app) {
         gig_id: req.body.gig_id
       },
       json: true
-    }, function(err, response) {
+    }, function(err, response, body) {
       if(err || response.statusCode != 200) {
-        req.flash('error', 'Unable to create claim');
+        req.flash('error', body.error || 'Unable to create claim');
       }
       else {
         req.flash('success', 'Claim created');
@@ -219,9 +219,9 @@ module.exports = function(app) {
       },
       body: {},
       json: true
-    }, function(err, response) {
+    }, function(err, response, body) {
       if(err || response.statusCode != 200) {
-        req.flash('error', 'Unable to update claim');
+        req.flash('error', body.error || 'Unable to update claim');
       }
       else {
         req.flash('success', 'Claim accepted');
@@ -240,9 +240,9 @@ module.exports = function(app) {
         "Authorization": GROOT_ACCESS_TOKEN,
       },
       json: true
-    }, function(err, response) {
+    }, function(err, response, body) {
       if(err || response.statusCode != 200) {
-        req.flash('error', 'Unable to reject claim');
+        req.flash('error', body.error || 'Unable to reject claim');
       }
       else {
         req.flash('success', 'Claim deleted');

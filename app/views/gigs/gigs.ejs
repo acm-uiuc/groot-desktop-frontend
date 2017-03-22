@@ -35,9 +35,7 @@ this license in a file with the distribution.
         </div>
         <% if(isAdmin) { %>
           <div class="card-section gig-info">
-            <form action="/intranet/gigs/<%= gigs[i].id %>/delete" method="post" style="display:inline;">
-                <button class="button" type="submit" name="delete" style="float:right;">Delete</button>
-            </form>
+            <a class="button" onclick="deleteGig(<%= gigs[i].id %>)">Delete</a>
           </div>
         <% } %>
       </div>
@@ -100,5 +98,15 @@ this license in a file with the distribution.
 
 <script>
 $(document).foundation();
+<% if(isAdmin) { %>
+function deleteGig(id) {
+  $.ajax({
+    method: "DELETE",
+    url: '/intranet/gigs/' + id
+  }).always(function() {
+    location.reload();
+  });
+}
+<% } %>
 </script>
 
