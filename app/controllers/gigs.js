@@ -158,18 +158,34 @@ module.exports = function(app) {
   });
   app.put('/intranet/gigs/:gig_id', function(req, res) {
     request({
-      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
-      method: "PUT",
+      url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+      method: "GET",
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
+        "Authorization": GROOT_ACCESS_TOKEN,
       },
-      json: true,
-      body: {}
+      json: true
     }, function(err, response, body) {
-      return res.send(body);
+      if(body.issuer != req.session.student.netid) {
+        req.flash('error', 'Gigs can only be closed by the issuer');
+        return res.sendStatus(403);
+      }
+      request({
+        url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+        method: "PUT",
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN
+        },
+        json: true,
+        body: {}
+      }, function(err, response, body) {
+        return res.send(body);
+      });
     });
   });
   app.get('/intranet/gigs/claims', function(req, res) {
+    if (!req.session.roles.isStudent) {
+      return res.sendStatus(403);
+    }
     request({
       url: `${SERVICES_URL}/gigs/claims`,
       method: "GET",
@@ -213,20 +229,33 @@ module.exports = function(app) {
     }
     request({
       url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
-      method: "PUT",
+      method: "GET",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
       },
-      body: {},
       json: true
     }, function(err, response, body) {
-      if(err || response.statusCode != 200) {
-        req.flash('error', body.error || 'Unable to update claim');
+      if(body.issuer != req.session.student.netid) {
+        req.flash('error', 'Claims can only be accepted by the issuer');
+        return res.sendStatus(403);
       }
-      else {
-        req.flash('success', 'Claim accepted');
-      }
-      return res.sendStatus(response.statusCode);
+      request({
+        url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+        method: "PUT",
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN,
+        },
+        body: {},
+        json: true
+      }, function(err, response, body) {
+        if(err || response.statusCode != 200) {
+          req.flash('error', body.error || 'Unable to update claim');
+        }
+        else {
+          req.flash('success', 'Claim accepted');
+        }
+        return res.sendStatus(response.statusCode);
+      });
     });
   });
   app.delete('/intranet/gigs/claims/:claim_id', function(req, res) {
@@ -235,19 +264,32 @@ module.exports = function(app) {
     }
     request({
       url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
-      method: "DELETE",
+      method: "GET",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
       },
       json: true
     }, function(err, response, body) {
-      if(err || response.statusCode != 200) {
-        req.flash('error', body.error || 'Unable to reject claim');
+      if(body.issuer != req.session.student.netid) {
+        req.flash('error', 'Claims can only be rejected by the issuer');
+        return res.sendStatus(403);
       }
-      else {
-        req.flash('success', 'Claim deleted');
-      }
-      return res.sendStatus(response.statusCode);
+      request({
+        url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+        method: "DELETE",
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN,
+        },
+        json: true
+      }, function(err, response, body) {
+        if(err || response.statusCode != 200) {
+          req.flash('error', body.error || 'Unable to reject claim');
+        }
+        else {
+          req.flash('success', 'Claim deleted');
+        }
+        return res.sendStatus(response.statusCode);
+      });
     });
   });
 };
