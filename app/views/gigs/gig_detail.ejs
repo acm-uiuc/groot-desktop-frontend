@@ -14,7 +14,7 @@ this license in a file with the distribution.
   <div class="row col-centered small-12 medium-6 large-6">
     <%- include('../_partials/flash') -%>
     <h3 style="display:inline;"><%= gig.title %></h3>
-    <a style="float:right;" href='/gigs'>Back to gigs</a>
+    <a style="float:right;" href='/intranet/gigs'>Back to gigs</a>
     <div class="callout">
       <p><strong>Details:</strong> <%= gig.details %></p>
       <p><strong>Created by:</strong> <%= gig.issuer %></p>
@@ -68,7 +68,7 @@ this license in a file with the distribution.
 function openClaim() {
   $.ajax({
     method: "POST",
-    url: '/gigs/claims',
+    url: '/intranet/gigs/claims',
     dataType: 'json',
     data: {
       gig_id: <%= gig.id %>
@@ -81,7 +81,7 @@ function openClaim() {
 function closeGig() {
   $.ajax({
     method: "PUT",
-    url: '/gigs/<%= gig.id %>'
+    url: '/intranet/gigs/<%= gig.id %>'
   }).always(function() {
     location.reload();
   });
@@ -90,7 +90,7 @@ function closeGig() {
 function acceptClaim(id) {
   $.ajax({
     method: "PUT",
-    url: '/gigs/claims/' + id,
+    url: '/intranet/gigs/claims/' + id,
   }).always(function() {
     location.reload();
   });
@@ -99,7 +99,7 @@ function acceptClaim(id) {
 function rejectClaim(id) {
   $.ajax({
     method: "DELETE",
-    url: '/gigs/claims/' + id,
+    url: '/intranet/gigs/claims/' + id,
   }).always(function() {
     location.reload();
   });

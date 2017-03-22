@@ -15,7 +15,7 @@ const moment = require('moment');
 const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
-  app.get('/gigs', function(req, res) {
+  app.get('/intranet/gigs', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
@@ -61,7 +61,7 @@ module.exports = function(app) {
       });
     });
   });
-  app.post('/gigs', function(req, res) {
+  app.post('/intranet/gigs', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
@@ -86,10 +86,10 @@ module.exports = function(app) {
       else {
         req.flash('success', 'Gig created');
       }
-      return res.redirect('/gigs');
+      return res.redirect('/intranet/gigs');
     });
   });
-  app.get('/gigs/:gig_id', function(req, res) {
+  app.get('/intranet/gigs/:gig_id', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.redirect('/login');
     }
@@ -102,7 +102,7 @@ module.exports = function(app) {
     }, function(err, response, gig) {
       if(err || !gig || gig.error) {
         req.flash('error', 'Unable to fetch gig');
-        return res.redirect('/gigs');
+        return res.redirect('/intranet/gigs');
       }
       var query = {
         gig_id: gig.id
@@ -120,7 +120,7 @@ module.exports = function(app) {
       }, function(err, response, claims) {
         if(err || !claims || claims.error) {
           req.flash('error', 'Unable to fetch claims');
-          return res.redirect('/gigs');
+          return res.redirect('/intranet/gigs');
         }
         return res.render('gigs/gig_detail', {
           authenticated: utils.isAuthenticated(req),
@@ -134,7 +134,7 @@ module.exports = function(app) {
       });
     });
   });
-  app.delete('/gigs/:gig_id/delete', function(req, res) {
+  app.delete('/intranet/gigs/:gig_id/delete', function(req, res) {
     if (!utils.validApprovalAuth(req)) {
       req.flash('error', 'Not authorized to delete gig');
       return res.redirect('/intranet');
@@ -153,10 +153,10 @@ module.exports = function(app) {
       else {
         req.flash('success', 'Gig deleted');
       }
-      return res.redirect('/gigs');
+      return res.redirect('/intranet/gigs');
     });
   });
-  app.put('/gigs/:gig_id', function(req, res) {
+  app.put('/intranet/gigs/:gig_id', function(req, res) {
     request({
       url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
       method: "PUT",
@@ -169,7 +169,7 @@ module.exports = function(app) {
       return res.send(body);
     });
   });
-  app.get('/gigs/claims', function(req, res) {
+  app.get('/intranet/gigs/claims', function(req, res) {
     request({
       url: `${SERVICES_URL}/gigs/claims`,
       method: "GET",
@@ -182,7 +182,7 @@ module.exports = function(app) {
       return res.send(body);
     });
   });
-  app.post('/gigs/claims', function(req, res) {
+  app.post('/intranet/gigs/claims', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.sendStatus(403);
     }
@@ -207,7 +207,7 @@ module.exports = function(app) {
       return res.sendStatus(response.statusCode);
     });
   });
-  app.put('/gigs/claims/:claim_id', function(req, res) {
+  app.put('/intranet/gigs/claims/:claim_id', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.sendStatus(403);
     }
@@ -229,7 +229,7 @@ module.exports = function(app) {
       return res.sendStatus(response.statusCode);
     });
   });
-  app.delete('/gigs/claims/:claim_id', function(req, res) {
+  app.delete('/intranet/gigs/claims/:claim_id', function(req, res) {
     if (!req.session.roles.isStudent) {
       return res.sendStatus(403);
     }

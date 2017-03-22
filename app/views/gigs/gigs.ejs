@@ -26,7 +26,7 @@ this license in a file with the distribution.
     <% for (var i = 0; i < gigs.length; i++) { %>
       <div id="gig-card-<%= gigs[i].id %>" class="gig-card card">
         <div class="card-section gig-info">
-          <a class="gig-title" href="/gigs/<%= gigs[i].id %>">
+          <a class="gig-title" href="/intranet/gigs/<%= gigs[i].id %>">
             <%= gigs[i].title %>
           </a>
           <p class="gig-details"><%= gigs[i].details %></p>
@@ -35,7 +35,7 @@ this license in a file with the distribution.
         </div>
         <% if(isAdmin) { %>
           <div class="card-section gig-info">
-            <form action="/gigs/<%= gigs[i].id %>/delete" method="post" style="display:inline;">
+            <form action="/intranet/gigs/<%= gigs[i].id %>/delete" method="post" style="display:inline;">
                 <button class="button" type="submit" name="delete" style="float:right;">Delete</button>
             </form>
           </div>
@@ -60,7 +60,7 @@ this license in a file with the distribution.
 
 <div class="reveal card-section" id="gigCreateModal" data-reveal>
   <h3>New Gig</h3>
-  <form data-abide method="post" action="/gigs" novalidate>
+  <form data-abide method="post" action="/intranet/gigs" novalidate>
     <div class="field-group required">
       <label for="title" class="field-label">Title
         <div class="field">
