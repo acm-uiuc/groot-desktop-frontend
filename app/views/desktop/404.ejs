@@ -63,27 +63,28 @@
             var str_length=tl[0].length;
             var contents, row;
 
-    function type_text()
-    {
+    function type_text() {
         contents='';
         row=Math.max(0,index-7);
-        while(row<index)
+        while(row<index) {
             contents += tl[row++] + '\r\n';
+        }
+
         document.forms[0].elements[0].value = contents + tl[index].substring(0,text_pos) + "_";
-        if(text_pos++==str_length)
-        {
+
+        if(text_pos++==str_length) {
             text_pos=0;
             index++;
-            if(index!=tl.length)
-            {
+            if(index!=tl.length) {
                 str_length=tl[index].length;
                 setTimeout("type_text()",1500);
             }
-        } else
+        } else {
             setTimeout("type_text()",speed);
-
+        }
     }
-    window.onload = function(){
+
+    window.onload = function() {
         type_text();
     }
     </script>
