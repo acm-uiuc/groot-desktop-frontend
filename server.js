@@ -153,8 +153,8 @@ app.get('/intranet', function(req, res) {
       return res.render('desktop/intranet', {
         authenticated: utils.isAuthenticated(req),
         session: req.session,
-        pin: body.data.pin,
-        creditsBalance: body.data.balance,
+        pin: body.data.pin || "",
+        creditsBalance: body.data.balance || 0,
         messages: req.flash('success'),
         errors: req.flash('error')
       });
