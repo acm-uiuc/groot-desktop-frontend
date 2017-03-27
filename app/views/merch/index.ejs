@@ -14,91 +14,43 @@ this license in a file with the distribution.
     <%- include('../_partials/flash') -%>
     
     <h2>Merch Manager</h2>
-    <h3>Add New Item</h3>
-    <form ref="uploadForm" method="post" action="/intranet/merch/items">
-      <div class="field-group required">
-        <label for="name" class="field-albe">Item Name </label>
-        <div class="field">
-          <input id="name" type="text" name="name" maxlength="16" />
-      </div>
-      <div class="field-group required">
-          <label for="price" class="field-label">Price</label>
-          <div class="field">
-              <input id="price" type="number" name="price"  />
-          </div>
-      </div>
-      <div class="field-group required">
-          <label for="quantity" class="field-label">Quantity</label>
-          <div class="field">
-              <input id="quantity" type="number" name="quantity" maxlength="32" />
-          </div>
-      </div>
-      <div class="field-group required">
-          <label for="location" class="field-label">Location (letter and number) </label>
-          <div class="field">
-              <input id="location" type="text" name="location" maxlength="3" />
-          </div>
-      </div>
-      <div class="field-group required">
-          <label for="image_url" class="field-label">Image URL</label>
-          <div class="field">
-              <input id="image_url" type="text" name="image_url" />
-          </div>
-      </div>
-      <div class="controls">
-          <button type="submit" class="button">Add Item</button>
-      </div>
-    </form>
 
-
-    <h3>All Items</h3>
-    <% if (items && items.length != 0) { %>
-    <table id="item-table" class="dynatable-container">
-        <thead>
-            <tr>
-                <th> Item ID </th>
-                <th> Image </th>
-                <th> Name </th>
-                <th> Price </th>
-                <th> Quantity </th>
-                <th> Locations </th>
-                <th> Action </th>
-            </tr>
-        </thead>
-        <% for (var item of items) { %>
-        <tr>
-            <td><%= item.id %></td>
-            <td><img src="<%= item.image %>" width="100"></img></td>
-            <td><%= item.name %></td>
-            <td><%= item.price %></td>
-            <td><%= item.total_stock %></td>
-            <td> 
-                <ul>
-                <% for (var loc of item.vending) { %>
-                    <li> <%= loc.quantity %> at <%= loc.location %> </li>
-                <% } %>
-                </ul>
-            </td>
-            <td> 
-                <a class="button" href="/intranet/merch/items/<%= item.id %>">Edit</a> 
-                <a class="button" onclick="deleteItem('<%= item.id %>')">Delete Item</a>
-            </td>
-        </tr>
+    <div class="merch-card-container row">
+    <% for (var i = 0; i < locations.length; i++) { %>
+      <div id="loc-card-<%= locations[i].id %>" class="merch-card card">
+        <a href="#" onclick="merchPopout(<%= locations[i].id %>); return false;">
+            <% if (locations[i].item == null) { %>
+                <img src="/images/item-placeholder.png" class="merch-image"/>
+            <% } else { %>
+                <img class="merch-image" src="<%= locations[i].item.image %>" />
+            <% } %>
+        </a>
+        <% if (locations[i].item == null) { %>
+            <h5><%= locations[i].location %>: Unassigned</h5>
+            <a href="<%= locations[i].location %>/new">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                Assign to item
+            </a>
+        <% } else { %>
+            <h5><%= locations[i].location %>: <%= locations[i].quantity %> of <%= locations[i].item.name %></h5>
+            <a href="<%= locations[i].location %>/edit">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+                Edit
+            </a>
+            <a href="#">
+                <i class="fa fa-trash" aria-hidden="true"></i>
+                Delete
+            </a>
         <% } %>
-    </table>
-    <% } else { %>
-        <h5>There are no items</h5>
+        </div>
     <% } %>
+    </div>
   </div>
 </div>
 
 <%- include('../_partials/footer') -%>
 
 <script>
-    $(document).ready(function() {
-        $('#item-table').dynatable();
-    });
-
     function deleteItem(id) {
         $.ajax({
             url: "/intranet/merch/items/" + id,

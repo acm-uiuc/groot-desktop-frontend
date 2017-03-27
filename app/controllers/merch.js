@@ -20,7 +20,7 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/merch/items`,
+      url: `${SERVICES_URL}/merch/locations`,
       method: "GET",
       json: true,
       headers: {
@@ -29,7 +29,7 @@ module.exports = function(app) {
     }, function(error, response, body) {
       res.render('merch/index.ejs', {
         authenticated: utils.isAuthenticated(req),
-        items: body.data,
+        locations: body.data,
         success: req.flash('success'),
         errors: req.flash('error')
       });
@@ -51,10 +51,10 @@ module.exports = function(app) {
       body: req.body
     }, function(error, response, body) {
       if (error || !response) {
-        return res.status(500).send("Error: " + error);
+        return res.status(500).send('Error: ' + error);
       }
 
-      if (response.statusCode == 200) {
+      if (response.statusCode === 200) {
         req.flash('success', body.message);
       } else {
         req.flash('error', body.error);
@@ -64,7 +64,27 @@ module.exports = function(app) {
     });
   });
 
-  app.get('/intranet/merch/items/:id', function(req, res) {
+  app.get('/intranet/merch/items/:location/new', function(req, res) {
+    if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
+      res.redirect('/intranet');
+    }
+
+    // TODO check if unoccupied first
+    res.render('merch/edit.ejs', {
+      authenticated: utils.isAuthenticated(req),
+      item: { // New Item Defaults
+        'name': '',
+        'price': 1,
+        'image': '',
+        'quantity': 5
+      },
+      location: req.params.location,
+      success: req.flash('success'),
+      errors: req.flash('error')
+    });
+  });
+
+  app.get('/intranet/merch/items/:id/:location/edit', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4) {
       res.redirect('/intranet');
     }
@@ -77,9 +97,11 @@ module.exports = function(app) {
         "Authorization": GROOT_ACCESS_TOKEN
       }
     }, function(error, response, body) {
+      // TODO check if location has that item already
       res.render('merch/edit.ejs', {
         authenticated: utils.isAuthenticated(req),
         item: body.data,
+        location: req.params.location,
         success: req.flash('success'),
         errors: req.flash('error')
       });
@@ -93,7 +115,7 @@ module.exports = function(app) {
 
     request({
       url: `${SERVICES_URL}/merch/items/` + req.params.id,
-      method: "PUT",
+      method: "PUT", // TODO make post or put depending on something
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
