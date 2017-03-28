@@ -111,8 +111,8 @@ module.exports = function(app){
           netid: req.params.netid
         });
       }
-      req.flash('error', 'Something went wrong.')
-      return res.redirect('/credits')
+      req.flash('error', 'Something went wrong.');
+      return res.redirect('/credits');
     });
   });
   app.post('/credits/admin/:netid', function(req, res) {
