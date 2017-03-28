@@ -36,7 +36,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post('/intranet/merch/items', function(req, res) {
+  app.post('/intranet/merch/items/:location', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
@@ -56,11 +56,11 @@ module.exports = function(app) {
 
       if (response.statusCode === 200) {
         req.flash('success', body.message);
+        res.redirect('/intranet/merch/items');
       } else {
         req.flash('error', body.error);
+        res.redirect('/intranet/merch/items/' + req.params.location + '/new');
       }
-      
-      res.redirect('/intranet/merch/items');
     });
   });
 
@@ -69,18 +69,35 @@ module.exports = function(app) {
       res.redirect('/intranet');
     }
 
-    // TODO check if unoccupied first
-    res.render('merch/edit.ejs', {
-      authenticated: utils.isAuthenticated(req),
-      item: { // New Item Defaults
-        'name': '',
-        'price': 1,
-        'image': '',
-        'quantity': 5
-      },
-      location: req.params.location,
-      success: req.flash('success'),
-      errors: req.flash('error')
+    request({
+      url: `${SERVICES_URL}/merch/locations/` + req.params.location,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response, body) {
+      if (body && body.data && response && response.statusCode == 200) {
+        if (body.data.item !== null) {
+          req.flash('error', 'An item already exists at ' + req.params.location + '.');
+          res.redirect('/intranet/merch');
+        }
+
+        return res.render('merch/edit.ejs', {
+          authenticated: utils.isAuthenticated(req),
+          item: { // New Item Defaults
+            'name': '',
+            'price': 1,
+            'image': ''
+          },
+          location: body.data,
+          url: '/intranet/merch/items/' + req.params.location,
+          success: req.flash('success'),
+          errors: req.flash('error')
+        });
+      }
+      req.flash('error', body.error || 'An invalid location was specified');
+      res.redirect('/intranet/merch/items');
     });
   });
 
@@ -90,44 +107,48 @@ module.exports = function(app) {
     }
 
     request({
-      url: `${SERVICES_URL}/merch/items/` + req.params.id,
+      url: `${SERVICES_URL}/merch/locations/` + req.params.location,
       method: "GET",
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       }
     }, function(error, response, body) {
-      // TODO check if location has that item already
-      res.render('merch/edit.ejs', {
-        authenticated: utils.isAuthenticated(req),
-        item: body.data,
-        location: req.params.location,
-        success: req.flash('success'),
-        errors: req.flash('error')
-      });
+      if (body && body.data && response && response.statusCode == 200) {
+        return res.render('merch/edit.ejs', {
+          authenticated: utils.isAuthenticated(req),
+          item: body.data.item,
+          location: body.data,
+          url: '/intranet/merch/items/' + body.data.item.id + '/' + req.params.location,
+          success: req.flash('success'),
+          errors: req.flash('error')
+        });
+      }
+      req.flash('error', body.error || "An invalid location was specified");
+      res.redirect('/intranet/merch/items');
     });
   });
 
-  app.post('/intranet/merch/items/:id', function(req, res) {
+  app.post('/intranet/merch/items/:id/:location', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
 
     request({
       url: `${SERVICES_URL}/merch/items/` + req.params.id,
-      method: "PUT", // TODO make post or put depending on something
+      method: "PUT",
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
       },
       body: req.body
     }, function(error, response, body) {
-      if (response.statusCode == 200) {
+      if (response && response.statusCode === 200) {
         req.flash('success', body.message);
-        return res.redirect('/intranet/merch/items');
+        res.redirect('/intranet/merch/items');
       } else {
         req.flash('error', body.error);
-        return res.redirect('/intranet/merch/items/' + req.params.id);
+        res.redirect('/intranet/merch/items/' + req.params.id + '/' + req.params.location + '/edit');
       }
     });
   });

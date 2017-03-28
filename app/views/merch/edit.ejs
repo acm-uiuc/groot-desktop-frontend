@@ -12,14 +12,14 @@ this license in a file with the distribution.
 
 <div id="edit-item-container">
   <div class="row">
-    <% if ( errors.length > 0 ) { %>
-        <div class="callout alert">
-            <p><%= errors %></p>
+    <%- include('../_partials/flash') -%>
+    <h3>Item at <%= location.location %></h3>
+    <form ref="uploadForm" method="post" action="<%= url %>">
+      <div class="field-group">
+        <div class="field">
+          <input id="location" type="hidden" name="location" value="<%= location.location %>" />
         </div>
-    <% } %>
-
-    <h3>Item at <%= location %></h3>
-    <form method="post">
+      </div>
       <div class="field-group required">
         <label for="name" class="field-albe">Item Name</label>
         <div class="field">
@@ -34,7 +34,7 @@ this license in a file with the distribution.
       <div class="field-group required">
           <label for="quantity" class="field-label">Quantity</label>
           <div class="field">
-              <input id="quantity" type="number" name="quantity" maxlength="32" value="<%= item.quantity %>" />
+              <input id="quantity" type="number" name="quantity" maxlength="32" value="<%= location.quantity %>" />
           </div>
       </div>
       <div class="field-group required">
@@ -43,8 +43,10 @@ this license in a file with the distribution.
               <input id="image_url" type="text" name="image_url" value="<%= item.image %>" />
           </div>
       </div>
-      <div class="controls">
-          <button type="submit" class="button">Update Item</button>
+      <div class="control-group">
+        <div class="controls">
+            <button type="submit" class="button">Update Item</button>
+        </div>
       </div>
     </form>
   </div>

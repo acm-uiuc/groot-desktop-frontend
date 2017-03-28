@@ -27,17 +27,17 @@ this license in a file with the distribution.
         </a>
         <% if (locations[i].item == null) { %>
             <h5><%= locations[i].location %>: Unassigned</h5>
-            <a href="<%= locations[i].location %>/new">
+            <a href="items/<%= locations[i].location %>/new">
                 <i class="fa fa-plus" aria-hidden="true"></i>
                 Assign to item
             </a>
         <% } else { %>
             <h5><%= locations[i].location %>: <%= locations[i].quantity %> of <%= locations[i].item.name %></h5>
-            <a href="<%= locations[i].location %>/edit">
+            <a href="items/<%= locations[i].item.id %>/<%= locations[i].location %>/edit">
                 <i class="fa fa-pencil" aria-hidden="true"></i>
                 Edit
             </a>
-            <a href="#">
+            <a href="#" onclick="deleteItem(<%= locations[i].item.id %>);">
                 <i class="fa fa-trash" aria-hidden="true"></i>
                 Delete
             </a>
