@@ -229,9 +229,10 @@ app.get('/corporate/careerweek/2017', function(req, res) {
 
 require('./app/controllers/credits.js')(app);
 require('./app/controllers/events.js')(app);
+require('./app/controllers/gigs.js')(app);
 require('./app/controllers/groups.js')(app);
-require('./app/controllers/merch.js')(app);
 require('./app/controllers/memes.js')(app);
+require('./app/controllers/merch.js')(app);
 require('./app/controllers/quotes.js')(app);
 require('./app/controllers/recruiters.js')(app);
 require('./app/controllers/users.js')(app);

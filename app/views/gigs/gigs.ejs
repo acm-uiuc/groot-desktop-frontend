@@ -1,0 +1,112 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="home-container" class="gig-container">
+  <div class="gig-header row">
+    <h2>Gigs</h2>
+    <br />
+    <a class='gig-order-link' href='?filter=active'>Active</a>
+    <a class='gig-order-link' href='?filter=mine'>Mine</a>
+    <a class='gig-order-link' href='?filter=claimed'>Claimed</a>
+    <a class='button' style='float:right;' onclick="$('#gigCreateModal').foundation('open');">New Gig</a>
+  </div>
+  <div class="row">
+  <%- include('../_partials/flash') -%>
+  </div>
+  <div class="gig-card-container row">
+    <% for (var i = 0; i < gigs.length; i++) { %>
+      <div id="gig-card-<%= gigs[i].id %>" class="gig-card card">
+        <div class="card-section gig-info">
+          <a class="gig-title" href="/intranet/gigs/<%= gigs[i].id %>">
+            <%= gigs[i].title %>
+          </a>
+          <p class="gig-details"><%= gigs[i].details %></p>
+          <span>By: <span class="gig-issuer"><%= gigs[i].issuer %></span></span>
+          <strong class="gig-credits"><%= gigs[i].credits.toFixed(2) %>ℂ</strong>
+        </div>
+        <% if(isAdmin) { %>
+          <div class="card-section gig-info">
+            <a class="button" onclick="deleteGig(<%= gigs[i].id %>)">Delete</a>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+    <% if (gigs.length == 0) { %>
+      <div class="row">
+        <p>No gigs match the query.</p>
+      </div>
+    <% } %>
+  </div>
+  <div class="row">
+    <% if(prevPage) { %>
+      <a href="?page=<%= prevPage %>" class="button">Previous Page</a>
+    <% } %>
+    <% if(nextPage) { %>
+      <a href="?page=<%= nextPage %>" class="button" style="float:right;">Next Page</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="reveal card-section" id="gigCreateModal" data-reveal>
+  <h3>New Gig</h3>
+  <form data-abide method="post" action="/intranet/gigs" novalidate>
+    <div class="field-group required">
+      <label for="title" class="field-label">Title
+        <div class="field">
+          <input type="text" name="title"/>
+        </div>
+      </label>
+    </div>
+    <div class="field-group required">
+      <label for="details" class="field-label">Details
+        <div class="field">
+          <input type="text" name="details"/>
+        </div>
+      </label>
+    </div>
+    <div class="field-group required">
+      <label for="credits" class="field-label">Credits Amount
+        <div class="field">
+          <input type="text" required pattern="number" name="credits"/>
+        </div>
+      </label>
+    </div>
+    <% if(isAdmin) { %>
+      <div class="card-divider field-group">
+        <input name="admin_gig" type="checkbox"><label for="checkbox1">Admin Gig</label>
+        <p class="help-text">If selected, will create credits upon completion of this gig instead of debiting your credits account.</p>
+      </div>
+    <% } %>
+    <div class="control-group">
+      <div class="controls">
+        <button type="submit" class="button">Create</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<%- include('../_partials/footer') -%>
+
+<script>
+$(document).foundation();
+<% if(isAdmin) { %>
+function deleteGig(id) {
+  $.ajax({
+    method: "DELETE",
+    url: '/intranet/gigs/' + id
+  }).always(function() {
+    location.reload();
+  });
+}
+<% } %>
+</script>
+
