@@ -19,7 +19,6 @@ const flash = require('express-flash');
 const winston = require('winston');
 const request = require('request');
 const expressWinston = require('express-winston');
-const strings_for_404 = require('./etc/404_strings.json');
 
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
@@ -242,7 +241,6 @@ app.use('/sponsors', express.static(__dirname + '/public'));
 
 app.use(function (req, res) {
   res.status(404).render('desktop/404', {
-    message: strings_for_404[Math.floor(Math.random()*strings_for_404.length)],
     authenticated: utils.isAuthenticated(req)
   });
 });
