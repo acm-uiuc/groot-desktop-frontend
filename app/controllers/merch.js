@@ -153,26 +153,26 @@ module.exports = function(app) {
     });
   });
 
-  app.delete('/intranet/merch/items/:id', function(req, res) {
+  app.put('/intranet/merch/items/:location', function(req, res) {
     if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
       res.redirect('/intranet');
     }
     
     request({
-      url: `${SERVICES_URL}/merch/items/` + req.params.id,
-      method: "DELETE",
+      url: `${SERVICES_URL}/merch/locations/` + req.params.location,
+      method: "PUT",
       json: true,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN
-      }
+      },
+      body: {}
     }, function(error, response, body) {
-      if (response.statusCode == 200) {
+      if (response && response.statusCode === 200) {
         req.flash('success', body.message);
-        res.status(200).send("");
       } else {
-        req.flash('error', body.error);
-        res.status(500).send("Error " + body.error);
+        req.flash('error', body.error || 'Unable to clear item at location');
       }
+      return res.sendStatus(response.statusCode);
     });
   });
 };

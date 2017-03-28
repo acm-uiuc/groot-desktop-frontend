@@ -9,10 +9,12 @@ this license in a file with the distribution.
 -->
 
 <%- include('../_partials/header') -%>
-<div id="resume-container">
+<div id="home-container" class="merch-container">
   <div class="row">
     <%- include('../_partials/flash') -%>
-    
+  </div>
+
+  <div class="row">
     <h2>Merch Manager</h2>
 
     <div class="merch-card-container row">
@@ -37,7 +39,8 @@ this license in a file with the distribution.
                 <i class="fa fa-pencil" aria-hidden="true"></i>
                 Edit
             </a>
-            <a href="#" onclick="deleteItem(<%= locations[i].item.id %>);">
+            <br/>
+            <a href="#" onclick="clearItem('<%= locations[i].location %>');">
                 <i class="fa fa-trash" aria-hidden="true"></i>
                 Delete
             </a>
@@ -51,14 +54,13 @@ this license in a file with the distribution.
 <%- include('../_partials/footer') -%>
 
 <script>
-    function deleteItem(id) {
+    function clearItem(loc) {
         $.ajax({
-            url: "/intranet/merch/items/" + id,
-            method: "DELETE",
-            success: function(response) {
-                location.reload();
-            }
-        })
+            url: "/intranet/merch/items/" + loc,
+            method: "PUT",
+        }).always(function() {
+            location.reload();
+        });
     }
 </script>
 
