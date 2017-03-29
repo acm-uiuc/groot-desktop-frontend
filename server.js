@@ -135,6 +135,7 @@ app.get('/intranet', function(req, res) {
       authenticated: utils.isAuthenticated(req),
       session: req.session,
       creditsBalance: 0,
+      pin: '',
       messages: req.flash('success'),
       errors: req.flash('error')
     });
