@@ -123,7 +123,7 @@ module.exports = function(app) {
       body: req.body
     }, function(err, response, body) {
       if(err || !response || response.statusCode != 200) {
-        req.flash('error', (body && body.error) || err);
+        req.flash('error', (body && body.error) ? body.error : "Something went wrong.");
         res.redirect('/login');
       } else {
         req.session.student = {
