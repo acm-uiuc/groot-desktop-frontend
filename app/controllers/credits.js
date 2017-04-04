@@ -139,6 +139,32 @@ module.exports = function(app){
       res.sendStatus(500);
     });
   });
+  app.get('/credits/audit', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/transactions`,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200 && body.transactions) {
+        for(var t of body.transactions){
+          t.created_at = moment(t.created_at)
+            .format('MMMM Do YYYY, h:mm:ss a');
+        }
+        return res.render('credits/credits_admin_audit', {
+          authenticated: true,
+          transactions: body.transactions
+        });
+      }
+      req.flash('error', 'Something went wrong.');
+      return res.redirect('/credits');
+    });
+  });
   app.delete('/credits/admin/transactions/:id', function(req, res) {
     if (!req.session.roles.isAdmin) {
       return res.redirect('/intranet');

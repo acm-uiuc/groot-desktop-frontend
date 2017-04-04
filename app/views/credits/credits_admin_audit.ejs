@@ -1,0 +1,44 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div id="credits-container">
+  <div class="row col-centered small-12 medium-6 large-6">
+    <h3>Credits Admin</h3>
+    <h4>Audit Log</h4>
+    <% if (transactions && transactions.length != 0) { %>
+      <table id="transactions-table" class="dynatable-container">
+        <thead>
+          <tr>
+            <th> Id </th>
+            <th> User </th>
+            <th> Amount </th>
+            <th> Time </th>
+            <th> Description </th>
+          </tr>
+        </thead>
+        <% for (var t of transactions) { %>
+          <tr class="transaction">
+            <td> <%= t.id %> </td>
+            <td> <a href="/credits/admin/<%= t.user %>"><%= t.user %></a> </td>
+            <td> <%= t.amount.toFixed(2) + 'ℂ' %> </td>
+            <td> <%= t.created_at %> </td>
+            <td> <%= t.description ? t.description : "No description" %> </td>
+          </tr>
+          <% } %>
+        </table>
+    <% } else { %>
+      <h5>There are no transactions.</h5>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../_partials/footer') -%>
