@@ -27,11 +27,11 @@ module.exports = function(app) {
       url: `${SERVICES_URL}/memes`,
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Meme-Token": req.session.student.token
       },
       qs: {
         page: req.query.page,
-        order: req.query.order
+        order: req.query.order,
+        netid: req.session.student.netid
       },
       json: true
     }, function(err, response, body) {
@@ -72,12 +72,12 @@ module.exports = function(app) {
       method: "POST",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
-        "Meme-Token": req.session.student.token
       },
       json: true,
       body: {
         title: req.body.title,
-        url: req.body.url
+        url: req.body.url,
+        netid: req.session.student.netid
       }
     }, function(err, response, body){
       if(err) {
@@ -101,11 +101,12 @@ module.exports = function(app) {
       url: `${SERVICES_URL}/memes/${req.params.meme_id}/vote`,
       method: req.query.action === 'unvote' ? 'DELETE' : 'PUT',
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN,
-        "Meme-Token": req.session.student.token
+        "Authorization": GROOT_ACCESS_TOKEN
       },
       json: true,
-      body: {}
+      body: {
+        netid: req.session.student.netid
+      }
     }, function(err, response, body){
       if(err || body.error) {
         return req.status(500).send(err || body.error);
@@ -124,8 +125,7 @@ module.exports = function(app) {
     }
     var opts = {
       headers: {
-        "Authorization": GROOT_ACCESS_TOKEN,
-        "Meme-Token": req.session.student.token
+        "Authorization": GROOT_ACCESS_TOKEN
       },
       json: true
     };
