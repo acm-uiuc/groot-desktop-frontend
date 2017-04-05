@@ -1,5 +1,8 @@
 # Groot Desktop Frontend
 
+[![Build Status](https://travis-ci.org/acm-uiuc/groot-desktop-frontend.svg?branch=master)](https://travis-ci.org/acm-uiuc/groot-desktop-frontend)
+
+
 This is the repo for the frontend/website for groot. It's built desktop first and with a focus on a low barrier to entry for contributions. Good coding practices are encouraged as this repo should serve as an example on how to contribute to groot.
 
 Groot core development:
