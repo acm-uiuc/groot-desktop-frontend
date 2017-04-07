@@ -75,7 +75,7 @@ module.exports = function(app) {
         issuer: req.session.student.netid,
         title: req.body.title,
         details: req.body.details,
-        credits: req.body.credits,
+        credits: parseInt(req.body.credits),
         admin_task: req.body.admin_gig
       },
       json: true

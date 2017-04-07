@@ -31,7 +31,7 @@ this license in a file with the distribution.
           </a>
           <p class="gig-details"><%= gigs[i].details %></p>
           <span>By: <span class="gig-issuer"><%= gigs[i].issuer %></span></span>
-          <strong class="gig-credits"><%= gigs[i].credits.toFixed(2) %>ℂ</strong>
+          <strong class="gig-credits"><%= gigs[i].credits %>ℂ</strong>
         </div>
         <% if(isAdmin) { %>
           <div class="card-section gig-info">
@@ -76,7 +76,7 @@ this license in a file with the distribution.
     <div class="field-group required">
       <label for="credits" class="field-label">Credits Amount
         <div class="field">
-          <input type="text" required pattern="number" name="credits"/>
+          <input type="text" required pattern="integer" name="credits"/>
         </div>
       </label>
     </div>
