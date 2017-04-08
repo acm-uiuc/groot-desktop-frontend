@@ -55,7 +55,7 @@ module.exports = function(app){
         return res.render('credits/credits', {
           authenticated: true,
           transactions: body.transactions,
-          balance: body.balance.toFixed(2),
+          balance: body.balance,
           messages: req.flash('success'),
           errors: req.flash('error')
         });
