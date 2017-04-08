@@ -15,7 +15,7 @@ this license in a file with the distribution.
     <%- include('../_partials/flash') -%>
     <h3>Credits</h3>
     <div>
-      <h5 style="display:inline; float:left; padding-top:20px" class="balance">Current Balance: <b class="balance_amount"><%= balance %>ℂ</b></h5>
+      <h5 class="balance credits-balance-header">Current Balance: <b class="balance_amount"><%= balance %>ℂ</b></h5>
       <a class="button" name="refill" href="/credits/addFunds" style="float:right">Refill Balance</a>
     </div>
     <% if (transactions && transactions.length != 0) { %>
@@ -38,7 +38,7 @@ this license in a file with the distribution.
           <% } %>
         </table>
     <% } else { %>
-      <h5 style="padding-top: 64px;">There are no transactions.</h5>
+      <h5 class="credits-no-transactions">There are no transactions.</h5>
     <% } %>
   </div>
 </div>

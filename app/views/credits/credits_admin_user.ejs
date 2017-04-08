@@ -15,7 +15,7 @@ this license in a file with the distribution.
     <h3>Credits Admin</h3>
     <h4>User: <%= netid %></h4>
     <div>
-      <h5 style="display:inline; float:left; padding-top:20px" class="balance">User Balance: <b class="balance_amount"><%= balance %>ℂ</b></h5>
+      <h5 class="balance credits-balance-header">User Balance: <b class="balance_amount"><%= balance %>ℂ</b></h5>
       <a class="button" name="refill" data-open="exampleModal1" style="float:right">Adjust Balance</a>
     </div>
     <% if (transactions && transactions.length != 0) { %>
@@ -40,7 +40,7 @@ this license in a file with the distribution.
           <% } %>
         </table>
     <% } else { %>
-      <h5 style="padding-top: 64px;s">There are no transactions.</h5>
+      <h5 class="credits-no-transactions">There are no transactions.</h5>
     <% } %>
   </div>
 </div>
