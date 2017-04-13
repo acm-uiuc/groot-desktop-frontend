@@ -38,7 +38,7 @@ this license in a file with the distribution.
           return;
         }
         ev.preventDefault();
-        var balance = Number($('#refill_amount_input').val()).toFixed(2);
+        var balance = Number($('#refill_amount_input').val());
         var balanceInCents = parseInt(balance);
         $('input#stripeAmount').val(balanceInCents);
         handler.open({
