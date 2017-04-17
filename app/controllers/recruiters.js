@@ -142,12 +142,9 @@ module.exports = function(app) {
     }, function(error, response, body) {
       if (body && body.error == null) {
         req.flash('success', body.message);
-        return res.redirect('/corporate/accounts');
       } else if (body && body.message == null) {
         req.flash('error', body.error || 'An unexpected error occurred');
-        return res.redirect('/corporate/accounts/' + req.params.recruiterId + '/invite');
       }
-
       return res.redirect('/corporate/accounts');
     });
   });
