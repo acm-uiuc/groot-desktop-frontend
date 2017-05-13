@@ -210,7 +210,7 @@ module.exports = function(app) {
           credits: parseInt(req.body.credits),
           admin_task: req.body.admin_gig ? true : false
         }
-      }, function(err, response, body) {
+      }, function() {
         return res.redirect('/intranet/gigs/' + req.params.gig_id);
       });
     });
