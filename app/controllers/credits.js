@@ -55,7 +55,7 @@ module.exports = function(app){
         return res.render('credits/credits', {
           authenticated: true,
           transactions: body.transactions,
-          balance: body.balance.toFixed(2),
+          balance: body.balance,
           messages: req.flash('success'),
           errors: req.flash('error')
         });
@@ -111,8 +111,8 @@ module.exports = function(app){
           netid: req.params.netid
         });
       }
-      req.flash('error', 'Something went wrong.')
-      return res.redirect('/credits')
+      req.flash('error', 'Something went wrong.');
+      return res.redirect('/credits');
     });
   });
   app.post('/credits/admin/:netid', function(req, res) {
@@ -137,6 +137,32 @@ module.exports = function(app){
         return res.redirect('/credits/admin/' + req.params.netid);
       }
       res.sendStatus(500);
+    });
+  });
+  app.get('/credits/audit', function(req, res) {
+    if (!req.session.roles.isAdmin) {
+      return res.redirect('/intranet');
+    }
+    request({
+      url: `${SERVICES_URL}/credits/transactions`,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response, body) {
+      if (response && response.statusCode == 200 && body.transactions) {
+        for(var t of body.transactions){
+          t.created_at = moment(t.created_at)
+            .format('MMMM Do YYYY, h:mm:ss a');
+        }
+        return res.render('credits/credits_admin_audit', {
+          authenticated: true,
+          transactions: body.transactions
+        });
+      }
+      req.flash('error', 'Something went wrong.');
+      return res.redirect('/credits');
     });
   });
   app.delete('/credits/admin/transactions/:id', function(req, res) {

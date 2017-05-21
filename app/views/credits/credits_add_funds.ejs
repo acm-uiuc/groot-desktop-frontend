@@ -16,9 +16,9 @@ this license in a file with the distribution.
     <form data-abide id='credits_form' novalidate method="post" action="/credits/addFunds">
       <div class="amount-field">
         <label>Balance Refill Amount <small>required</small>
-          <input id="refill_amount_input" type="number" required data-validator="credits_balance" pattern="number" placeholder="5.00">
+          <input id="refill_amount_input" type="number" required data-validator="credits_balance" placeholder="500">
         </label>
-        <small class="error">Balance refill amount is required and must be a number between 5 and 50.</small>
+        <small class="error">Balance refill amount is required and must be a number between 500 and 5000 (corresponding to $5 and $50).</small>
       </div>
       <input name="token" id="stripeToken" type="hidden">
       <input name="amount" id="stripeAmount" type="hidden">
@@ -30,17 +30,16 @@ this license in a file with the distribution.
       $(document).foundation();
       Foundation.Abide.defaults.validators['credits_balance'] =
       function($el,required,parent) {
-        if (!required) return true;
-        var val = Number($el.val());
-        return (val >= 5 && val <= 50)
+        var val = parseInt($el.val());
+        return val >= 500 && val <= 5000
       };
       $(document).on("submit", function(ev) {
         if($('input#stripeToken').val()) {
           return;
         }
         ev.preventDefault();
-        var balance = Number($('#refill_amount_input').val()).toFixed(2);
-        var balanceInCents = parseInt(balance * 100);
+        var balance = Number($('#refill_amount_input').val());
+        var balanceInCents = parseInt(balance);
         $('input#stripeAmount').val(balanceInCents);
         handler.open({
           name: 'ACM @ Illinois',
@@ -51,7 +50,7 @@ this license in a file with the distribution.
     });
     var handler = StripeCheckout.configure({
       key: '<%= stripePublishableKey %>',
-      image: 'http://acm.illinois.edu/images/acm-logo-flat-og.png',
+      image: 'https://acm.illinois.edu/images/acm-logo-flat-og.png',
       locale: 'auto',
       token: function(token) {
         // You can access the token ID with `token.id`.

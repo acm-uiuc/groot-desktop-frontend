@@ -19,7 +19,6 @@ const flash = require('express-flash');
 const winston = require('winston');
 const request = require('request');
 const expressWinston = require('express-winston');
-const strings_for_404 = require('./etc/404_strings.json');
 
 const PORT = process.env.PORT || 5000;
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
@@ -137,6 +136,7 @@ app.get('/intranet', function(req, res) {
       authenticated: utils.isAuthenticated(req),
       session: req.session,
       creditsBalance: 0,
+      pin: '',
       messages: req.flash('success'),
       errors: req.flash('error')
     });
@@ -154,8 +154,8 @@ app.get('/intranet', function(req, res) {
       return res.render('desktop/intranet', {
         authenticated: utils.isAuthenticated(req),
         session: req.session,
-        pin: body.data.pin,
-        creditsBalance: body.data.balance,
+        pin: body.data.pin || "",
+        creditsBalance: body.data.balance || 0,
         messages: req.flash('success'),
         errors: req.flash('error')
       });
@@ -230,9 +230,10 @@ app.get('/corporate/careerweek/2017', function(req, res) {
 
 require('./app/controllers/credits.js')(app);
 require('./app/controllers/events.js')(app);
+require('./app/controllers/gigs.js')(app);
 require('./app/controllers/groups.js')(app);
-require('./app/controllers/merch.js')(app);
 require('./app/controllers/memes.js')(app);
+require('./app/controllers/merch.js')(app);
 require('./app/controllers/quotes.js')(app);
 require('./app/controllers/recruiters.js')(app);
 require('./app/controllers/users.js')(app);
@@ -242,7 +243,6 @@ app.use('/sponsors', express.static(__dirname + '/public'));
 
 app.use(function (req, res) {
   res.status(404).render('desktop/404', {
-    message: strings_for_404[Math.floor(Math.random()*strings_for_404.length)],
     authenticated: utils.isAuthenticated(req)
   });
 });
