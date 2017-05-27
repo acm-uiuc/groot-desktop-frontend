@@ -76,7 +76,7 @@ module.exports = function(app) {
         title: req.body.title,
         details: req.body.details,
         credits: parseInt(req.body.credits),
-        admin_task: req.body.admin_gig
+        admin_task: Boolean(req.body.admin_gig)
       },
       json: true
     }, function(err, response, body) {
@@ -156,9 +156,9 @@ module.exports = function(app) {
       return res.redirect('/intranet/gigs');
     });
   });
-  app.put('/intranet/gigs/:gig_id', function(req, res) {
+  app.put('/intranet/gigs/close/:gig_id', function(req, res) {
     request({
-      url: `${SERVICES_URL}/gigs/claims/${req.params.claim_id}`,
+      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
       method: "GET",
       headers: {
         "Authorization": GROOT_ACCESS_TOKEN,
@@ -176,9 +176,42 @@ module.exports = function(app) {
           "Authorization": GROOT_ACCESS_TOKEN
         },
         json: true,
-        body: {}
+        body: {
+          active: false
+        }
       }, function(err, response, body) {
         return res.send(body);
+      });
+    });
+  });
+  app.post('/intranet/gigs/edit/:gig_id', function(req, res) {
+    request({
+      url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+      method: "GET",
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN,
+      },
+      json: true
+    }, function(err, response, body) {
+      if(body.issuer != req.session.student.netid) {
+        req.flash('error', 'Gigs can only be modified by the issuer');
+        return res.redirect('/intranet/gigs/' + req.params.gig_id);
+      }
+      request({
+        url: `${SERVICES_URL}/gigs/${req.params.gig_id}`,
+        method: "PUT",
+        headers: {
+          "Authorization": GROOT_ACCESS_TOKEN
+        },
+        json: true,
+        body: {
+          title: req.body.title,
+          details: req.body.details,
+          credits: parseInt(req.body.credits),
+          admin_task: Boolean(req.body.admin_gig)
+        }
+      }, function() {
+        return res.redirect('/intranet/gigs/' + req.params.gig_id);
       });
     });
   });
