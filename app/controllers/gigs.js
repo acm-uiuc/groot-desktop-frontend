@@ -76,7 +76,7 @@ module.exports = function(app) {
         title: req.body.title,
         details: req.body.details,
         credits: parseInt(req.body.credits),
-        admin_task: req.body.admin_gig ? true : false
+        admin_task: Boolean(req.body.admin_gig)
       },
       json: true
     }, function(err, response, body) {
@@ -208,7 +208,7 @@ module.exports = function(app) {
           title: req.body.title,
           details: req.body.details,
           credits: parseInt(req.body.credits),
-          admin_task: req.body.admin_gig ? true : false
+          admin_task: Boolean(req.body.admin_gig)
         }
       }, function() {
         return res.redirect('/intranet/gigs/' + req.params.gig_id);
