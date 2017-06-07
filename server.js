@@ -87,6 +87,7 @@ app.get('/conference', function(req, res) {
   res.render('desktop/conference', {
     authenticated: utils.isAuthenticated(req),
     editions: [
+      { year: '2017', path: 'https://www-s.acm.illinois.edu/conference/2017' },
       { year: '2016', path: 'https://www-s.acm.illinois.edu/conference/2016' },
       { year: '2015', path: 'https://www-s.acm.illinois.edu/conference/2015' },
       { year: '2014', path: 'https://www-s.acm.illinois.edu/conference/2014' },
