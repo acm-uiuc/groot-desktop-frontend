@@ -155,7 +155,7 @@ var dec = "December ";
 var may = "May ";
 
 if (m > 6) {
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < 5; i++) {
     sponsorsScope.grad.years.push({
       date: dec + y
     });
