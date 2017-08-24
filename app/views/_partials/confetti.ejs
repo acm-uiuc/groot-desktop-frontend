@@ -1,105 +1,3 @@
-<!--<script>
-NUM_CONFETTI = 350
-COLORS = [[85,71,106], [174,61,99], [219,56,83], [244,92,68], [248,182,70]]
-PI_2 = 2 * Math.PI
-
-
-canvas = document.getElementById("confetti")
-context = canvas.getContext("2d")
-window.w = 0
-window.h = 0
-
-resizeWindow = function() {
-    window.w = canvas.width = window.innerWidth
-    window.h = canvas.height = window.innerHeight
-}
-
-window.addEventListener('resize', resizeWindow, false)
-  
-window.onload = function() {
-    setTimeout(resizeWindow, 0)
-}
-
-range = function(a,b) {
-    return (b-a)*Math.random() + a
-}
-
-drawCircle = function(x,y,r,style) {
-    context.beginPath()
-    context.arc(x,y,r,0,PI_2,false)
-    context.fillStyle = style
-    context.fill()
-}
-
-xpos = 0.5
-
-document.onmousemove = function(e) {
-    xpos = e.pageX/w
-}
-
-window.requestAnimationFrame = function() {
-    window.requestAnimationFrame       ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame    ||
-    window.oRequestAnimationFrame      ||
-    window.msRequestAnimationFrame     ||
-    function(callback) {window.setTimeout(callback, 1000 / 60)}
-}
-
-
-class Confetti {
-    constructor() {
-        this.style = COLORS[~~range(0,5)]
-        this.rgb = "rgba(#{this.style[0]}, #{this.style[1]}, #{this.style[2]}"
-        this.r = ~~range(2, 6)
-        this.r2 = 2 * this.r
-        this.replace()
-    }
-
-    replace() {
-        this.opacity = 0
-        this.dop = 0.03 * range(1, 4)
-        this.x = range(-this.r2, w - this.r2)
-        this.y = range(-20, h - this.r2)
-        this.xmax = w - this.r
-        this.ymax = h - this.r
-        this.vx = range(0,2) + 8 * xpos - 5
-        this.vy = 0.7 * this.r + range(-1, 1)
-    }
-
-    draw () {
-        this.x += this.vx
-        this.y += this.vy
-        this.opacity += this.dop
-        if (this.opacity > 1) {
-            this.opacity = 1
-            this.dop *= -1
-        }
-        if (this.opacity < 0 || this.y > this.ymax) {
-            this.Confetti()
-        }
-        if (!(0 < this.x < this.xmax)) {
-            this.x = (this.x + this.xmax) % this.xmax
-        }
-        drawCircle(~~this.x, ~~this.y, this.r,"#{this.rgb}, #{this.opacity})")
-    }
-}
-
-confetti = [] 
-for (i in [1..NUM_CONFETTI]) {
-    confetti.push(new Confetti)
-}
-
-window.step = function() {
-    requestAnimationFrame(step)
-    context.clearRect(0,0,w,h)
-    for (c in confetti) {
-        c.draw()
-    }
-}
-
-step()
-</script>-->
 <script type="text/javascript">
 var retina = window.devicePixelRatio,
 
@@ -110,6 +8,7 @@ var retina = window.devicePixelRatio,
     random = Math.random,
     cos = Math.cos,
     sin = Math.sin,
+    kappa = (4 * (sqrt(2) - 1))/3
 
     // Local WindowAnimationTiming interface
     rAF = window.requestAnimationFrame,
@@ -153,13 +52,27 @@ document.addEventListener("DOMContentLoaded", function() {
         ribbonPaperDist = 8.0,
         ribbonPaperThick = 8.0,
         confettiPaperCount = 95,
+        balloonCount = 10,
+        radius = 50,
+        width_factor = 0.0333;
+        height_factor = 0.4;
+        tie_width_factor = 0.12;
+        tie_height_factor = 0.10;
+        tie_curve_factor = 0.13;
+        graident_factor = 0.3;
+        graident_circle_radius = 3;
+        handleLength = kappa * radius
         DEG_TO_RAD = PI / 180,
         RAD_TO_DEG = 180 / PI,
         colors = [
-            ["#df0049", "#660671"],
-            ["#00e857", "#005291"],
-            ["#2bebbc", "#05798a"],
-            ["#ffd200", "#b06c00"]
+            ["#1abc9c", "#16a085"],
+            ["#2ecc71", "#27ae60"],
+            ["#3498db", "#2980b9"],
+            ["#f1c40f", "#f39c12"],
+            ["#2ecc71", "#27ae60"],
+            ["#e67e22", "#d35400"],
+            ["#e74c3c", "#c0392b"],
+            ["#9b59b6", "#8e44ad"]
         ];
 
     function Vector2(_x, _y) {
@@ -308,6 +221,135 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     ConfettiPaper.bounds = new Vector2(0, 0);
 
+    function Balloon(_x, _y) {
+        this.pos = new Vector2(_x, _y);
+        this.rotationSpeed = (random() * 600 + 800);
+        this.angle = DEG_TO_RAD * random() * 360;
+        this.rotation = DEG_TO_RAD * random() * 360;
+        this.cosA = 1.0;
+        this.size = 5.0;
+        this.oscillationSpeed = (random() * 1.5 + 0.5);
+        this.xSpeed = 40.0;
+        this.ySpeed = (random() * 30 + 50.0) * -1;
+        this.corners = new Array();
+        this.time = random();
+        var ci = round(random() * (colors.length - 1));
+        this.frontColor = colors[ci][0];
+        this.backColor = colors[ci][1];
+        for (var i = 0; i < 4; i++) {
+            var dx = cos(this.angle + DEG_TO_RAD * (i * 90 + 45));
+            var dy = sin(this.angle + DEG_TO_RAD * (i * 90 + 45));
+            this.corners[i] = new Vector2(dx, dy);
+        }
+
+        this.Update = function(_dt) {
+            this.time += _dt;
+            this.rotation += this.rotationSpeed * _dt;
+            this.pos.x += cos(this.time * this.oscillationSpeed) * this.xSpeed * _dt;
+            this.pos.y += this.ySpeed * _dt;
+            if (this.pos.y < -50) {
+                this.pos.x = random() * Balloon.bounds.x;
+                this.pos.y = Balloon.bounds.y + 25;
+            }
+        }
+
+        this.Draw = function(_g) {
+            _g.beginPath();
+
+            centerX = (this.pos.x + this.corners[0].x * this.size) * retina;
+            centerY = (this.pos.y + this.corners[0].y * this.size) * retina
+            
+            var widthDiff = (radius * width_factor);
+            var heightDiff = (radius * height_factor);
+            
+            var balloonBottomY = centerY + radius + heightDiff;
+            
+            // Begin balloon path
+            
+            _g.beginPath();
+        
+            // Top Left Curve
+            
+            var topLeftCurveStartX = centerX - radius;
+            var topLeftCurveStartY = centerY;
+            
+            var topLeftCurveEndX = centerX;
+            var topLeftCurveEndY = centerY - radius;
+            
+            _g.moveTo(topLeftCurveStartX, topLeftCurveStartY);
+            _g.bezierCurveTo(topLeftCurveStartX, topLeftCurveStartY - handleLength - widthDiff,
+                                    topLeftCurveEndX - handleLength, topLeftCurveEndY,
+                                    topLeftCurveEndX, topLeftCurveEndY);
+                                    
+            // Top Right Curve
+            
+            var topRightCurveStartX = centerX;
+            var topRightCurveStartY = centerY - radius;
+            
+            var topRightCurveEndX = centerX + radius;
+            var topRightCurveEndY = centerY;
+            
+            _g.bezierCurveTo(topRightCurveStartX + handleLength + widthDiff, topRightCurveStartY,
+                                    topRightCurveEndX, topRightCurveEndY - handleLength,
+                                    topRightCurveEndX, topRightCurveEndY);
+                                                
+            // Bottom Right Curve
+            
+            var bottomRightCurveStartX = centerX + radius;
+            var bottomRightCurveStartY = centerY;
+            
+            var bottomRightCurveEndX = centerX;
+            var bottomRightCurveEndY = balloonBottomY;
+            
+            _g.bezierCurveTo(bottomRightCurveStartX, bottomRightCurveStartY + handleLength,
+                                    bottomRightCurveEndX + handleLength, bottomRightCurveEndY,
+                                    bottomRightCurveEndX, bottomRightCurveEndY);							
+            
+            // Bottom Left Curve
+            
+            var bottomLeftCurveStartX = centerX;
+            var bottomLeftCurveStartY = balloonBottomY;
+            
+            var bottomLeftCurveEndX = centerX - radius;
+            var bottomLeftCurveEndY = centerY;
+            
+            _g.bezierCurveTo(bottomLeftCurveStartX - handleLength, bottomLeftCurveStartY,
+                                    bottomLeftCurveEndX, bottomLeftCurveEndY + handleLength,
+                                    bottomLeftCurveEndX, bottomLeftCurveEndY);
+            
+            // Create balloon gradient
+            
+            var gradientOffset = (radius/3);
+            
+            var balloonGradient =
+                _g.createRadialGradient(centerX + gradientOffset, centerY - gradientOffset,
+                                                graident_circle_radius,
+                                                centerX, centerY, radius + heightDiff);
+            balloonGradient.addColorStop(0, this.frontColor);
+            balloonGradient.addColorStop(0.7, this.backColor);
+            
+            _g.fillStyle = balloonGradient;
+            _g.fill();
+            
+            // End balloon path
+            
+            // Create balloon tie
+            
+            var halfTieWidth = (radius * tie_width_factor)/2;
+            var tieHeight = (radius * tie_height_factor);
+            var tieCurveHeight = (radius * tie_curve_factor);
+            
+            _g.beginPath();
+            _g.moveTo(centerX - 1, balloonBottomY);
+            _g.lineTo(centerX - halfTieWidth, balloonBottomY + tieHeight);
+            _g.quadraticCurveTo(centerX, balloonBottomY + tieCurveHeight,
+                                        centerX + halfTieWidth, balloonBottomY + tieHeight);
+            _g.lineTo(centerX + 1, balloonBottomY);
+            _g.fill();
+        }
+    }
+    Balloon.bounds = new Vector2(0, 0);
+
     function ConfettiRibbon(_x, _y, _count, _dist, _thickness, _angle, _mass, _drag) {
         this.particleDist = _dist;
         this.particleCount = _count;
@@ -446,16 +488,25 @@ document.addEventListener("DOMContentLoaded", function() {
         canvas.height = canvasHeight * retina;
         var context = canvas.getContext('2d');
         var interval = null;
+
         var confettiRibbons = new Array();
         ConfettiRibbon.bounds = new Vector2(canvasWidth, canvasHeight);
         for (i = 0; i < confettiRibbonCount; i++) {
             confettiRibbons[i] = new ConfettiRibbon(random() * canvasWidth, -random() * canvasHeight * 2, ribbonPaperCount, ribbonPaperDist, ribbonPaperThick, 45, 1, 0.05);
         }
+
         var confettiPapers = new Array();
         ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
         for (i = 0; i < confettiPaperCount; i++) {
             confettiPapers[i] = new ConfettiPaper(random() * canvasWidth, random() * canvasHeight);
         }
+
+        var balloons = new Array();
+        Balloon.bounds = new Vector2(canvasWidth, canvasHeight);
+        for (i = 0; i < balloonCount; i++) {
+            balloons[i] = new Balloon(random() * canvasWidth, random() * canvasHeight);
+        }
+
         this.resize = function() {
             canvasWidth = canvasParent.offsetWidth;
             canvasHeight = canvasParent.offsetHeight;
@@ -463,15 +514,19 @@ document.addEventListener("DOMContentLoaded", function() {
             canvas.height = canvasHeight * retina;
             ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
             ConfettiRibbon.bounds = new Vector2(canvasWidth, canvasHeight);
+            Balloon.bounds = new Vector2(canvasWidth, canvasHeight);
         }
+
         this.start = function() {
             this.stop()
             var context = this;
             this.update();
         }
+        
         this.stop = function() {
             cAF(this.interval);
         }
+
         this.update = function() {
             var i = 0;
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -479,10 +534,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 confettiPapers[i].Update(duration);
                 confettiPapers[i].Draw(context);
             }
+        
             for (i = 0; i < confettiRibbonCount; i++) {
                 confettiRibbons[i].Update(duration);
                 confettiRibbons[i].Draw(context);
             }
+        
+            for (i = 0; i < balloonCount; i++) {
+                balloons[i].Update(duration);
+                balloons[i].Draw(context);
+            }
+        
             this.interval = rAF(function() {
                 confetti.update();
             });
