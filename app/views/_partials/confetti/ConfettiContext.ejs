@@ -20,13 +20,13 @@ confetti.Context = function(id) {
     var confettiPapers = new Array();
     ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
     for (i = 0; i < confettiPaperCount; i++) {
-        confettiPapers[i] = new ConfettiPaper(random() * canvasWidth, random() * canvasHeight);
+        confettiPapers[i] = new ConfettiPaper(random() * canvasWidth, -random() * canvasHeight);
     }
 
     var balloons = new Array();
     Balloon.bounds = new Vector2(canvasWidth, canvasHeight);
     for (i = 0; i < balloonCount; i++) {
-        balloons[i] = new Balloon(random() * canvasWidth, random() * canvasHeight);
+        balloons[i] = new Balloon(random() * canvasWidth, (-random() * canvasHeight) - canvasHeight);
     }
 
     this.resize = function() {

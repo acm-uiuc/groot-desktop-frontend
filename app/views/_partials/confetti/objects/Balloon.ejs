@@ -9,7 +9,7 @@ class Balloon {
         this.size = 5.0;
         this.oscillationSpeed = (random() * 1.5 + 0.5);
         this.xSpeed = 40.0;
-        this.ySpeed = (random() * 30 + 50.0) * -1;
+        this.ySpeed = (random() * 30 + 50.0);
         this.corners = new Array();
         this.time = random();
         var ci = round(random() * (colors.length - 1));
@@ -27,9 +27,9 @@ class Balloon {
         this.rotation += this.rotationSpeed * _dt;
         this.pos.x += cos(this.time * this.oscillationSpeed) * this.xSpeed * _dt;
         this.pos.y += this.ySpeed * _dt;
-        if (this.pos.y < -50) {
+        if (this.pos.y > Balloon.bounds.y + 25) {
             this.pos.x = random() * Balloon.bounds.x;
-            this.pos.y = Balloon.bounds.y + 25;
+            this.pos.y = -100;
         }
     }
 
