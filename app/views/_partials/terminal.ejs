@@ -1,16 +1,217 @@
 <script>
-  (function(){
-    var message_str = "50 Years of ACM@UIUC"
-    var showText = function(target, message, index, interval) {
-        if (index < message.length) {
-            $(target).append(message[index++]);
-            setTimeout(function() {
-                showText(target, message, index, interval);
-            }, interval);
+    const term = Object.freeze({HEADER:  0,
+                                WAITING: 1,
+                                LIVE:    2,
+                                EXEC:    3});
+
+    function drop_confetti(args) {
+        confetti.start();
+    }
+
+    function stop_confetti(args) {
+        confetti.stop();
+    }
+
+    /* How to write a program for ACMsh 
+     * 
+     * ACMsh runs on a single thread (thread) in the JS runtime
+     * This thread is controlled by a terminal state variable term_state
+     * ACMsh.exec() will set the term_state to EXEC, thereby giving control 
+     * of the thread to the program. 
+     * From this point you can use the console output by setting 
+     * terminal.textContent 
+     * or conduct other actions
+     * 
+     * Arguments to your program are provided in an array, quoted strings will 
+     * be treated as one argument
+     * 
+     * Before returning, call the ACMsh.return() to return control back to the shell
+     * If you need the console output to presist, pass a time in ms to the return function
+     * to delay turnover by.
+     */
+
+    function echo(args) {
+        console.log(args);
+        if (args.length > 1) {
+            terminal.textContent = "ERR: Too many args"
+        } else if (args.length === 0) {
+            terminal.textContent = "ERR: missing args"
+        } else {
+            terminal.textContent = args[0];
+        }
+        ACMsh.return(1000);
+    }
+
+    function kill(args) {
+        if (args === "happy_birthday") {
+            stop_confetti();
         }
     }
-    $(function() {
-        showText("#qualities", message_str, -1, 150);
-    });
-  })()
+
+    const bin = {"happy_birthday" : drop_confetti,
+                 "kill" : kill,
+                 "echo" : echo};
+
+    term_state = term.HEADER;
+    terminal = document.getElementById("shell");
+    acmsh = null;
+
+    (function() {
+        var message_str = " 50 Years of ACM@UIUC"
+        var showText = function(target, message, index, interval) {
+            if (index < message.length) {
+                $(target).append(message[index++]);
+                setTimeout(function() {
+                    showText(target, message, index, interval);
+                }, interval);
+            } else {
+                term_state = term.WAITING;
+            }
+        }
+        $(function() {
+            showText("#shell", message_str, -1, 75);
+        });
+    })()
+
+    var thread = function(sh) {
+        setTimeout(function() {
+            if (term_state === term.LIVE) {
+                sh.shell();
+                thread(sh);
+            }
+        }, 125);
+    }
+
+    class ACMsh {
+        constructor() {
+            this.input = "";
+            this.display = "";
+            this.cursor_alt = false;
+            this.history = [''];
+            this.history_pos = 0;
+            this.cursor_pos = 0
+
+            window.addEventListener("keydown", function(e) {
+                // space and arrow keys
+                if([' ', 'Backspace', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown'].indexOf(e.key) > -1) {
+                    e.preventDefault();
+                }
+            }, false);
+
+            document.addEventListener('keydown', (event) => {
+                switch (event.key) {
+                    case "ArrowUp":
+                        if (this.history_pos < this.history.length) {
+                            this.history_pos += 1;
+                            this.input = this.history[this.history.length - this.history_pos];
+                        }
+                        break;
+
+                    case "ArrowDown":
+                        if (this.history_pos > 0) {
+                            this.history_pos -= 1;
+                            var next = this.history.length - this.history_pos;
+                            this.history.push("")
+                            this.input = this.history[next];
+                            this.history.pop();
+                        }
+                        break;
+                    
+                    case "ArrowLeft":
+                        if (this.cursor_pos > 0) {
+                            this.cursor_pos -= 1
+                        }
+                        break;
+
+                    case "ArrowRight":
+                        if (this.cursor_pos <= this.input.length) {
+                            this.cursor_pos += 1
+                        }
+                        break;
+
+                    case "Enter":
+                        this.exec();
+                        break;
+                    case "Backspace":
+                        var in_bef = this.input.substring(0, this.cursor_pos);
+                        var in_aft = this.input.substring(this.cursor_pos);
+                        this.input = in_bef.slice(0, -1) + in_aft;
+                        if (this.cursor_pos > 0) {
+                            this.cursor_pos -= 1
+                        }
+                        break;
+                    case "Shift":
+                        // Do something for "esc" key press.
+                        break;
+                    default:
+                        var in_bef = this.input.substring(0, this.cursor_pos);
+                        var in_aft = this.input.substring(this.cursor_pos);
+                        this.input = in_bef + event.key + in_aft;
+                        this.history_pos = 0;
+                        this.cursor_pos += 1
+                    return; 
+                }
+            }, false);
+        }
+
+        exec() {
+            this.history.push(this.input);
+
+            /*TODO: escape characters*/
+            var tokens = this.input.match(/(?:[^\s"]+|"[^"]*")+/g);
+            var cmd = tokens[0];
+            var args = tokens.slice(1, tokens.length);
+            for (var a = 0; a < args.length; a++) {
+                if (args[a][0] === '"') {
+                    args[a] = args[a].slice(1, -1);
+                }
+            }
+            if (cmd in bin) {
+                term_state = term.EXEC;
+                bin[cmd](args);
+            } else {
+                term_state = term.WAITING;
+                terminal.textContent = `command ${cmd} not found`;
+                setTimeout(function () {
+                        term_state = term.LIVE;
+                        thread(acmsh); //Note: this is hardcoded for groot, change to the instance of the shell
+                }, 1000);
+            }
+            this.input = ""
+        }
+        
+        shell() {
+            this.cursor();    
+            terminal.textContent = this.display;
+        }
+
+        cursor() {
+            if (this.cursor_alt) {
+                var in_bef = this.input.substring(0, this.cursor_pos);
+                var in_aft = this.input.substring(this.cursor_pos);
+                this.display = in_bef + '\u2593' + in_aft.slice(1, in_aft.length);
+            } else {
+                this.display = this.input;
+            }
+            this.cursor_alt = !(this.cursor_alt);
+        }
+
+        static return(delay) {
+            if (typeof delay === 'undefined') { delay = 0; }
+            setTimeout(function () {
+                term_state = term.LIVE;
+                thread(acmsh);  //Note: this is hardcoded for groot, change to the instance of the shell
+            }, delay);
+        }
+    }
+
+    terminal.addEventListener("click", function( event ) {
+        // display the current click count inside the clicked div
+        if (term_state === term.WAITING) {
+            event.target.textContent = '';
+            term_state = term.LIVE;
+            acmsh = new ACMsh();
+            thread(acmsh);
+        }
+    }, false);
 </script>
