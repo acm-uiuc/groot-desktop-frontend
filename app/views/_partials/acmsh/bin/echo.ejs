@@ -1,0 +1,30 @@
+<script>
+/* How to write a program for ACMsh 
+* 
+* ACMsh runs on a single thread (thread) in the JS runtime
+* This thread is controlled by a terminal state variable term_state
+* ACMsh.exec() will set the term_state to EXEC, thereby giving control 
+* of the thread to the program. 
+* From this point you can use the console output by setting 
+* terminal.textContent 
+* or conduct other actions
+* 
+* Arguments to your program are provided in an array, quoted strings will 
+* be treated as one argument
+* 
+* Before returning, call the ACMsh.return() to return control back to the shell
+* If you need the console output to presist, pass a time in ms to the return function
+* to delay turnover by.
+*/
+
+function echo(args) {
+    if (args.length > 1) {
+        terminal.textContent = "ERR: Too many args"
+    } else if (args.length === 0) {
+        terminal.textContent = "ERR: missing args"
+    } else {
+        terminal.textContent = args[0];
+    }
+    ACMsh.return(1000);
+}
+</script>

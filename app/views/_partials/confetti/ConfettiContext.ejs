@@ -3,9 +3,12 @@ confetti = {};
 confetti.Context = function(id) {
     var i = 0;
     var canvas = document.getElementById(id);
+    this.canvas = document.getElementById(id);
     var canvasParent = canvas.parentNode;
     var canvasWidth = canvasParent.offsetWidth;
-    var canvasHeight = canvasParent.offsetHeight;
+    var canvasHeight = Math.max( canvasParent.scrollHeight, canvasParent.offsetHeight, 
+                                canvasParent.parentNode.clientHeight, canvasParent.parentNode.scrollHeight, 
+                                canvasParent.parentNode.offsetHeight);
     canvas.width = canvasWidth * retina;
     canvas.height = canvasHeight * retina;
     var context = canvas.getContext('2d');
@@ -31,7 +34,9 @@ confetti.Context = function(id) {
 
     this.resize = function() {
         canvasWidth = canvasParent.offsetWidth;
-        canvasHeight = canvasParent.offsetHeight;
+        canvasHeight = Math.max(canvasParent.scrollHeight, canvasParent.offsetHeight, 
+                                canvasParent.parentNode.clientHeight, canvasParent.parentNode.scrollHeight, 
+                                canvasParent.parentNode.offsetHeight );
         canvas.width = canvasWidth * retina;
         canvas.height = canvasHeight * retina;
         ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
@@ -40,12 +45,15 @@ confetti.Context = function(id) {
     }
 
     this.start = function() {
-        this.stop()
+        this.canvas.setAttribute("display","block");
+        console.log("running");
+        cAF(this.interval);
         this.update();
     }
     
     this.stop = function() {
         cAF(this.interval);
+        this.canvas.style.display = "none";
     }
 
     this.update = function() {
