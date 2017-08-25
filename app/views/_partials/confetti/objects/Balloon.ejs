@@ -1,0 +1,105 @@
+<script type="text/javascript">
+class Balloon {
+    constructor(_x, _y) {
+        this.pos = new Vector2(_x, _y);
+        this.rotationSpeed = (random() * 600 + 800);
+        this.angle = DEG_TO_RAD * random() * 360;
+        this.rotation = DEG_TO_RAD * random() * 360;
+        this.cosA = 1.0;
+        this.size = 5.0;
+        this.oscillationSpeed = (random() * 1.5 + 0.5);
+        this.xSpeed = 40.0;
+        this.ySpeed = (random() * 30 + 50.0) * -1;
+        this.corners = new Array();
+        this.time = random();
+        var ci = round(random() * (colors.length - 1));
+        this.frontColor = colors[ci][0];
+        this.backColor = colors[ci][1];
+        for (var i = 0; i < 4; i++) {
+            var dx = cos(this.angle + DEG_TO_RAD * (i * 90 + 45));
+            var dy = sin(this.angle + DEG_TO_RAD * (i * 90 + 45));
+            this.corners[i] = new Vector2(dx, dy);
+        }
+    }
+
+    Update(_dt) {
+        this.time += _dt;
+        this.rotation += this.rotationSpeed * _dt;
+        this.pos.x += cos(this.time * this.oscillationSpeed) * this.xSpeed * _dt;
+        this.pos.y += this.ySpeed * _dt;
+        if (this.pos.y < -50) {
+            this.pos.x = random() * Balloon.bounds.x;
+            this.pos.y = Balloon.bounds.y + 25;
+        }
+    }
+
+    Draw(_g) {
+        var centerX = (this.pos.x + this.corners[0].x * this.size) * retina;
+        var centerY = (this.pos.y + this.corners[0].y * this.size) * retina;
+        
+        var widthDiff = (radius * width_factor);
+        var heightDiff = (radius * height_factor);
+        var balloonBottomY = centerY + radius + heightDiff;
+        
+        // Begin balloon path
+        _g.beginPath();
+
+        // Top Left Curve
+        var topLeftCurveStartX = centerX - radius;
+        var topLeftCurveStartY = centerY;
+        var topLeftCurveEndX = centerX;
+        var topLeftCurveEndY = centerY - radius;
+        _g.moveTo(topLeftCurveStartX, topLeftCurveStartY);
+        _g.bezierCurveTo(topLeftCurveStartX, topLeftCurveStartY - handleLength - widthDiff,
+                                topLeftCurveEndX - handleLength, topLeftCurveEndY,
+                                topLeftCurveEndX, topLeftCurveEndY);
+        // Top Right Curve
+        var topRightCurveStartX = centerX;
+        var topRightCurveStartY = centerY - radius;
+        var topRightCurveEndX = centerX + radius;
+        var topRightCurveEndY = centerY;
+        _g.bezierCurveTo(topRightCurveStartX + handleLength + widthDiff, topRightCurveStartY,
+                                topRightCurveEndX, topRightCurveEndY - handleLength,
+                                topRightCurveEndX, topRightCurveEndY);    
+        // Bottom Right Curve
+        var bottomRightCurveStartX = centerX + radius;
+        var bottomRightCurveStartY = centerY;
+        var bottomRightCurveEndX = centerX;
+        var bottomRightCurveEndY = balloonBottomY;
+        _g.bezierCurveTo(bottomRightCurveStartX, bottomRightCurveStartY + handleLength,
+                                bottomRightCurveEndX + handleLength, bottomRightCurveEndY,
+                                bottomRightCurveEndX, bottomRightCurveEndY);							
+        // Bottom Left Curve
+        var bottomLeftCurveStartX = centerX;
+        var bottomLeftCurveStartY = balloonBottomY;
+        var bottomLeftCurveEndX = centerX - radius;
+        var bottomLeftCurveEndY = centerY;
+        _g.bezierCurveTo(bottomLeftCurveStartX - handleLength, bottomLeftCurveStartY,
+                                bottomLeftCurveEndX, bottomLeftCurveEndY + handleLength,
+                                bottomLeftCurveEndX, bottomLeftCurveEndY);
+        // Create balloon gradient
+        var gradientOffset = (radius/3);
+        var balloonGradient =
+            _g.createRadialGradient(centerX + gradientOffset, centerY - gradientOffset,
+                                            graident_circle_radius,
+                                            centerX, centerY, radius + heightDiff);
+        balloonGradient.addColorStop(0, this.frontColor);
+        balloonGradient.addColorStop(0.7, this.backColor);
+        
+        _g.fillStyle = balloonGradient;
+        _g.fill();
+        // Create balloon tie
+        var halfTieWidth = (radius * tie_width_factor)/2;
+        var tieHeight = (radius * tie_height_factor);
+        var tieCurveHeight = (radius * tie_curve_factor);
+        _g.beginPath();
+        _g.moveTo(centerX - 1, balloonBottomY);
+        _g.lineTo(centerX - halfTieWidth, balloonBottomY + tieHeight);
+        _g.quadraticCurveTo(centerX, balloonBottomY + tieCurveHeight,
+                                    centerX + halfTieWidth, balloonBottomY + tieHeight);
+        _g.lineTo(centerX + 1, balloonBottomY);
+        _g.fill();
+    }
+}
+Balloon.bounds = new Vector2(0, 0);
+</script>

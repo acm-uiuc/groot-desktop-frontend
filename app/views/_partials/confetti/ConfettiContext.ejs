@@ -1,0 +1,75 @@
+<script type="text/javascript">
+confetti = {};
+confetti.Context = function(id) {
+    var i = 0;
+    var canvas = document.getElementById(id);
+    var canvasParent = canvas.parentNode;
+    var canvasWidth = canvasParent.offsetWidth;
+    var canvasHeight = canvasParent.offsetHeight;
+    canvas.width = canvasWidth * retina;
+    canvas.height = canvasHeight * retina;
+    var context = canvas.getContext('2d');
+    var interval = null;
+
+    var confettiRibbons = new Array();
+    ConfettiRibbon.bounds = new Vector2(canvasWidth, canvasHeight);
+    for (i = 0; i < confettiRibbonCount; i++) {
+        confettiRibbons[i] = new ConfettiRibbon(random() * canvasWidth, -random() * canvasHeight * 2, ribbonPaperCount, ribbonPaperDist, ribbonPaperThick, 45, 1, 0.05);
+    }
+
+    var confettiPapers = new Array();
+    ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
+    for (i = 0; i < confettiPaperCount; i++) {
+        confettiPapers[i] = new ConfettiPaper(random() * canvasWidth, random() * canvasHeight);
+    }
+
+    var balloons = new Array();
+    Balloon.bounds = new Vector2(canvasWidth, canvasHeight);
+    for (i = 0; i < balloonCount; i++) {
+        balloons[i] = new Balloon(random() * canvasWidth, random() * canvasHeight);
+    }
+
+    this.resize = function() {
+        canvasWidth = canvasParent.offsetWidth;
+        canvasHeight = canvasParent.offsetHeight;
+        canvas.width = canvasWidth * retina;
+        canvas.height = canvasHeight * retina;
+        ConfettiPaper.bounds = new Vector2(canvasWidth, canvasHeight);
+        ConfettiRibbon.bounds = new Vector2(canvasWidth, canvasHeight);
+        Balloon.bounds = new Vector2(canvasWidth, canvasHeight);
+    }
+
+    this.start = function() {
+        this.stop()
+        this.update();
+    }
+    
+    this.stop = function() {
+        cAF(this.interval);
+    }
+
+    this.update = function() {
+        var i = 0;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        for (i = 0; i < confettiPaperCount; i++) {
+            confettiPapers[i].Update(duration);
+            confettiPapers[i].Draw(context);
+        }
+    
+        for (i = 0; i < confettiRibbonCount; i++) {
+            confettiRibbons[i].Update(duration);
+            confettiRibbons[i].Draw(context);
+        }
+    
+        for (i = 0; i < balloonCount; i++) {
+            balloons[i].Update(duration);
+            balloons[i].Draw(context);
+        }
+    
+        this.interval = rAF(function() {
+            confetti.update();
+        });
+    }
+}
+var confetti = new confetti.Context('confetti');
+</script>
