@@ -101,10 +101,7 @@ class ACMsh {
         } else {
             term_state = term.WAITING;
             terminal.textContent = `command ${cmd} not found`;
-            setTimeout(function () {
-                    term_state = term.LIVE;
-                    thread(acmsh); //Note: this is hardcoded for groot, change to the instance of the shell
-            }, 1000);
+            ACMsh.return(1000);
         }
         this.input = ""
     }
