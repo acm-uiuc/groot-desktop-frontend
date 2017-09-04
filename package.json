@@ -4,7 +4,7 @@
   "description": "The Official ACM@UIUC Website",
   "author": "Groot Development Team <acm@illinois.edu>",
   "scripts": {
-    "start": "npm run build && node server.js",
+    "start": "npm run build && nodemon server.js",
     "build": "mkdirp public/css && lessc public/less/main.less > public/css/main.css",
     "lint": "node_modules/eslint/bin/eslint.js server.js app/controllers/*.js etc/utils.js"
   },
@@ -26,6 +26,7 @@
     "graceful-fs": "^4.1.10",
     "moment": "^2.17.1",
     "nodemailer": "^2.7.0",
+    "nodemon": "^1.11.0",
     "path": "^0.12.7",
     "request": "^2.75.0",
     "winston": "^2.3.0"
