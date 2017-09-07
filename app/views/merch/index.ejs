@@ -29,21 +29,25 @@ this license in a file with the distribution.
         </a>
         <% if (locations[i].item == null) { %>
             <h5><%= locations[i].location %>: Unassigned</h5>
-            <a href="items/<%= locations[i].location %>/new">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-                Assign to item
-            </a>
+            <% if (roles.isAdmin || roles.isTop4) { %>
+                <a href="items/<%= locations[i].location %>/new">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                    Assign to item
+                </a>
+            <% } %>
         <% } else { %>
             <h5><%= locations[i].location %>: <%= locations[i].quantity %> of <%= locations[i].item.name %></h5>
-            <a href="items/<%= locations[i].item.id %>/<%= locations[i].location %>/edit">
-                <i class="fa fa-pencil" aria-hidden="true"></i>
-                Edit
-            </a>
-            <br/>
-            <a href="#" onclick="clearItem('<%= locations[i].location %>');">
-                <i class="fa fa-trash" aria-hidden="true"></i>
-                Delete
-            </a>
+            <% if (roles.isAdmin || roles.isTop4) { %>
+                <a href="items/<%= locations[i].item.id %>/<%= locations[i].location %>/edit">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Edit
+                </a>
+                <br/>
+                <a href="#" onclick="clearItem('<%= locations[i].location %>');">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    Delete
+                </a>
+            <% } %>
         <% } %>
         </div>
     <% } %>

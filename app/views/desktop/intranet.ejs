@@ -35,13 +35,17 @@ this license in a file with the distribution.
         <% } %>
       </div>
     </div>
-    <div class="intranet-card-container">
-      <% if (session.roles.isAdmin || session.roles.isTop4) { %>
-        <div class="intranet-card card">
-            <h3>Merch</h3>
+    <div class="intranet-card-container">      
+      <div class="intranet-card card">
+          <h3>Merch</h3>
+          <% if (session.roles.isAdmin || session.roles.isTop4) { %>
             <p>View and maintain available items</p>
-            <a href="/intranet/merch/items"><button class="button">Manage</button></a>
-        </div>
+          <% } else { %>
+            <p>View available items to vend</p>
+          <% } %>
+          <a href="/intranet/merch/items"><button class="button">View items</button></a>
+      </div>
+      <% if (session.roles.isAdmin || session.roles.isTop4) { %>
         <div class="intranet-card card">
           <h3>User Manager</h3>
           <p>View and maintain current and pending ACM users</p>
