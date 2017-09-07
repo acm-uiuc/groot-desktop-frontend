@@ -15,10 +15,8 @@ const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
   app.get('/intranet/merch/items', function(req, res) {
-    if(!req.session.roles.isAdmin && !req.session.roles.isTop4 && !req.session.roles.isCorporate) {
-      res.redirect('/intranet');
-    }
-
+    // Let any user view items that are vended, but restrict them from modifying the contents of the items
+    
     request({
       url: `${SERVICES_URL}/merch/locations`,
       method: "GET",
@@ -29,6 +27,7 @@ module.exports = function(app) {
     }, function(error, response, body) {
       res.render('merch/index.ejs', {
         authenticated: utils.isAuthenticated(req),
+        roles: req.session.roles,
         locations: body.data,
         success: req.flash('success'),
         errors: req.flash('error')
