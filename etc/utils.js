@@ -75,6 +75,7 @@ exports.getUserData = function(req, res, nextSteps){
     if(body && body[0] != undefined) {
       req.session.student.firstName = body[0].first_name;
       req.session.student.lastName = body[0].last_name;
+      req.session.student.isPaid = body[0].is_member;
       req.session.username = req.session.student.firstName;
     }
     nextSteps(req, res);

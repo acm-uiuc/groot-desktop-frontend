@@ -130,6 +130,10 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
+
+  if(!req.session.student.isPaid) {
+    return res.redirect('/unpaid');
+  }
   
   if (req.session.roles.isRecruiter) {
     return res.render('desktop/intranet', {

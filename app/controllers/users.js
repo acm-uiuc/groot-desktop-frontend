@@ -93,6 +93,30 @@ module.exports = function(app) {
     });
   });
 
+  app.get('/join', function(req, res) {
+    if(utils.isAuthenticated(req)) {
+      return res.redirect('/intranet');
+    }
+
+    request({
+      url: `${SERVICES_URL}/groups/sigs`,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      },
+      method: "GET",
+    }, function(err, response, body) {
+      if (err || !response || response.statusCode != 200) {
+        return res.status(500).send(err);
+      }
+      res.render('users/join', {
+        authenticated: false,
+        sigs: JSON.parse(body),
+        messages: req.flash('success'),
+        errors: req.flash('error')
+      });
+    });
+  });
+
   app.post('/join', function(req, res) {
     request({
       url: `${SERVICES_URL}/users`,
@@ -109,6 +133,14 @@ module.exports = function(app) {
         req.flash('success', body.message);
       }
       res.redirect('/join');
+    });
+  });
+
+  app.get('/unpaid', function(req, res) {
+    return res.render('users/unpaid', {
+      authenticated: utils.isAuthenticated(req),
+      messages: req.flash('success'),
+      errors: req.flash('error')
     });
   });
 
@@ -130,7 +162,8 @@ module.exports = function(app) {
           first_name: body.data.first_name,
           last_name: body.data.last_name,
           token: body.data.token,
-          netid: body.data.netid
+          netid: body.data.netid,
+          isPaid: body.data.is_member
         };
         req.session.username = req.session.student.first_name;
         req.session.roles.isStudent = true;

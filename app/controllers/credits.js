@@ -13,6 +13,7 @@ const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || "TEMP_STRING";
 const request = require('request');
 const moment = require('moment');
+const utils = require('../../etc/utils.js');
 
 function makeUserPaid(req, res, nextSteps) {
   request({
@@ -26,7 +27,9 @@ function makeUserPaid(req, res, nextSteps) {
       req.flash('error', "Unable to make user a paid user. Talk to someone in ACM Admin.");
       return req.redirect("/");
     }
-    nextSteps(req, res);
+    utils.getUserData(req, res, function(req, res) {
+      nextSteps(req, res);
+    });
   });
 }
 
@@ -185,14 +188,21 @@ module.exports = function(app){
     });
   });
   app.get('/credits/purchaseMembership', function(req, res) {
-    // TODO: Redirect if not a 'pre-member'
+    // Redirect if not a 'pre-member'
+    if(req.session.student.isPaid) {
+      return res.redirect('/intranet');
+    }
+
     res.render('credits/credits_purchase_membership', {
       authenticated: true,
       stripePublishableKey: STRIPE_PUBLISHABLE_KEY
     });
   });
   app.post('/credits/purchaseMembership', function(req, res) {
-    // TODO: Redirect if not a 'pre-member'
+    // Redirect if not a 'pre-member'
+    if(req.session.student.isPaid) {
+      return res.redirect('/intranet');
+    }
 
     // Sanity checks
     if(!req.body.stripeToken) {
