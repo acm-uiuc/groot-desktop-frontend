@@ -14,30 +14,6 @@ const request = require('request');
 const utils = require('../../etc/utils.js');
 
 module.exports = function(app) {
-  app.get('/join', function(req, res) {
-    if(utils.isAuthenticated(req)) {
-      return res.redirect('/intranet');
-    }
-
-    request({
-      url: `${SERVICES_URL}/groups/sigs`,
-      headers: {
-        "Authorization": GROOT_ACCESS_TOKEN
-      },
-      method: "GET",
-    }, function(err, response, body) {
-      if (err || !response || response.statusCode != 200) {
-        return res.status(500).send(err);
-      }
-      res.render('users/join', {
-        authenticated: false,
-        sigs: JSON.parse(body),
-        messages: req.flash('success'),
-        errors: req.flash('error')
-      });
-    });
-  });
-
   app.get('/sigs', function(req, res) {
     request({
       url: `${SERVICES_URL}/groups/sigs`,
