@@ -1,9 +1,9 @@
 <script>
 
-    if (!String.prototype.splice) {
-        String.prototype.splice = function(start, delCount, newSubStr) {
-            return this.slice(0, start) + newSubStr + this.slice(start + Math.abs(delCount));
-        };
+    function formatDate(date) {
+      var d = new Date(date);
+      return d.toLocaleString("en", { month: "short" }) + ' ' +
+             d.toLocaleString("en", { day: "numeric" });
     }
 
     $.ajax({
@@ -13,31 +13,31 @@
             $('.fb_events').empty();
             for (var event of events) {
                 var sameDate = (
-                    new Date(event.start_time).toISOString().split("T")[0] == 
-                    new Date(event.end_time).toISOString().split("T")[0]
+                    event.start_time.split(",")[0] ==
+                    event.end_time.split(",")[0]
                 );
                 var location = (event.place) ? "<li>" + event.place.name + "</li>": "";
-                
+                var shortStartDate = formatDate(event.start_time);
+                var shortEndDate = formatDate(event.end_time);
+
                 if (sameDate) {
-                    var startDate = event.start_time.split(", ")[0];
-                    startDate = startDate.splice(startDate.length - 5, 0, ",");
                     var startTime = event.start_time.split(", ")[1] + " - " + event.end_time.split(", ")[1]
                     $('.fb_events').append(
                         "<div class='event'> \
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
                             <ul class='dashed'> \
-                                <li>" + startDate + "<br/>" + startTime + "</li> \
+                                <li>" + shortStartDate + ": " + startTime + "</li> \
                                 " + location + "\
                             </ul> \
                         </div>"
                     );
                 } else {
-                    var startDate = event.start_time + " - " + event.end_time;
+                    var eventTime = shortStartDate + " - " + shortEndDate;
                     $('.fb_events').append(
                         "<div class='event'> \
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
                             <ul class='dashed'> \
-                                <li>" + startDate + "</li> \
+                                <li>" + eventTime + "</li> \
                                 " + location + "\
                             </ul> \
                         </div>"
