@@ -1,0 +1,45 @@
+<%- include('confetti/Constants') -%>
+<%- include('confetti/Vector2') -%>
+<%- include('confetti/EulersMass') -%>
+<%- include('confetti/objects/ConfettiPaper') -%>
+<%- include('confetti/objects/ConfettiRibbon') -%>
+<%- include('confetti/objects/Balloon') -%>
+<%- include('confetti/ConfettiContext') -%>
+
+<script type="text/javascript">
+// Local WindowAnimationTiming interface polyfill
+(function (w) {
+    /**
+    * Fallback implementation.
+    */
+    var prev = new Date().getTime();
+    function fallback(fn) {
+        var curr = _now();
+        var ms = Math.max(0, 16 - (curr - prev));
+        var req = setTimeout(fn, ms);
+        prev = curr;
+        return req;
+    }
+
+    /**
+    * Cancel.
+    */
+    var cancel = w.cancelAnimationFrame
+        || w.webkitCancelAnimationFrame
+        || w.clearTimeout;
+
+    rAF = w.requestAnimationFrame
+        || w.webkitRequestAnimationFrame
+        || fallback;
+
+    cAF = function(id){
+        cancel.call(w, id);
+    };
+}(window));
+
+document.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener('resize', function(event){
+        confetti.resize();
+    });
+});
+</script>

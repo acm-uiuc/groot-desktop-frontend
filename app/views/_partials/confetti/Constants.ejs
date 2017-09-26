@@ -1,0 +1,46 @@
+<script type="text/javascript">
+var retina = window.devicePixelRatio,
+
+// Math shorthands
+PI = Math.PI,
+sqrt = Math.sqrt,
+round = Math.round,
+random = Math.random,
+cos = Math.cos,
+sin = Math.sin,
+kappa = (4 * (sqrt(2) - 1))/3
+
+// Local WindowAnimationTiming interface
+rAF = window.requestAnimationFrame,
+cAF = window.cancelAnimationFrame || window.cancelRequestAnimationFrame;
+
+var speed = 50,
+duration = (1.0 / speed),
+confettiRibbonCount = 11,
+ribbonPaperCount = 30,
+ribbonPaperDist = 8.0,
+ribbonPaperThick = 8.0,
+confettiPaperCount = 95,
+balloonCount = 10,
+radius = 50,
+width_factor = 0.0333;
+height_factor = 0.4;
+tie_width_factor = 0.12;
+tie_height_factor = 0.10;
+tie_curve_factor = 0.13;
+gradient_factor = 0.3;
+gradient_circle_radius = 3;
+handleLength = kappa * radius
+DEG_TO_RAD = PI / 180,
+RAD_TO_DEG = 180 / PI,
+colors = [
+    ["#1abc9c", "#16a085"],
+    ["#2ecc71", "#27ae60"],
+    ["#3498db", "#2980b9"],
+    ["#f1c40f", "#f39c12"],
+    ["#2ecc71", "#27ae60"],
+    ["#e67e22", "#d35400"],
+    ["#e74c3c", "#c0392b"],
+    ["#9b59b6", "#8e44ad"]
+];
+</script>
