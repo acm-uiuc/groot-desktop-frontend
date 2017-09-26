@@ -13,26 +13,29 @@
             $('.fb_events').empty();
             for (var event of events) {
                 var sameDate = (
-                    event.start_time.split(",")[0] ==
-                    event.end_time.split(",")[0]
+                    !event.end_time ||
+                    (event.start_time.split(",")[0] ==
+                    event.end_time.split(",")[0])
                 );
                 var location = (event.place) ? "<li>" + event.place.name + "</li>": "";
                 var shortStartDate = formatDate(event.start_time);
-                var shortEndDate = formatDate(event.end_time);
+                var shortEndDate = event.end_time ? formatDate(event.end_time) : '';
 
                 if (sameDate) {
-                    var startTime = event.start_time.split(", ")[1] + " - " + event.end_time.split(", ")[1]
+                    var endTime = event.end_time ? event.end_time.split(", ")[1] : "";
+                    var startTime = event.start_time.split(", ")[1]
+                    var eventTime = startTime + (endTime ? " - " + endTime : "");
                     $('.fb_events').append(
                         "<div class='event'> \
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
                             <ul class='dashed'> \
-                                <li>" + shortStartDate + ": " + startTime + "</li> \
+                                <li>" + shortStartDate + ": " + eventTime + "</li> \
                                 " + location + "\
                             </ul> \
                         </div>"
                     );
                 } else {
-                    var eventTime = shortStartDate + " - " + shortEndDate;
+                    var eventTime = shortStartDate + (shortEndDate ? " - " + shortEndDate : "");
                     $('.fb_events').append(
                         "<div class='event'> \
                             <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
