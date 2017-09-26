@@ -1,0 +1,48 @@
+<%- include('acmsh/acmsh') -%>
+<%- include('acmsh/bin/bin') -%>
+<script>
+    const term = Object.freeze({HEADER:  0,
+                                WAITING: 1,
+                                LIVE:    2,
+                                EXEC:    3});
+
+    term_state = term.HEADER;
+    terminal = document.getElementById("shell");
+    acmsh = null;
+
+    (function() {
+        var message_str = " 50 Years of ACM@UIUC"
+        var showText = function(target, message, index, interval) {
+            if (index < message.length) {
+                $(target).append(message[index++]);
+                setTimeout(function() {
+                    showText(target, message, index, interval);
+                }, interval);
+            } else {
+                term_state = term.WAITING;
+            }
+        }
+        $(function() {
+            showText("#shell", message_str, -1, 75);
+        });
+    })()
+
+    var thread = function(sh) {
+        setTimeout(function() {
+            if (term_state === term.LIVE) {
+                sh.shell();
+                thread(sh);
+            }
+        }, 125);
+    }
+
+    terminal.addEventListener("click", function( event ) {
+        // display the current click count inside the clicked div
+        if (term_state === term.WAITING) {
+            event.target.textContent = '';
+            term_state = term.LIVE;
+            acmsh = new ACMsh();
+            thread(acmsh);
+        }
+    }, false);
+</script>

@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <meta property="og:title" content="Association for Computing Machinery - University of Illinois Urbana-Champaign" />
-    <meta property="og:image" content="http://acm.illinois.edu/images/acm-logo-flat-og.png" />
+    <meta property="og:image" content="http://acm.illinois.edu/images/acm-logo-flat-50years.png" />
     <meta property="og:description" content="The Official Website of ACM@UIUC" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation.min.css" />
@@ -34,17 +34,29 @@
 </head>
 
 <body>
+    <canvas id="confetti" width="1" height="1"></canvas>
     <div class="viewbox">
         <div class="top-bar nav">
             <div class="desktop">
                 <div class="top-bar-left">
                     <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-                        <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="/images/acm-logo-flat.svg" class="logo"/>
-                    <h3 id="title-text">ACM@UIUC</h3></a></span>
+                        <li class="menu-text">
+                            <span id="title">
+                                <a id="nav-home" href="/">
+                                    <img src="/images/acm-logo-flat-50years.svg" class="logo" id="header-logo"/>
+                                    <h3 id="title-text">ACM@UIUC</h3></br>
+                                    <h5 id="years">50 Years</h5>
+                                </a>
+                            </span>
                         </li>
                         <li class="nav-loc">
                             <a href="/about"> About </a>
                         </li>
+                        <!--
+                        <li class="nav-loc">
+                            <a href="/about/history">History</a> After anniversery move this from nav bar 
+                        </li>
+                        -->
                         <li class="nav-loc">
                             <a href="/sigs">SIGs</a>
                         </li>
@@ -91,7 +103,7 @@
             <div class="mobile">
                 <div class="top-bar-left mobile-left">
                     <ul data-dropdown-menu="data-dropdown-menu" class="dropdown menu">
-                        <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="/images/acm-logo-flat.svg" class="logo"/>
+                        <li class="menu-text"><span id="title"><a id="nav-home" href="/"><img src="/images/acm-logo-flat-50years.svg" class="logo"/>
                             <h3 id="title-text">ACM@UIUC</h3></a></span>
                         </li>
                     </ul>
@@ -115,6 +127,9 @@
                     </li>
                     <li class="nav-loc-side">
                         <a href="/about"> About </a>
+                    </li>
+                    <li class="nav-loc-side">
+                        <a href="/about/history"> History </a> <!-- After anniversery move this from nav bar -->
                     </li>
                     <li class="nav-loc-side">
                         <a href="/sigs">SIGs</a>
