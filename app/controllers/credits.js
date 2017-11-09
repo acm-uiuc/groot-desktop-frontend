@@ -19,14 +19,17 @@ function makeUserPaid(req, res, netid, nextSteps) {
     method:"PUT",
     url: `${SERVICES_URL}/users/${netid}/paid`,
     headers: {
-      "Authorization": GROOT_ACCESS_TOKEN
-    }
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Accept": "application/json"
+    },
+    json: true,
+    body: {}
   }, function(error, response) {
     if(error || response.statusCode != 200) {
       req.flash('error', "Unable to make user a paid user. Talk to someone in ACM Admin.");
       return res.redirect("/");
     }
-    nextSteps(req, res);
+    return nextSteps(req, res);
   });
 }
 
@@ -252,7 +255,9 @@ module.exports = function(app){
         // Make user a paid user
         makeUserPaid(req, res, req.body.netid, function() {
           req.flash('success', "Success! Your membership fee is being processed.");
-          return res.redirect('/');
+          return res.render('credits/credits_membership_success', {
+            authenticated: false
+          });
         });
       }
     });
