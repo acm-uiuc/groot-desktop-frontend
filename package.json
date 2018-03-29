@@ -26,7 +26,6 @@
     "graceful-fs": "^4.1.10",
     "moment": "^2.21.0",
     "nodemailer": "^2.7.0",
-    "nodemon": "^1.11.0",
     "path": "^0.12.7",
     "request": "^2.75.0",
     "winston": "^2.3.0"
