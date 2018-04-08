@@ -72,6 +72,14 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/about/history', function(req, res) {
+  res.render('desktop/history', {
+    authenticated: utils.isAuthenticated(req),
+    messages: req.flash('success'),
+    errors: req.flash('error')
+  });
+});
+
 app.get('/login', function(req, res) {
   if (utils.isAuthenticated(req)) {
     return res.redirect('intranet');
@@ -118,7 +126,8 @@ app.get('/hackillinois', function(req, res) {
   res.render('desktop/hackillinois', {
     authenticated: utils.isAuthenticated(req),
     editions: [
-      { year: '2017', path: 'https://hackillinois.org' }, 
+      { year: '2018', path: 'https://2018.hackillinois.org' },
+      { year: '2017', path: 'https://2017.hackillinois.org' }, 
       { year: '2016', path: 'https://2016.hackillinois.org' },
       { year: '2015', path: 'https://2015.hackillinois.org' },
       { year: '2014', path: 'https://2014.hackillinois.org' },  
