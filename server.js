@@ -1,8 +1,8 @@
 /**
 * Copyright © 2017, ACM@UIUC
 *
-* This file is part of the Groot Project.  
-* 
+* This file is part of the Groot Project.
+*
 * The Groot Project is open source software, released under the University of
 * Illinois/NCSA Open Source License. You should have received a copy of
 * this license in a file with the distribution.
@@ -55,6 +55,11 @@ app.use(function(req, res, next){ //mainly for the inital load, setting initial 
       isRecruiter: false
     };
   }
+  if (!req.session.rp) {
+    req.session.rp = {
+      jwtAuth: null
+    };
+  }
   next();
 });
 
@@ -84,7 +89,7 @@ app.get('/login', function(req, res) {
   if (utils.isAuthenticated(req)) {
     return res.redirect('intranet');
   }
-  
+
   res.render('users/login', {
     authenticated: false,
     errors: req.flash('error')
@@ -128,10 +133,10 @@ app.get('/hackillinois', function(req, res) {
     authenticated: utils.isAuthenticated(req),
     editions: [
       { year: '2018', path: 'https://2018.hackillinois.org' },
-      { year: '2017', path: 'https://2017.hackillinois.org' }, 
+      { year: '2017', path: 'https://2017.hackillinois.org' },
       { year: '2016', path: 'https://2016.hackillinois.org' },
       { year: '2015', path: 'https://2015.hackillinois.org' },
-      { year: '2014', path: 'https://2014.hackillinois.org' },  
+      { year: '2014', path: 'https://2014.hackillinois.org' },
     ]
   });
 });
@@ -140,7 +145,7 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
-  
+
   if (req.session.roles.isRecruiter) {
     return res.render('desktop/intranet', {
       authenticated: utils.isAuthenticated(req),
@@ -225,7 +230,7 @@ app.get('/sponsors/reset_password', function(req, res) {
   });
 });
 
-app.get('/corporate/careerweek/2017', function(req, res) { 
+app.get('/corporate/careerweek/2017', function(req, res) {
   if (!utils.isAuthenticated(req)) {
     res.redirect('/sponsors/login');
   } else if (!req.session.roles.isRecruiter || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor)) {
@@ -246,6 +251,7 @@ require('./app/controllers/memes.js')(app);
 require('./app/controllers/merch.js')(app);
 require('./app/controllers/quotes.js')(app);
 require('./app/controllers/recruiters.js')(app);
+require('./app/controllers/rp.js')(app);
 require('./app/controllers/users.js')(app);
 
 app.use(express.static(__dirname + '/public'));
