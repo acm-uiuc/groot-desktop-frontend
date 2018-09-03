@@ -1,0 +1,52 @@
+<script>
+
+    function formatDate(date) {
+      var d = new Date(date);
+      return d.toLocaleString("en", { month: "short" }) + ' ' +
+             d.toLocaleString("en", { day: "numeric" });
+    }
+
+    $.ajax({
+        url: "/events/upcoming",
+        method: "GET",
+        success: function(events) {
+            $('.fb_events').empty();
+            for (var event of events) {
+                var sameDate = (
+                    !event.end_time ||
+                    (event.start_time.split(",")[0] ==
+                    event.end_time.split(",")[0])
+                );
+                var location = (event.place) ? "<li>" + event.place.name + "</li>": "";
+                var shortStartDate = formatDate(event.start_time);
+                var shortEndDate = event.end_time ? formatDate(event.end_time) : '';
+
+                if (sameDate) {
+                    var endTime = event.end_time ? event.end_time.split(", ")[1] : "";
+                    var startTime = event.start_time.split(", ")[1]
+                    var eventTime = startTime + (endTime ? " - " + endTime : "");
+                    $('.fb_events').append(
+                        "<div class='event'> \
+                            <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
+                            <ul class='dashed'> \
+                                <li>" + shortStartDate + ": " + eventTime + "</li> \
+                                " + location + "\
+                            </ul> \
+                        </div>"
+                    );
+                } else {
+                    var eventTime = shortStartDate + (shortEndDate ? " - " + shortEndDate : "");
+                    $('.fb_events').append(
+                        "<div class='event'> \
+                            <h5><a href='" + event.url + "'>" + event.name + "</a></h5> \
+                            <ul class='dashed'> \
+                                <li>" + eventTime + "</li> \
+                                " + location + "\
+                            </ul> \
+                        </div>"
+                    );
+                }
+            }
+        }
+    });
+</script>
