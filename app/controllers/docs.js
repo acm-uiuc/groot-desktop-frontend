@@ -15,7 +15,7 @@ const request = require('request');
 module.exports = function(app) {
   app.get('/docs', function(req, res) {
     request({
-      url: `${SERVICES_URL}/events/upcoming`,
+      url: `${SERVICES_URL}/docs`,
       method: "GET",
       json: true,
       headers: {
@@ -23,7 +23,9 @@ module.exports = function(app) {
       }
     }, function(error, response, body) {
       if (response && response.statusCode == 200) {
-        res.json(body);
+        res.render('acm_docs/docs', {
+          authenticated: true,
+        });    
       }
     });
   });
