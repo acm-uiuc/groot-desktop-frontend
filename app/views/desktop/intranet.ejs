@@ -35,7 +35,7 @@ this license in a file with the distribution.
         <% } %>
       </div>
     </div>
-    <div class="intranet-card-container">      
+    <div class="intranet-card-container">
       <div class="intranet-card card">
           <h3>Merch</h3>
           <% if (session.roles.isAdmin || session.roles.isTop4) { %>
@@ -69,12 +69,22 @@ this license in a file with the distribution.
           <p>View and filter student resumes</p>
           <a href="corporate/resumes"><button class="button">View Resumes</button></a>
         </div>
-      <% } %>    
+        <div class="intranet-card card">
+          <h3>R|P Resume Database</h3>
+          <p>View and filter R|P resumes</p>
+          <a href="rp/resumes"><button class="button">View Resumes</button></a>
+        </div>
+      <% } %>
       <% if (session.roles.isRecruiter && session.recruiter.is_sponsor) { %>
         <div class="intranet-card card">
           <h3>Resume Database</h3>
           <p>View and filter student resumes</p><a href="corporate/resumes">
           <button class="button">View Resumes</button></a>
+        </div>
+        <div class="intranet-card card">
+          <h3>R|P Resume Database</h3>
+          <p>View and filter R|P resumes</p>
+          <a href="corporate/rp_resumes"><button class="button">View Resumes</button></a>
         </div>
 
         <div class="intranet-card card">
@@ -219,7 +229,7 @@ this license in a file with the distribution.
           <ul class="dashed">
             <li><a href="http://steamcommunity.com/groups/acmuiuc">ACM Steam</a></li>
           </ul>
-        </div> 
+        </div>
         <div class="event">
           <ul class="dashed">
             <li><a href="https://www.reddit.com/r/acmuiuc">ACM Subreddit</a></li>
@@ -242,5 +252,3 @@ this license in a file with the distribution.
 <div class="footer_padding">
 </div>
 <%- include('../_partials/footer') -%>
-
-
