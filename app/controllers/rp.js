@@ -9,8 +9,7 @@
 **/
 
 const SERVICES_URL = process.env.SERVICES_URL || 'http://localhost:8000';
-// const RP_URL = 'https://api.reflectionsprojections.org/';
-const RP_URL = 'https://17439b35.ngrok.io';
+const RP_URL = 'https://api.reflectionsprojections.org/';
 const GROOT_ACCESS_TOKEN = process.env.GROOT_ACCESS_TOKEN || "TEMP_STRING";
 const request = require('request');
 const Promise = require('promise');
@@ -22,7 +21,7 @@ function fetchRPResume(resume, jwtAuth) {
     let new_resume = Object.assign({}, resume);
     if (jwtAuth !== null) {
       request({
-        url: `https://ef7ff4e8.ngrok.io/upload/resume/${resume.netid}/`,
+        url: `${RP_URL}/upload/resume/${resume.netid}/`,
         method: 'GET',
         headers: {
           "Authorization": jwtAuth,
@@ -87,7 +86,7 @@ module.exports = function(app) {
     let authorizationCode = req.query.code;
     authorizationCode.concat("#");
     request({
-      url: `${RP_URL}/auth/code/google/?redirect_uri=http://localhost:5000/rp/login_2`,
+      url: `${RP_URL}/auth/code/google/?redirect_uri=https://acm.illinois.edu/rp/login_2`,
       method: "POST",
       json: true,
       body: { 'code': authorizationCode }
@@ -98,9 +97,9 @@ module.exports = function(app) {
   });
 
   app.get('/rp/resumes', function(req, res) {
-    // if(!(req.session.roles.isCorporate || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor))) {
-    //   res.redirect('/sponsors/login');
-    // }
+    if(!(req.session.roles.isCorporate || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor))) {
+      res.redirect('/sponsors/login');
+    }
 
     let jwtAuth = req.flash('jwtAuth');
     let newRpAuthenticated = JSON.stringify(jwtAuth) !== "[]";
@@ -112,7 +111,7 @@ module.exports = function(app) {
       res.render('rp/resume_filter', {
         authenticated: utils.isAuthenticated(req),
         rp_authenticated: req.session.rp.jwtAuth !== null,
-        rp_redirect_uri: `${RP_URL}/auth/google/?redirect_uri=http://localhost:5000/rp/login_2`,
+        rp_redirect_uri: `${RP_URL}/auth/google/?redirect_uri=https://acm.illinois.edu/rp/login_2`,
         job: utils.sponsorsScope.job,
         degree: utils.sponsorsScope.degree,
         grad: utils.sponsorsScope.grad,

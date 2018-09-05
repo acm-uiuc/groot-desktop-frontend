@@ -69,23 +69,23 @@ this license in a file with the distribution.
           <p>View and filter student resumes</p>
           <a href="corporate/resumes"><button class="button">View Resumes</button></a>
         </div>
+        <div class="intranet-card card">
+          <h3>R|P Resume Database</h3>
+          <p>View and filter R|P resumes</p>
+          <a href="rp/resumes"><button class="button">View Resumes</button></a>
+        </div>
       <% } %>
-      <div class="intranet-card card">
-        <h3>R|P Resume Database</h3>
-        <p>View and filter R|P resumes</p>
-        <a href="rp/resumes"><button class="button">View Resumes</button></a>
-      </div>
       <% if (session.roles.isRecruiter && session.recruiter.is_sponsor) { %>
         <div class="intranet-card card">
           <h3>Resume Database</h3>
           <p>View and filter student resumes</p><a href="corporate/resumes">
           <button class="button">View Resumes</button></a>
         </div>
-        <!-- <div class="intranet-card card">
+        <div class="intranet-card card">
           <h3>R|P Resume Database</h3>
           <p>View and filter R|P resumes</p>
           <a href="corporate/rp_resumes"><button class="button">View Resumes</button></a>
-        </div> -->
+        </div>
 
         <div class="intranet-card card">
           <h3>Create Job Listing</h3>
