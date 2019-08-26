@@ -1,8 +1,8 @@
 /**
 * Copyright © 2017, ACM@UIUC
 *
-* This file is part of the Groot Project.  
-* 
+* This file is part of the Groot Project.
+*
 * The Groot Project is open source software, released under the University of
 * Illinois/NCSA Open Source License. You should have received a copy of
 * this license in a file with the distribution.
@@ -84,41 +84,41 @@ app.get('/login', function(req, res) {
   if (utils.isAuthenticated(req)) {
     return res.redirect('intranet');
   }
-  
+
   res.render('users/login', {
     authenticated: false,
     errors: req.flash('error')
   });
 });
 
+// GitHub Pages links for R|P site archives. The sites that are commented out
+// are currently down, and should be uncommented once they are fixed.
 app.get('/conference', function(req, res) {
   res.render('desktop/conference', {
     authenticated: utils.isAuthenticated(req),
     editions: [
-      { year: '2018', path: 'https://www-s.acm.illinois.edu/conference/2018' },
-      { year: '2017', path: 'https://www-s.acm.illinois.edu/conference/2017' },
-      { year: '2016', path: 'https://www-s.acm.illinois.edu/conference/2016' },
-      { year: '2015', path: 'https://www-s.acm.illinois.edu/conference/2015' },
-      { year: '2014', path: 'https://www-s.acm.illinois.edu/conference/2014' },
-      { year: '2013', path: 'https://www-s.acm.illinois.edu/conference/2013' },
-      { year: '2012', path: 'https://www-s.acm.illinois.edu/conference/2012' },
-      { year: '2011', path: 'https://www-s.acm.illinois.edu/conference/2011' },
-      { year: '2010', path: 'https://www-s.acm.illinois.edu/conference/2010' },
-      { year: '2009', path: '#' },
-      { year: '2008', path: 'https://www-s.acm.illinois.edu/conference/2008' },
-      { year: '2007', path: 'https://www-s.acm.illinois.edu/conference/2007' },
-      { year: '2006', path: 'https://www-s.acm.illinois.edu/conference/2006' },
-      { year: '2005', path: '#' },
-      { year: '2004', path: '#' },
-      { year: '2003', path: 'https://www-s.acm.illinois.edu/conference/2003' },
-      { year: '2002', path: 'https://www-s.acm.illinois.edu/conference/2002' },
-      { year: '2001', path: 'https://www-s.acm.illinois.edu/conference/2001' },
-      { year: '2000', path: 'https://www-s.acm.illinois.edu/conference/2000' },
-      { year: '1999', path: 'https://www-s.acm.illinois.edu/conference/1999' },
-      { year: '1998', path: 'https://www-s.acm.illinois.edu/conference/1998' },
-      { year: '1997', path: 'https://www-s.acm.illinois.edu/conference/1997' },
-      { year: '1996', path: 'https://www-s.acm.illinois.edu/conference/1996' },
-      { year: '1995', path: 'https://www-s.acm.illinois.edu/conference/1995' },
+      { year: '2018', path: 'https://reflectionsprojections.github.io/rp2018' },
+      { year: '2017', path: 'https://reflectionsprojections.github.io/rp2017' },
+      { year: '2016', path: 'https://reflectionsprojections.github.io/rp2016' },
+      { year: '2015', path: 'https://reflectionsprojections.github.io/rp2015website' },
+      { year: '2014', path: 'https://reflectionsprojections.github.io/rp2014website' },
+      // { year: '2013', path: 'https://reflectionsprojections.github.io/rp2013' },
+      // { year: '2012', path: 'https://reflectionsprojections.github.io/mango-django' },
+      // { year: '2011', path: 'https://reflectionsprojections.github.io/rp2011_site' },
+      { year: '2010', path: 'https://reflectionsprojections.github.io/rp2010' },
+      { year: '2008', path: 'https://reflectionsprojections.github.io/rp2008' },
+      { year: '2007', path: 'https://reflectionsprojections.github.io/rp2007' },
+      // { year: '2006', path: 'https://reflectionsprojections.github.io/rp2006' },
+      // { year: '2004', path: 'https://reflectionsprojections.github.io/rp2004' },
+      { year: '2003', path: 'https://reflectionsprojections.github.io/rp2003' },
+      { year: '2002', path: 'https://reflectionsprojections.github.io/rp2002' },
+      { year: '2001', path: 'https://reflectionsprojections.github.io/rp2001' },
+      { year: '2000', path: 'https://reflectionsprojections.github.io/rp2000' },
+      { year: '1999', path: 'https://reflectionsprojections.github.io/rp1999' },
+      { year: '1998', path: 'https://reflectionsprojections.github.io/rp1998' },
+      { year: '1997', path: 'https://reflectionsprojections.github.io/rp1997' },
+      { year: '1996', path: 'https://reflectionsprojections.github.io/rp1996' },
+      { year: '1995', path: 'https://reflectionsprojections.github.io/rp1995' },
     ]
   });
 });
@@ -128,10 +128,10 @@ app.get('/hackillinois', function(req, res) {
     authenticated: utils.isAuthenticated(req),
     editions: [
       { year: '2018', path: 'https://2018.hackillinois.org' },
-      { year: '2017', path: 'https://2017.hackillinois.org' }, 
+      { year: '2017', path: 'https://2017.hackillinois.org' },
       { year: '2016', path: 'https://2016.hackillinois.org' },
       { year: '2015', path: 'https://2015.hackillinois.org' },
-      { year: '2014', path: 'https://2014.hackillinois.org' },  
+      { year: '2014', path: 'https://2014.hackillinois.org' },
     ]
   });
 });
@@ -140,7 +140,7 @@ app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');
   }
-  
+
   if (req.session.roles.isRecruiter) {
     return res.render('desktop/intranet', {
       authenticated: utils.isAuthenticated(req),
@@ -225,7 +225,7 @@ app.get('/sponsors/reset_password', function(req, res) {
   });
 });
 
-app.get('/corporate/careerweek/2017', function(req, res) { 
+app.get('/corporate/careerweek/2017', function(req, res) {
   if (!utils.isAuthenticated(req)) {
     res.redirect('/sponsors/login');
   } else if (!req.session.roles.isRecruiter || (req.session.roles.isRecruiter && req.session.recruiter.is_sponsor)) {
