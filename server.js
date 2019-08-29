@@ -136,6 +136,19 @@ app.get('/hackillinois', function(req, res) {
   });
 });
 
+app.get('/projects', function(req, res) {
+  res.render('desktop/projects', {
+    authenticated: utils.isAuthenticated(req),
+    editions: [
+			{ project: 'Groot', path: 'https://github.com/acm-uiuc/groot', desc: 'Groot is the next generation web application serving the UIUC Chapter of ACM.'},
+			{ project: 'Arbor', path: 'https://github.com/arbor-dev/arbor', desc: 'Arbor is a statically configured framework for creating API Gateways.'},
+			{ project: 'Concert', path: 'https://github.com/acm-uiuc/concert', desc: 'Concert is the new music system for the ACM Office.' },
+			{ project: 'GPU Cluster', path: 'https://github.com/acm-uiuc/gpu-cluster', desc:'The GPU Cluster allows students to provision containers and Jupyter Notebooks  with GPU access.' },
+			{ project: 'IlliniRACECAR', path: 'https://racecar.acm.illinois.edu', desc:'Illini RACECAR is a RC car robotics platform used by students to research robotics and reinforcement learning.' },
+    ]
+  });
+});
+
 app.get('/intranet', function(req, res) {
   if(!utils.isAuthenticated(req)) {
     return res.redirect('/login');

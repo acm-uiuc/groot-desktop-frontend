@@ -1,0 +1,43 @@
+<!--
+Copyright © 2017, ACM@UIUC
+
+This file is part of the Groot Project.  
+
+The Groot Project is open source software, released under the University of
+Illinois/NCSA Open Source License.  You should have received a copy of
+this license in a file with the distribution.
+-->
+
+<%- include('../_partials/header') -%>
+
+<div class="conference-container">
+<div class="row">
+  <div class="img-container small-12 medium-12 large-12 column col-centered"><img class="center_img" width="200px" src="../images/acm-logo-flat.svg"/></div>
+</div>
+<div class="row">
+  <p>
+    ACM Projects is the engineering group for ACM that builds useful and interesting projects that allow ACM to function and students to learn.
+  </p>
+</div>
+<div class="row title"><span>Projects</span></div>
+<div>
+  <div class="top-bar nav" border="0">
+    <table class="h-list" style="background-color:transparent">
+			<tbody>
+				<% for (var n of editions) { %>
+        	<tr>
+						<th>
+							<a href= <%= n.path %> > <%= n.project %> </a>
+						</th>
+						<td>
+							<%= n.desc%>
+						</td>
+        	</tr>
+      <% } %>
+	  </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<%- include('../_partials/footer') -%>
