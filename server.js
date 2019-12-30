@@ -127,6 +127,8 @@ app.get('/hackillinois', function(req, res) {
   res.render('desktop/hackillinois', {
     authenticated: utils.isAuthenticated(req),
     editions: [
+      { year: '2020', path: 'https://2020.hackillinois.org' },
+      { year: '2019', path: 'https://2019.hackillinois.org' },
       { year: '2018', path: 'https://2018.hackillinois.org' },
       { year: '2017', path: 'https://2017.hackillinois.org' },
       { year: '2016', path: 'https://2016.hackillinois.org' },
