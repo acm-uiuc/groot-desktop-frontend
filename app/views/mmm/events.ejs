@@ -71,18 +71,24 @@
         )
     };
 
-    const TextInput = ({ label, value, onChange }) => {
+    const TextInput = ({ label, value, multiline = false, maxLength = 128, onChange }) => {
         return (
             <div>
                 <h4 className="input-title">{label}</h4>
-                <input type="text" value={value} onChange={onChange} />
+
+                {multiline ? (
+                    <textarea className="text-area" maxlength={maxLength} value={value} onChange={onChange} />
+                ) : (
+                    <input className="text-input" maxlength={maxLength} type="text" value={value} onChange={onChange} />
+                )}
             </div>
-        )
+        );
     }
 
     const CreateForm = ({ student, sigs }) => {
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
+        const [eventDesc, setEventDesc] = React.useState("");
 
         const handleSubmit = () => {
             event.preventDefault();
@@ -97,6 +103,7 @@
                     </div>
 
                     <TextInput label="Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                    <TextInput label="Description" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
                 </form>
             </div>
         )
@@ -209,5 +216,14 @@
         font-family: "Open Sans";
         font-weight: 700;
         font-size: 14px;
+    }
+
+    .text-input {
+
+    }
+
+    .text-area {
+        resize: vertical;
+        min-height: 98px;
     }
 </style>
