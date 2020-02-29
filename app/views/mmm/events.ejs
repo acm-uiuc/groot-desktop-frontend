@@ -17,8 +17,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js" integrity="sha256-GBryZPfVv8G3K1Lu2QwcqQXAO4Szv4xlY4B/ftvyoMI=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js" integrity="sha256-FT1eN+60LmWX0J8P25UuTjEEE0ZYvpC07nnU6oFKFuI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.js" integrity="sha256-L9T+qE3Ms6Rsuxl+KwLST6a3R/2o6m33zB5mR2KyPjU=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css" integrity="sha256-Lfe6+s5LEek8iiZ31nXhcSez0nmOxP+3ssquHMR3Alo=" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css" integrity="sha256-AVsv7CEpB2Y1F7ZjQf0WI8SaEDCycSk4vnDRt0L2MNQ=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.css" integrity="sha256-DOWdbe6a1VwJwFpkimY6z5tW9mmrBNre2jZsAige5PE=" crossorigin="anonymous" />
 
 <!-- EJS connection -->
 <script type="text/javascript">
@@ -46,27 +48,22 @@
             const calendarEl = document.getElementById('calendar-mount');
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid']
+                plugins: ['dayGrid', 'timeGrid']
             });
 
             calendar.render();
         }, [events]);
 
-        return <div id="calendar-mount" />;
-    };
-
-    const Header = ({ name }) => {
         return (
-            <React.Fragment>
-                <p style={styles.greeting}>Hello {name}</p>
-                <p style={styles.title}>Choose an Organization:</p>
-            </React.Fragment>
+            <div className="calendar-wrapper">
+                <div id="calendar-mount" />
+            </div>
         );
     };
 
     const SigSelector = ({ sigs, value, onChange }) => {
         return (
-            <select value={value} onChange={onChange}>
+            <select style={styles.selector} value={value} onChange={onChange}>
                 {
                     sigs.map(sig => <option key={sig.name} value={sig.name}>{sig.name}</option>)
                 }
@@ -74,7 +71,16 @@
         )
     };
 
-    const CreateForm = ({ sigs }) => {
+    const TextInput = ({ label, value, onChange }) => {
+        return (
+            <div>
+                <h4>{label}</h4>
+                <input type="text" value={value} onChange={onChange} />
+            </div>
+        )
+    }
+
+    const CreateForm = ({ student, sigs }) => {
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
 
@@ -83,11 +89,14 @@
         };
 
         return (
-            <div>
-                <form onSubmit={handleSubmit}>
-                    <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
+            <div style={styles.formContainer}>
+                <form style={styles.form} className="form" onSubmit={handleSubmit}>
+                    <div>
+                        <p style={styles.greeting}>Hello {student.firstName}</p>
+                        <p style={styles.title}>Choose an Organization: <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} /></p>
+                    </div>
 
-                    {/* <input type="text" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} /> */}
+                    <TextInput label="Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
                 </form>
             </div>
         )
@@ -103,9 +112,7 @@
         return (
             <div style={styles.container}>
                 <EventCalendar events={events} />
-
-                <Header name={config.student.firstName} />
-                <CreateForm sigs={config.sigs} />
+                <CreateForm student={config.student} sigs={config.sigs} />
             </div>
         )
     }
@@ -123,10 +130,20 @@
 <script type="text/javascript">
     const styles = {
         container: {
-            padding: 50
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+        },
+        formContainer: {
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center'
+        },
+        form: {
+            flex: 1,
+            maxWidth: "1024px"
         },
         greeting: {
-            marginTop: 40,
             fontFamily: 'Open Sans',
             fontWeight: 700,
             textTransform: "uppercase",
@@ -138,12 +155,55 @@
             lineHeight: 1,
             fontWeight: 700,
             color: "black"
+        },
+        selector: {
+            marginTop: "5px",
+            maxWidth: "360px"
         }
     }
 </script>
 
 <style>
+    .calendar-wrapper {
+        padding-left: 20px;
+        padding-right: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    @media (min-width: 810px) {
+        .calendar-wrapper {
+            padding-left: 50px;
+            padding-right: 50px;
+        }
+    }
+
+    #calendar-mount {
+        max-width: 1024px;
+    }
+
     .fc-bg > table {
         margin-bottom: 0 !important;
+    }
+
+    .form {
+        margin-top: 20px;
+        min-width: 320px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    @media (min-width: 810px) {
+        .form {
+            margin-left: 50px;
+            margin-right: 50px;
+            min-width: 420px;
+        }
+    }
+
+    @media (min-width: 1594px) {
+        .form {
+            margin-left: 0px;
+        }
     }
 </style>
