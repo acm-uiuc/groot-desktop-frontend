@@ -27,6 +27,31 @@
     console.log(config);
 </script>
 
+<!-- Client-side React -->
+<script type="text/babel">
+    const Header = ({ name }) => {
+        return (
+            <React.Fragment>
+                <p style={styles.greeting}>Hello {name}</p>
+                <p style={styles.title}>Let's Create an Event</p>
+            </React.Fragment>
+        );
+    }
+
+    const App = ({ config }) => {
+        return (
+            <div style={styles.container}>
+                <Header name={config.firstName} />
+            </div>
+        )
+    }
+
+    ReactDOM.render(
+        <App config={config} />,
+        document.getElementById('react-mount')
+    );
+</script>
+
 <!-- Styles -->
 <script type="text/javascript">
     const styles = {
@@ -46,29 +71,4 @@
             color: "black"
         }
     }
-</script>
-
-<!-- Client-side React -->
-<script type="text/babel">
-    const Header = ({ name }) => {
-        return (
-            <React.Fragment>
-                <p style={styles.greeting}>Hello {name}</p>
-                <p style={styles.title}>Create an Event</p>
-            </React.Fragment>
-        );
-    }
-
-    const App = ({ config }) => {
-        return (
-            <div style={styles.container}>
-                <Header name={config.firstName} />
-            </div>
-        )
-    }
-
-    ReactDOM.render(
-        <App config={config} />,
-        document.getElementById('react-mount')
-    );
 </script>
