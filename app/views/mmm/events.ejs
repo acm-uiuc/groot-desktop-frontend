@@ -48,7 +48,12 @@
             const calendarEl = document.getElementById('calendar-mount');
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['dayGrid', 'timeGrid']
+                plugins: ['dayGrid', 'timeGrid'],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }
             });
 
             calendar.render();
