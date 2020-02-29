@@ -15,14 +15,16 @@
 <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.js"></script>
 
 <!-- EJS connection -->
 <script type="text/javascript">
     const config = {
+        authenticated: "<%= authenticated %>" === "true",
         student: {
-            netid: "<%= session.student.netid %>",
-            firstName: "<%= session.student.firstName %>",
-            lastName: "<%= session.student.lastName %>"
+            netid: "<%= authenticated ? session.student.netid : '' %>",
+            firstName: "<%= authenticated ? session.student.firstName : '' %>",
+            lastName: "<%= authenticated ? session.student.lastName : '' %>"
         },
         sigs: <%- JSON.parse(JSON.stringify(sigs)) %>
     };
@@ -40,7 +42,7 @@
         return (
             <React.Fragment>
                 <p style={styles.greeting}>Hello {name}</p>
-                <p style={styles.title}>Let's Create an Event</p>
+                <p style={styles.title}>Choose an Organization:</p>
             </React.Fragment>
         );
     }
@@ -68,7 +70,7 @@
                 <form onSubmit={handleSubmit}>
                     <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
 
-                    <input type="text" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                    {/* <input type="text" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} /> */}
                 </form>
             </div>
         )
@@ -79,6 +81,10 @@
             <div style={styles.container}>
                 <Header name={config.student.firstName} />
                 <CreateForm sigs={config.sigs} />
+
+                <fullcalendar
+                defaultView="dayGridMonth"
+                    />
             </div>
         )
     }

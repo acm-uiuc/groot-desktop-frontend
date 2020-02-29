@@ -252,9 +252,7 @@ app.get('/events', function(req, res) {
     }
   };
 
-  if (!DEV_REQ && (!utils.isAuthenticated(req) || !req.session.isStudent)) { // need to be more selective than isStudent
-    res.redirect('/login');
-  }
+  const authenticated = DEV_REQ !== undefined || utils.isAuthenticated(req);
 
   request({
     url: `${SERVICES_URL}/groups/sigs`,
@@ -268,7 +266,7 @@ app.get('/events', function(req, res) {
     }
 
     res.render('mmm/events.ejs', {
-      authenticated: true,
+      authenticated,
       session: DEV_REQ.session || req.session,
       sigs: body
     });
