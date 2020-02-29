@@ -63,7 +63,7 @@
 
     const SigSelector = ({ sigs, value, onChange }) => {
         return (
-            <select style={styles.selector} value={value} onChange={onChange}>
+            <select className="selector" value={value} onChange={onChange}>
                 {
                     sigs.map(sig => <option key={sig.name} value={sig.name}>{sig.name}</option>)
                 }
@@ -74,7 +74,7 @@
     const TextInput = ({ label, value, onChange }) => {
         return (
             <div>
-                <h4>{label}</h4>
+                <h4 className="input-title">{label}</h4>
                 <input type="text" value={value} onChange={onChange} />
             </div>
         )
@@ -89,11 +89,11 @@
         };
 
         return (
-            <div style={styles.formContainer}>
-                <form style={styles.form} className="form" onSubmit={handleSubmit}>
+            <div className="form-container">
+                <form className="form" onSubmit={handleSubmit}>
                     <div>
-                        <p style={styles.greeting}>Hello {student.firstName}</p>
-                        <p style={styles.title}>Choose an Organization: <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} /></p>
+                        <p className="greeting">Hello {student.firstName}</p>
+                        <p className="org-select-title">Choose an Organization: <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} /></p>
                     </div>
 
                     <TextInput label="Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
@@ -110,7 +110,7 @@
         }, []);
 
         return (
-            <div style={styles.container}>
+            <div className="app-container">
                 <EventCalendar events={events} />
                 <CreateForm student={config.student} sigs={config.sigs} />
             </div>
@@ -127,43 +127,13 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:700&display=swap" rel="stylesheet">
 
 <!-- Styles -->
-<script type="text/javascript">
-    const styles = {
-        container: {
-            display: 'flex',
-            justifyContent: 'center',
-            flexWrap: 'wrap'
-        },
-        formContainer: {
-            flex: 1,
-            display: 'flex',
-            justifyContent: 'center'
-        },
-        form: {
-            flex: 1,
-            maxWidth: "1024px"
-        },
-        greeting: {
-            fontFamily: 'Open Sans',
-            fontWeight: 700,
-            textTransform: "uppercase",
-            fontSize: 14,
-            lineHeight: 0.5
-        },
-        title: {
-            fontSize: 28,
-            lineHeight: 1,
-            fontWeight: 700,
-            color: "black"
-        },
-        selector: {
-            marginTop: "5px",
-            maxWidth: "360px"
-        }
-    }
-</script>
-
 <style>
+    .app-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
     .calendar-wrapper {
         padding-left: 20px;
         padding-right: 20px;
@@ -186,7 +156,15 @@
         margin-bottom: 0 !important;
     }
 
+    .form-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
     .form {
+        flex: 1;
+        max-width: 1024px;
         margin-top: 20px;
         min-width: 320px;
         margin-left: 20px;
@@ -205,5 +183,31 @@
         .form {
             margin-left: 0px;
         }
+    }
+
+    .greeting {
+        font-family: "Open Sans";
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 14px;
+        line-height: 14px;
+    }
+
+    .org-select-title {
+        font-size: 28px;
+        line-height: 42px;
+        font-weight: 700;
+        color: black;
+    }
+
+    .selector {
+        margin-top: 5px;
+        max-width: 360px;
+    }
+
+    .input-title {
+        font-family: "Open Sans";
+        font-weight: 700;
+        font-size: 14px;
     }
 </style>
