@@ -5,26 +5,70 @@
     console.log("sesson", session)
 %>
 
+<!-- React mounting div -->
 <div id="react-mount"></div>
 
 <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<!-- <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script> -->
+<!--
+<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
 
+<!-- EJS connection -->
 <script type="text/javascript">
-    const netid = "<%= session.student.netid %>";
-    console.log(netid);
+    const config = {
+        netid: "<%= session.student.netid %>",
+        firstName: "<%= session.student.firstName %>",
+        lastName: "<%= session.student.lastName %>"
+    }
+
+    console.log(config);
 </script>
 
+<!-- Styles -->
+<script type="text/javascript">
+    const styles = {
+        container: {
+            padding: 50
+        },
+        greeting: {
+            fontWeight: 700,
+            textTransform: "uppercase",
+            fontSize: 12,
+            lineHeight: 0.5
+        },
+        title: {
+            fontSize: 28,
+            lineHeight: 1,
+            fontWeight: 700,
+            color: "black"
+        }
+    }
+</script>
+
+<!-- Client-side React -->
 <script type="text/babel">
-    const Greeting = ({ name }) => {
-        return <p>Hello {name}</p>;
+    const Header = ({ name }) => {
+        return (
+            <React.Fragment>
+                <p style={styles.greeting}>Hello {name}</p>
+                <p style={styles.title}>Create an Event</p>
+            </React.Fragment>
+        );
+    }
+
+    const App = ({ config }) => {
+        return (
+            <div style={styles.container}>
+                <Header name={config.firstName} />
+            </div>
+        )
     }
 
     ReactDOM.render(
-        <Greeting name={netid} />,
+        <App config={config} />,
         document.getElementById('react-mount')
     );
 </script>
