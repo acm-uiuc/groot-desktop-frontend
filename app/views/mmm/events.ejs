@@ -19,10 +19,17 @@
 <!-- EJS connection -->
 <script type="text/javascript">
     const config = {
-        netid: "<%= session.student.netid %>",
-        firstName: "<%= session.student.firstName %>",
-        lastName: "<%= session.student.lastName %>"
-    }
+        student: {
+            netid: "<%= session.student.netid %>",
+            firstName: "<%= session.student.firstName %>",
+            lastName: "<%= session.student.lastName %>"
+        },
+        sigs: <%- JSON.parse(JSON.stringify(sigs)) %>
+    };
+
+    config.sigs.unshift({
+        name: "Select one"
+    });
 
     console.log(config);
 </script>
@@ -38,10 +45,40 @@
         );
     }
 
+    const SigSelector = ({ sigs, value, onChange }) => {
+        return (
+            <select value={value} onChange={onChange}>
+                {
+                    sigs.map(sig => <option key={sig.name} value={sig.name}>{sig.name}</option>)
+                }
+            </select>
+        )
+    }
+
+    const CreateForm = ({ sigs }) => {
+        const [sigName, setSigName] = React.useState("Select one");
+        const [eventTitle, setEventTitle] = React.useState("");
+
+        const handleSubmit = () => {
+            event.preventDefault();
+        };
+
+        return (
+            <div>
+                <form onSubmit={handleSubmit}>
+                    <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
+
+                    <input type="text" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                </form>
+            </div>
+        )
+    }
+
     const App = ({ config }) => {
         return (
             <div style={styles.container}>
-                <Header name={config.firstName} />
+                <Header name={config.student.firstName} />
+                <CreateForm sigs={config.sigs} />
             </div>
         )
     }

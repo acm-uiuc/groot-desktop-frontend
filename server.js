@@ -256,9 +256,22 @@ app.get('/events', function(req, res) {
     res.redirect('/login');
   }
 
-  res.render('mmm/events.ejs', {
-    authenticated: true,
-    session: DEV_REQ.session || req.session
+  request({
+    url: `${SERVICES_URL}/groups/sigs`,
+    headers: {
+      "Authorization": GROOT_ACCESS_TOKEN
+    },
+    method: "GET",
+  }, function(err, response, body) {
+    if (err || !response || !response.statusCode) {
+      return res.status(500).send(err);
+    }
+
+    res.render('mmm/events.ejs', {
+      authenticated: true,
+      session: DEV_REQ.session || req.session,
+      sigs: body
+    });
   });
 });
 
