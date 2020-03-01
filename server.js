@@ -254,22 +254,9 @@ app.get('/events', function(req, res) {
 
   const authenticated = DEV_REQ !== undefined || utils.isAuthenticated(req);
 
-  request({
-    url: `${SERVICES_URL}/groups/sigs`,
-    headers: {
-      "Authorization": GROOT_ACCESS_TOKEN
-    },
-    method: "GET",
-  }, function(err, response, body) {
-    if (err || !response || !response.statusCode) {
-      return res.status(500).send(err);
-    }
-
-    res.render('mmm/events.ejs', {
-      authenticated,
-      session: DEV_REQ.session || req.session,
-      sigs: body
-    });
+  res.render('mmm/events.ejs', {
+    authenticated,
+    session: DEV_REQ.session || req.session
   });
 });
 
