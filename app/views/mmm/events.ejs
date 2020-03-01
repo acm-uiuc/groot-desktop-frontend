@@ -173,9 +173,10 @@
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
+        const [eventLocation, setEventLocation] = React.useState("");
         const [tags, setTags] = React.useState([]);
-        const [start, setStart] = React.useState(new Date());
-        const [end, setEnd] = React.useState(new Date());
+        const [eventStart, setEventStart] = React.useState(new Date());
+        const [eventEnd, setEventEnd] = React.useState(new Date());
 
         const handleSubmit = () => {
             event.preventDefault();
@@ -194,12 +195,13 @@
                         </form>
                     </div>
 
-                    <TextInput label="Title" placeholder="Title of the event (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
-                    <TextInput label="Description" placeholder="Full description of the event (ex: the largest Hackathon of UIUC)" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
+                    <TextInput label="Title" placeholder="What is the event called? (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                    <TextInput label="Description" placeholder="What is happening at the event? (ex: the largest Hackathon of UIUC)" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
+                    <TextInput label="Location" placeholder="Where is the event? (ex: Siebel 1404)" value={eventLocation} onChange={(e) => setEventLocation(e.target.value)} />
                     
                     <div className="date-container">
-                        <DatetimePicker label="Start" value={start} onChange={(newDatetime) => setStart(newDatetime)} />
-                        <DatetimePicker label="End" value={end} onChange={(newDatetime) => setEnd(newDatetime)} />
+                        <DatetimePicker label="Start" value={eventStart} onChange={(newDatetime) => setEventStart(newDatetime)} />
+                        <DatetimePicker label="End" value={eventEnd} onChange={(newDatetime) => setEventEnd(newDatetime)} />
                     </div>
 
                     <Tagger tags={tags} onChange={(newTags) => setTags(newTags)} />
@@ -213,8 +215,10 @@
             {
                 title: 'HackIllinois',
                 description: 'University of Illinois\' Open Source hackathon',
+                location: "University of Illinois at Urbana Champaign",
                 start: '2020-02-28 16:00',
-                end: '2020-03-01 10:00'
+                end: '2020-03-01 10:00',
+                tags: ["hackathon"]
             }
         ]);
 
