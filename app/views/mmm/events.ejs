@@ -21,17 +21,8 @@
             netid: "<%= authenticated ? session.student.netid : '' %>",
             firstName: "<%= authenticated ? session.student.firstName : '' %>",
             lastName: "<%= authenticated ? session.student.lastName : '' %>"
-        },
-        sigs: <%- JSON.parse(JSON.stringify(sigs)) %>
+        }
     };
-
-    config.sigs.unshift({
-        name: "ACM"
-    });
-
-    config.sigs.unshift({
-        name: "Select one"
-    });
 
     const getColor = (type) => {
         switch (type) {
@@ -48,7 +39,44 @@
         }
     }
 
-    console.log(config);
+    const BASE_URL_MMM = "https://89gebvx4j9.execute-api.us-east-1.amazonaws.com/dev";
+    const ENDPOINT_GET_EVENTS = (where) => `${BASE_URL_MMM}/events?whereEvent=${JSON.stringify(where)}`;
+    const ENDPOINT_POST_EVENTS = () => `${BASE_URL_MMM}/events`;
+    const ENDPOINT_PATCH_EVENTS = (id) => `${BASE_URL_MMM}/events/${id}`;
+    const ENDPOINT_DELETE_EVENTS = (id) => `${BASE_URL_MMM}/events/${id}`;
+    const ENDPOINT_GET_TOPICS = (where) => `${BASE_URL_MMM}/topics?whereTopic=${JSON.stringify(where)}`;
+    const ENDPOINT_GET_ORGS = () => `${BASE_URL_MMM}/orgs`;
+
+    const mmm = async (endpoint, method, body) => {
+        let response;
+
+        try {
+            response = await fetch(endpoint, {
+                method,
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                redirect: 'follow',
+                body: body !== undefined ? JSON.stringify(body) : undefined
+            });
+
+            return {
+                status: true,
+                data: await response.json()
+            };
+        } catch (err) {
+            console.log(endpoint, err);
+
+            return {
+                status: false,
+                error: err
+            };
+        }
+    };
+
+    console.log("CONFIG", config);
 </script>
 
 <!-- Client-side React -->
@@ -118,11 +146,11 @@
         );
     };
 
-    const SigSelector = ({ sigs, value, onChange }) => {
+    const OrgSelector = ({ orgs, value, onChange }) => {
         return (
             <select className="selector" value={value} onChange={onChange}>
                 {
-                    sigs.map(sig => <option key={sig.name} value={sig.name}>{sig.name}</option>)
+                    orgs.map(org => <option key={org.name} value={org.name}>{org.name}</option>)
                 }
             </select>
         )
@@ -210,9 +238,9 @@
         );
     };
 
-    const CreateForm = ({ student, sigs, tempEvent, editingEvent, onChange, onCancel, onDelete, onSubmit }) => {
+    const CreateForm = ({ student, orgs, tempEvent, editingEvent, onChange, onCancel, onDelete, onSubmit }) => {
 
-        const [sigName, setSigName] = React.useState("Select one");
+        const [orgName, setOrgName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
         const [eventLocation, setEventLocation] = React.useState("");
@@ -225,7 +253,7 @@
         };
 
         const clear = () => {
-            setSigName("Select one");
+            setOrgName("Select one");
             setEventTitle("");
             setEventDesc("");
             setEventLocation("");
@@ -237,7 +265,9 @@
         const onClickSubmit = React.useCallback(() => {
             onSubmit({
                 creator: student.netid,
-                organization: sigName,
+                organization: {
+                    name: orgName
+                },
                 title: eventTitle,
                 description: eventDesc,
                 location: eventLocation,
@@ -245,7 +275,7 @@
                 start: new Date(eventStart),
                 end: new Date(eventEnd)
             });
-        }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
+        }, [orgName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         const onClickCancel = React.useCallback(() => {
             clear();
@@ -262,7 +292,7 @@
                 return;
             }
 
-            setSigName(editingEvent.organization.name);
+            setOrgName(editingEvent.organization.name);
             setEventTitle(editingEvent.title);
             setEventDesc(editingEvent.description);
             setEventLocation(editingEvent.location);
@@ -282,7 +312,7 @@
             onChange({
                 creator: student.netid,
                 organization: {
-                    name: sigName
+                    name: orgName
                 },
                 title: eventTitle,
                 description: eventDesc,
@@ -291,7 +321,7 @@
                 start: eventStart,
                 end: eventEnd
             });
-        }, [editingEvent, sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
+        }, [editingEvent, orgName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         return (
             <div className="form-container">
@@ -315,7 +345,7 @@
 
                     <form onSubmit={handleSubmit}>
                         <h4 className="input-title">Organization</h4>
-                        <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
+                        <OrgSelector orgs={orgs} value={orgName} onChange={(e) => setOrgName(e.target.value)} />
                     </form>
 
                     <TextInput label="Title" placeholder="What is the event called? (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
@@ -352,6 +382,7 @@
 
         const [blame, setBlame] = React.useState();
 
+        const [orgs, setOrgs] = React.useState([]);
         const [events, setEvents] = React.useState([
             {
                 _id: 0,
@@ -375,9 +406,7 @@
         const createEvent = (eventData) => {
             const {
                 creator,
-                organization: {
-                    name: organization
-                },
+                organization,
                 title,
                 description,
                 location,
@@ -418,10 +447,37 @@
             }
 
             setEditingEvent(undefined);
-        }
+        };
+
+        const initOrgs = async () => {
+            let response = await mmm(ENDPOINT_GET_ORGS(), "GET");
+            console.log("ORGS", response);
+            
+            if (response.status) {
+                const orgs = [
+                    {
+                        name: "Select one",
+                        kind: ""
+                    },
+                    {
+                        name: "ACM",
+                        kind: "committee"
+                    }
+                ].concat(response.data.orgs);
+
+                setOrgs(orgs);
+            } else {
+                alert("Issue connecting to MMM backend");
+            }
+        };
+
+        const initEvents = async () => {
+
+        };
+
 
         React.useEffect(() => {
-            // TODO: API calls
+            initOrgs();
         }, []);
 
         return (
@@ -429,7 +485,7 @@
                 <EventCalendar events={events} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
-                    <CreateForm student={config.student} sigs={config.sigs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
+                    <CreateForm student={config.student} orgs={orgs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
                 )}
             </div>
         )
