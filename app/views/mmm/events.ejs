@@ -210,7 +210,7 @@
         );
     };
 
-    const CreateForm = ({ student, sigs, tempEvent, editingEvent, onChange, onCancel, onSubmit }) => {
+    const CreateForm = ({ student, sigs, tempEvent, editingEvent, onChange, onCancel, onDelete, onSubmit }) => {
 
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
@@ -223,6 +223,16 @@
         const handleSubmit = () => {
             event.preventDefault();
         };
+
+        const clear = () => {
+            setSigName("Select one");
+            setEventTitle("");
+            setEventDesc("");
+            setEventLocation("");
+            setEventTags([]);
+            setEventStart(new Date());
+            setEventEnd(new Date());
+        }
 
         const onClickSubmit = React.useCallback(() => {
             onSubmit({
@@ -238,15 +248,13 @@
         }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         const onClickCancel = React.useCallback(() => {
-            setSigName("Select one");
-            setEventTitle("");
-            setEventDesc("");
-            setEventLocation("");
-            setEventTags([]);
-            setEventStart(new Date());
-            setEventEnd(new Date());
-
+            clear();
             onCancel();
+        }, []);
+
+        const onClickDelete = React.useCallback(() => {
+            clear();
+            onDelete();
         }, []);
 
         React.useEffect(() => {
@@ -325,7 +333,14 @@
                         <button className="button form-submit" onClick={onClickSubmit}>Submit</button>
 
                         {
-                            (editingEvent !== undefined || tempEvent !== undefined) && <button className="form-cancel" onClick={onClickCancel}>Cancel</button>
+                            (editingEvent !== undefined) && (
+                                <button className="form-cancel" onClick={onClickDelete}>Delete</button>
+                            )
+                        }
+                        {
+                            (editingEvent !== undefined || tempEvent !== undefined) && (
+                                <button className="form-cancel" onClick={onClickCancel}>Cancel</button>
+                            )
                         }
                     </div>
                 </div>
@@ -397,6 +412,14 @@
             setEditingEvent(undefined);
         };
 
+        const deleteEvent = () => {
+            if (editingEvent !== undefined) {
+                // TODO
+            }
+
+            setEditingEvent(undefined);
+        }
+
         React.useEffect(() => {
             // TODO: API calls
         }, []);
@@ -406,7 +429,7 @@
                 <EventCalendar events={events} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
-                    <CreateForm student={config.student} sigs={config.sigs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onSubmit={createEvent} />
+                    <CreateForm student={config.student} sigs={config.sigs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
                 )}
             </div>
         )
