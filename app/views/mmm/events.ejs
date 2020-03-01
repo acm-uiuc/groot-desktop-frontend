@@ -8,23 +8,7 @@
 <!-- React mounting div -->
 <div id="react-mount"></div>
 
-<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-<!--
-<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
--->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.js" integrity="sha256-GBryZPfVv8G3K1Lu2QwcqQXAO4Szv4xlY4B/ftvyoMI=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.js" integrity="sha256-FT1eN+60LmWX0J8P25UuTjEEE0ZYvpC07nnU6oFKFuI=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.js" integrity="sha256-L9T+qE3Ms6Rsuxl+KwLST6a3R/2o6m33zB5mR2KyPjU=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/interaction/main.min.js" integrity="sha256-MUHmW5oHmLLsvmMWBO8gVtKYrjVwUSFau6pRXu8dtnA=" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/popper.js@1" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/tippy.js@5.2.1/dist/tippy.iife.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://unpkg.com/tippy.js@5.2.1/dist/tippy.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/core/main.min.css" integrity="sha256-Lfe6+s5LEek8iiZ31nXhcSez0nmOxP+3ssquHMR3Alo=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/daygrid/main.min.css" integrity="sha256-AVsv7CEpB2Y1F7ZjQf0WI8SaEDCycSk4vnDRt0L2MNQ=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/4.2.0/timegrid/main.min.css" integrity="sha256-DOWdbe6a1VwJwFpkimY6z5tW9mmrBNre2jZsAige5PE=" crossorigin="anonymous" />
+<%- include('./cdn') -%>
 
 <!-- EJS connection -->
 <script type="text/javascript">
@@ -118,6 +102,28 @@
         );
     }
 
+    const DatetimePicker = ({ label, value, onChange }) => {
+        const handleChange = (selectedDates, dateStr, instance) => {
+            onChange(dateStr);
+        };
+
+        React.useEffect(() => {
+            flatpickr(`#flatpickr-mount-${label}`, {
+                defaultDate: value,
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                onChange: handleChange
+            });
+        }, [value]);
+
+        return (
+            <div>
+                <h4 className="input-title">{label}</h4>
+                <input className="datetime-picker" id={`flatpickr-mount-${label}`} />
+            </div>
+        );
+    };
+
     const TagButton = ({ tag, onDelete }) => {
         return (
             <div className="tag-container">
@@ -125,7 +131,7 @@
                 <span className="tag-delete" onClick={() => onDelete(tag.id)}>×</span>
             </div>
         )
-    }
+    };
 
     const Tagger = ({ tags, onChange }) => {
         const [taggerValue, setTaggerValue] = React.useState("");
@@ -161,13 +167,15 @@
                 </form>
             </div>
         );
-    }
+    };
 
     const CreateForm = ({ student, sigs }) => {
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
         const [tags, setTags] = React.useState([]);
+        const [start, setStart] = React.useState(new Date());
+        const [end, setEnd] = React.useState(new Date());
 
         const handleSubmit = () => {
             event.preventDefault();
@@ -178,6 +186,7 @@
                 <div className="form">
                     <div>
                         <p className="greeting">Hello {student.firstName}</p>
+
                         <form onSubmit={handleSubmit}>
                             <p className="org-select-title">Choose an Organization: 
                                 <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
@@ -187,6 +196,11 @@
 
                     <TextInput label="Title" placeholder="Title of the event (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
                     <TextInput label="Description" placeholder="Full description of the event (ex: the largest Hackathon of UIUC)" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
+                    
+                    <div className="date-container">
+                        <DatetimePicker label="Start" value={start} onChange={(newDatetime) => setStart(newDatetime)} />
+                        <DatetimePicker label="End" value={end} onChange={(newDatetime) => setEnd(newDatetime)} />
+                    </div>
 
                     <Tagger tags={tags} onChange={(newTags) => setTags(newTags)} />
                 </div>
@@ -214,7 +228,7 @@
                 <CreateForm student={config.student} sigs={config.sigs} />
             </div>
         )
-    }
+    };
 
     ReactDOM.render(
         <App config={config} />,
@@ -222,15 +236,13 @@
     );
 </script>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:700&display=swap" rel="stylesheet">
-
 <!-- Styles -->
 <style>
     .app-container {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
+        margin-bottom: 50px;
     }
 
     .calendar-wrapper {
@@ -310,9 +322,7 @@
         font-size: 14px;
     }
 
-    .text-input {
-
-    }
+    .text-input {}
 
     .text-area {
         resize: vertical;
@@ -356,6 +366,20 @@
         font-size: 20px;
         line-height: 24px;
         color: rgb(168, 168, 168);
+    }
+
+    .datetime-picker {
+        max-width: 256px;
+    }
+
+    .date-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+    }
+
+    .date-container div:nth-child(2) {
+        margin-left: 20px;
     }
     
 </style>
