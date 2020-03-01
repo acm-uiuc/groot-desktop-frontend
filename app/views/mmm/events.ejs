@@ -81,7 +81,7 @@
 
 <!-- Client-side React -->
 <script type="text/babel">
-    const EventCalendar = ({ events, tempEvent, onClickEvent }) => {
+    const EventCalendar = ({ events, getEvents, tempEvent, onClickEvent }) => {
 
         const onEventClick = (info) => {
             const event = info.event;
@@ -106,6 +106,13 @@
         const onDayClick = (info) => {
             const { date, dateStr, view } = info;
         };
+
+        const onDatesRender = (info) => {
+            const { view } = info;
+            const { activeStart, activeEnd } = view;
+
+            getEvents(activeStart, activeEnd);
+        }
 
         const renderEvent = (info) => {
             const { organization, location, description } = info.event.extendedProps;
@@ -133,7 +140,8 @@
                 events: tempEvent !== undefined ? events.concat(tempEvent) : events,
                 eventRender: renderEvent,
                 eventClick: onEventClick,
-                dateClick: onDayClick
+                dateClick: onDayClick,
+                datesRender: onDatesRender
             });
 
             calendar.render();
@@ -450,7 +458,8 @@
         };
 
         const initOrgs = async () => {
-            let response = await mmm(ENDPOINT_GET_ORGS(), "GET");
+            const response = await mmm(ENDPOINT_GET_ORGS(), "GET");
+
             console.log("ORGS", response);
             
             if (response.status) {
@@ -471,10 +480,15 @@
             }
         };
 
-        const initEvents = async () => {
+        const getEvents = async (startDate, endDate) => {
+            const response = await mmm(ENDPOINT_GET_EVENTS({
+                orgs: {
+                    _id: "aida"
+                }
+            }), "GET");
 
+            console.log("EVENTS", { startDate, endDate }, response);
         };
-
 
         React.useEffect(() => {
             initOrgs();
@@ -482,7 +496,7 @@
 
         return (
             <div className="app-container">
-                <EventCalendar events={events} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
+                <EventCalendar events={events} getEvents={getEvents} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
                     <CreateForm student={config.student} orgs={orgs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
