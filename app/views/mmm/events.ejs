@@ -56,13 +56,10 @@
 
         const onDayClick = (info) => {
             const { date, dateStr, view } = info;
-
-            console.log("Clicked day", date, view.viewSpec.durationUnit);
         };
 
         const renderEvent = (info) => {
             const { organization, location, description } = info.event.extendedProps;
-            console.log(info.event.extendedProps);
 
             const line1 = `${organization.name}: ${description}`;
             const line2 = location ? `<br />${location}` : '';
