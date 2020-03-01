@@ -5,6 +5,9 @@
     console.log("sesson", session)
 %>
 
+<!-- shell to mask groot error from footer.ejs -->
+<div id="shell"></div>
+
 <!-- React mounting div -->
 <div id="react-mount"></div>
 
@@ -355,6 +358,11 @@
 
 <!-- Styles -->
 <style>
+    /* Prevents showing groot shell from footer.ejs */
+    #shell {
+        display: none;
+    }
+
     .app-container {
         display: flex;
         justify-content: center;
@@ -511,3 +519,5 @@
         margin-bottom: 40px;
     }
 </style>
+
+<%- include('../_partials/footer') -%>
