@@ -62,9 +62,13 @@
 
         const renderEvent = (info) => {
             const { organization, location, description } = info.event.extendedProps;
+            console.log(info.event.extendedProps);
+
+            const line1 = `${organization.name}: ${description}`;
+            const line2 = location ? `<br />${location}` : '';
 
             tippy(info.el, {
-                content: `${organization.name}: ${description}<br />@ ${location}`
+                content: line1 + line2
             });
         }
 
@@ -130,7 +134,7 @@
                 defaultDate: value,
                 enableTime: true,
                 dateFormat: "Y-m-d H:i",
-                onChange: handleChange
+                onClose: handleChange
             });
         }, [value]);
 
@@ -216,7 +220,9 @@
         React.useEffect(() => {
             onChange({
                 creator: student.netid,
-                organization: sigName,
+                organization: {
+                    name: sigName
+                },
                 title: eventTitle,
                 description: eventDesc,
                 location: eventLocation,
@@ -257,6 +263,8 @@
     };
 
     const App = ({ config }) => {
+        const [blame, setBlame] = React.useState();
+
         const [events, setEvents] = React.useState([
             {
                 organization: {
@@ -278,7 +286,9 @@
         const createEvent = (eventData) => {
             const {
                 creator,
-                organization,
+                organization: {
+                    name: organization
+                },
                 title,
                 description,
                 location,
