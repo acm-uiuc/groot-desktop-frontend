@@ -187,13 +187,13 @@
                 <div className="form">
                     <div>
                         <p className="greeting">Hello {student.firstName}</p>
-
-                        <form onSubmit={handleSubmit}>
-                            <p className="org-select-title">Choose an Organization: 
-                                <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
-                            </p>
-                        </form>
+                        <p className="greeting-title">Let's Create an Event</p>
                     </div>
+
+                    <form onSubmit={handleSubmit}>
+                        <h4 className="input-title">Organization</h4>
+                        <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
+                    </form>
 
                     <TextInput label="Title" placeholder="What is the event called? (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
                     <TextInput label="Description" placeholder="What is happening at the event? (ex: the largest Hackathon of UIUC)" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
@@ -305,18 +305,18 @@
         font-weight: 700;
         text-transform: uppercase;
         font-size: 14px;
-        line-height: 14px;
+        line-height: 8px;
     }
 
-    .org-select-title {
+    .greeting-title {
+        margin-bottom: 40px;
         font-size: 28px;
-        line-height: 42px;
+        line-height: 14px;
         font-weight: 700;
         color: black;
     }
 
     .selector {
-        margin-top: 5px;
         max-width: 360px;
     }
 
@@ -324,6 +324,7 @@
         font-family: "Open Sans";
         font-weight: 700;
         font-size: 14px;
+        text-transform: uppercase;
     }
 
     .text-input {}
