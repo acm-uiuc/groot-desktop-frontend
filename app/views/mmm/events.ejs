@@ -308,7 +308,10 @@
         return (
             <div className="app-container">
                 <EventCalendar events={events} tempEvent={tempEvent} />
-                <CreateForm student={config.student} sigs={config.sigs} onChange={handleChange} onSubmit={createEvent} />
+                
+                {config.authenticated && (
+                    <CreateForm student={config.student} sigs={config.sigs} onChange={handleChange} onSubmit={createEvent} />
+                )}
             </div>
         )
     };
