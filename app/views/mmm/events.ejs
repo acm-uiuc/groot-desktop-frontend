@@ -46,12 +46,26 @@
 
 <!-- Client-side React -->
 <script type="text/babel">
-    const EventCalendar = ({ events, tempEvent }) => {
+    const EventCalendar = ({ events, tempEvent, onClickEvent }) => {
 
         const onEventClick = (info) => {
-            console.log("Clicked event", info);
-            
-            // TODO: should show event information
+            const event = info.event;
+            const extendedProps = event.extendedProps;
+
+            if (extendedProps._id === 'temp') {
+                return;
+            }
+
+            onClickEvent({
+                _id: extendedProps._id,
+                organization: extendedProps.organization,
+                title: event.title,
+                description: extendedProps.description,
+                location: extendedProps.location,
+                topics: extendedProps.topics,
+                start: event.start,
+                end: event.end
+            });
         };
 
         const onDayClick = (info) => {
@@ -122,6 +136,7 @@
     }
 
     const DatetimePicker = ({ label, value, onChange }) => {
+
         const handleChange = (selectedDates, dateStr, instance) => {
             onChange(dateStr);
         };
@@ -153,6 +168,7 @@
     };
 
     const Tagger = ({ tags, onChange }) => {
+
         const [taggerValue, setTaggerValue] = React.useState("");
 
         const handleSubmit = React.useCallback(() => {
@@ -189,6 +205,7 @@
     };
 
     const CreateForm = ({ student, sigs, onChange, onSubmit }) => {
+
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
@@ -260,10 +277,12 @@
     };
 
     const App = ({ config }) => {
+
         const [blame, setBlame] = React.useState();
 
         const [events, setEvents] = React.useState([
             {
+                _id: 0,
                 organization: {
                     name: 'ACM',
                     kind: 'committee'
@@ -297,16 +316,21 @@
             console.log(eventData);
         }
 
+        const handleClickEvent = (event) => {
+            console.log(event);
+        };
+
         const handleChange = (newTempEvent) => {
             if (newTempEvent.title !== '') {
                 setTempEvent({
                     ...newTempEvent,
+                    _id: 'temp',
                     color: 'gray'
                 });
             } else {
                 setTempEvent(null);
             }
-        }
+        };
 
         React.useEffect(() => {
             // TODO: API calls
@@ -314,7 +338,7 @@
 
         return (
             <div className="app-container">
-                <EventCalendar events={events} tempEvent={tempEvent} />
+                <EventCalendar events={events} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
                     <CreateForm student={config.student} sigs={config.sigs} onChange={handleChange} onSubmit={createEvent} />
