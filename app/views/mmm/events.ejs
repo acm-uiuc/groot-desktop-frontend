@@ -31,20 +31,20 @@
             case "company":
                 return "purple";
             case "committee":
-                return "orange";
-            case "general":
                 return "#378006";
+            case "general":
+                return "orange";
             default:
                 return "#C32148";
         }
     }
 
-    const BASE_URL_MMM = "https://89gebvx4j9.execute-api.us-east-1.amazonaws.com/dev";
-    const ENDPOINT_GET_EVENTS = (where) => `${BASE_URL_MMM}/events?whereEvent=${JSON.stringify(where)}`;
+    const BASE_URL_MMM = "https://4z5904nohk.execute-api.us-east-1.amazonaws.com/dev";
+    const ENDPOINT_GET_EVENTS = (where) => `${BASE_URL_MMM}/events?whereEvent=${encodeURIComponent(JSON.stringify(where))}`;
     const ENDPOINT_POST_EVENTS = () => `${BASE_URL_MMM}/events`;
     const ENDPOINT_PATCH_EVENTS = (id) => `${BASE_URL_MMM}/events/${id}`;
     const ENDPOINT_DELETE_EVENTS = (id) => `${BASE_URL_MMM}/events/${id}`;
-    const ENDPOINT_GET_TOPICS = (where) => `${BASE_URL_MMM}/topics?whereTopic=${JSON.stringify(where)}`;
+    const ENDPOINT_GET_TOPICS = (where) => `${BASE_URL_MMM}/topics?whereTopic=${encodeURIComponent(JSON.stringify(where))}`;
     const ENDPOINT_GET_ORGS = () => `${BASE_URL_MMM}/orgs`;
 
     const mmm = async (endpoint, method, body) => {
@@ -56,11 +56,14 @@
                 mode: 'cors',
                 cache: 'no-cache',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    // 'NetID': config.student.netid
                 },
                 redirect: 'follow',
                 body: body !== undefined ? JSON.stringify(body) : undefined
             });
+
+            console.log(endpoint, response);
 
             return {
                 status: true,
@@ -81,7 +84,7 @@
 
 <!-- Client-side React -->
 <script type="text/babel">
-    const EventCalendar = ({ events, getEvents, tempEvent, onClickEvent }) => {
+    const EventCalendar = ({ startDate, endDate, events, tempEvent, onChangeView, onClickEvent }) => {
 
         const onEventClick = (info) => {
             const event = info.event;
@@ -111,7 +114,11 @@
             const { view } = info;
             const { activeStart, activeEnd } = view;
 
-            getEvents(activeStart, activeEnd);
+            console.log("test");
+
+            if (startDate != activeStart || endDate != activeEnd) {
+                onChangeView(activeStart, activeEnd);
+            }
         }
 
         const renderEvent = (info) => {
@@ -137,11 +144,12 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
+                nowIndicator: true,
                 events: tempEvent !== undefined ? events.concat(tempEvent) : events,
                 eventRender: renderEvent,
                 eventClick: onEventClick,
                 dateClick: onDayClick,
-                datesRender: onDatesRender
+                // onDatesRender: onDatesRender
             });
 
             calendar.render();
@@ -408,6 +416,9 @@
             }
         ]);
 
+        const [startDate, setStartDate] = React.useState(new Date());
+        const [endDate, setEndDate] = React.useState(new Date());
+
         const [tempEvent, setTempEvent] = React.useState();
         const [editingEvent, setEditingEvent] = React.useState();
 
@@ -449,6 +460,13 @@
             setEditingEvent(undefined);
         };
 
+        const handleChangeView = (activeStart, activeEnd) => {
+            setStartDate(activeStart);
+            setEndDate(activeEnd);
+
+            getEvents(activeStart, activeEnd);
+        };
+
         const deleteEvent = () => {
             if (editingEvent !== undefined) {
                 // TODO
@@ -463,14 +481,12 @@
             console.log("ORGS", response);
             
             if (response.status) {
+                response.data.orgs.sort((a, b) => (a.name > b.name) ? 1 : -1);
+
                 const orgs = [
                     {
                         name: "Select one",
                         kind: ""
-                    },
-                    {
-                        name: "ACM",
-                        kind: "committee"
                     }
                 ].concat(response.data.orgs);
 
@@ -480,23 +496,56 @@
             }
         };
 
+        const initTopics = async () => {
+            const response = await mmm(ENDPOINT_GET_TOPICS({}), "GET");
+
+            console.log()
+        }
+
         const getEvents = async (startDate, endDate) => {
             const response = await mmm(ENDPOINT_GET_EVENTS({
-                orgs: {
-                    _id: "aida"
+                // $or: [
+                //     {
+                //         startTime: { $gte: startDate }
+                //     },
+                //     {
+                //         endTime: { $lte: endDate }
+                //     }
+                // ]
+                name: {
+                    $not: {
+                        $regex: "^smoke-test.*$"
+                    }
                 }
             }), "GET");
 
             console.log("EVENTS", { startDate, endDate }, response);
+
+            if (response.status) {
+                setEvents(response.data.events.map(event => ({
+                    _id: event._id,
+                    title: event.name,
+                    description: event.description,
+                    organization: event.org,
+                    start: event.eventDate.startTime,
+                    end: event.eventDate.endTime,
+                    location: event.location,
+                    creator: event.creator,
+                    color: getColor(event.org.kind)
+                })));
+            } else {
+                alert("Issue connecting to MMM backend");
+            }
         };
 
         React.useEffect(() => {
             initOrgs();
+            getEvents(new Date(), new Date());
         }, []);
 
         return (
             <div className="app-container">
-                <EventCalendar events={events} getEvents={getEvents} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
+                <EventCalendar startDate={startDate} endDate={endDate} events={events} onChangeView={handleChangeView} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
                     <CreateForm student={config.student} orgs={orgs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
