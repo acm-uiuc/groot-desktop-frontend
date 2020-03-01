@@ -37,7 +37,6 @@
             console.log("Clicked event", info);
             
             // TODO: should show event information
-            alert("TODO");
         };
 
         const onDayClick = (info) => {
@@ -60,7 +59,7 @@
                 header: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: 'dayGridMonth,timeGridWeek'
                 },
                 events,
                 eventRender: renderEvent,
@@ -88,7 +87,7 @@
         )
     };
 
-    const TextInput = ({ label, placeholder = label, value, multiline = false, maxLength = multiline ? 256 : 128, onChange }) => {
+    const TextInput = ({ label, placeholder = label, value, multiline = false, maxLength = multiline ? 256 : 64, onChange }) => {
         return (
             <div>
                 <h4 className="input-title">{label}</h4>
