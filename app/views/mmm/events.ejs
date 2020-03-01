@@ -104,16 +104,61 @@
         )
     };
 
-    const TextInput = ({ label, value, multiline = false, maxLength = 128, onChange }) => {
+    const TextInput = ({ label, placeholder = label, value, multiline = false, maxLength = multiline ? 256 : 128, onChange }) => {
         return (
             <div>
                 <h4 className="input-title">{label}</h4>
 
                 {multiline ? (
-                    <textarea className="text-area" maxLength={maxLength} value={value} onChange={onChange} />
+                    <textarea className="text-area" maxLength={maxLength} placeholder={placeholder} value={value} onChange={onChange} />
                 ) : (
-                    <input className="text-input" maxLength={maxLength} type="text" value={value} onChange={onChange} />
+                    <input className="text-input" maxLength={maxLength} placeholder={placeholder}  type="text" value={value} onChange={onChange} />
                 )}
+            </div>
+        );
+    }
+
+    const TagButton = ({ tag, onDelete }) => {
+        return (
+            <div className="tag-container">
+                <span className="tag-text">{tag.text}</span>
+                <span className="tag-delete" onClick={() => onDelete(tag.id)}>×</span>
+            </div>
+        )
+    }
+
+    const Tagger = ({ tags, onChange }) => {
+        const [taggerValue, setTaggerValue] = React.useState("");
+
+        const handleSubmit = React.useCallback(() => {
+            if (taggerValue !== '') {
+                onChange([{
+                    id: tags.length,
+                    text: taggerValue
+                }].concat(tags));
+
+                setTaggerValue("");
+            }
+
+            event.preventDefault();
+        }, [taggerValue]);
+
+        const onDelete = React.useCallback((tagId) => {
+            onChange(tags.filter(tag => tag.id !== tagId));
+        }, [tags]);
+
+        return (
+            <div className="tagger">
+                <form onSubmit={handleSubmit}>
+                    <h4 className="input-title">Tags {taggerValue !== '' && <span className="tagger-enter">(↵ to add)</span>}</h4>
+
+
+                    <div className="tag-list">
+                        <input className="tagger-input" maxLength={35} type="text" placeholder="Tags (ex: machine learning)" value={taggerValue} onChange={(e) => setTaggerValue(e.target.value)} />
+                        
+                        {tags.map((tag, index) => <TagButton key={tag.id} tag={tag} onDelete={onDelete} />)}
+                    </div>
+                </form>
             </div>
         );
     }
@@ -122,6 +167,7 @@
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
+        const [tags, setTags] = React.useState([]);
 
         const handleSubmit = () => {
             event.preventDefault();
@@ -129,15 +175,21 @@
 
         return (
             <div className="form-container">
-                <form className="form" onSubmit={handleSubmit}>
+                <div className="form">
                     <div>
                         <p className="greeting">Hello {student.firstName}</p>
-                        <p className="org-select-title">Choose an Organization: <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} /></p>
+                        <form onSubmit={handleSubmit}>
+                            <p className="org-select-title">Choose an Organization: 
+                                <SigSelector sigs={sigs} value={sigName} onChange={(e) => setSigName(e.target.value)} />
+                            </p>
+                        </form>
                     </div>
 
-                    <TextInput label="Title" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
-                    <TextInput label="Description" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
-                </form>
+                    <TextInput label="Title" placeholder="Title of the event (ex: HackIllinois)" value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} />
+                    <TextInput label="Description" placeholder="Full description of the event (ex: the largest Hackathon of UIUC)" multiline value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} />
+
+                    <Tagger tags={tags} onChange={(newTags) => setTags(newTags)} />
+                </div>
             </div>
         )
     };
@@ -148,7 +200,7 @@
                 title: 'HackIllinois',
                 description: 'welcome to clown town',
                 start: '2020-02-28',
-                end: '2020-03-01'
+                end: '2020-03-02'
             }
         ]);
 
@@ -266,4 +318,44 @@
         resize: vertical;
         min-height: 98px;
     }
+
+    .tagger-enter {
+        font-weight: 700;
+        color: rgb(173, 173, 173);
+    }
+
+    .tagger-input {
+        max-width: 256px;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .tag-container {
+        margin-left: 8px;
+        padding: 6px 6px 6px 6px;
+        display: flex;
+        justify-content: space-between;
+        background-color: rgb(235, 235, 235);
+        border-style: solid;
+        border-color: rgb(212, 212, 212);
+        border-width: 1px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+    }
+
+    .tag-delete {
+        padding-left: 8px;
+        padding-right: 4px;
+        cursor: pointer;
+        font-size: 20px;
+        line-height: 24px;
+        color: rgb(168, 168, 168);
+    }
+    
 </style>
