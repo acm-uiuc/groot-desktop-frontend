@@ -31,7 +31,7 @@
 
 <!-- Client-side React -->
 <script type="text/babel">
-    const EventCalendar = ({ events }) => {
+    const EventCalendar = ({ events, tempEvent }) => {
 
         const onEventClick = (info) => {
             console.log("Clicked event", info);
@@ -54,6 +54,8 @@
         React.useEffect(() => {
             const calendarEl = document.getElementById('calendar-mount');
 
+            calendarEl.innerHTML = "";
+
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['dayGrid', 'timeGrid', 'interaction'],
                 header: {
@@ -61,14 +63,14 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
-                events,
+                events: tempEvent ? events.concat(tempEvent) : events,
                 eventRender: renderEvent,
                 eventClick: onEventClick,
                 dateClick: onDayClick
             });
 
             calendar.render();
-        }, [events]);
+        }, [events, tempEvent]);
 
         return (
             <div className="calendar-wrapper">
@@ -168,7 +170,7 @@
         );
     };
 
-    const CreateForm = ({ student, sigs, onSubmit }) => {
+    const CreateForm = ({ student, sigs, onChange, onSubmit }) => {
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
@@ -191,6 +193,19 @@
                 topics: eventTags,
                 start: new Date(eventStart),
                 end: new Date(eventEnd)
+            });
+        }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
+
+        React.useEffect(() => {
+            onChange({
+                creator: student.netid,
+                organization: sigName,
+                title: eventTitle,
+                description: eventDesc,
+                location: eventLocation,
+                topics: eventTags,
+                start: eventStart,
+                end: eventEnd
             });
         }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
@@ -218,7 +233,7 @@
 
                     <Tagger tags={eventTags} onChange={(newTags) => setEventTags(newTags)} />
 
-                    <button className="button" onClick={onClickSubmit}>Submit</button>
+                    <button className="button form-submit" onClick={onClickSubmit}>Submit</button>
                 </div>
             </div>
         )
@@ -236,6 +251,8 @@
             }
         ]);
 
+        const [tempEvent, setTempEvent] = React.useState();
+
         const createEvent = (eventData) => {
             const {
                 creator,
@@ -251,14 +268,25 @@
             console.log(eventData);
         }
 
+        const handleChange = (newTempEvent) => {
+            if (newTempEvent.title !== '') {
+                setTempEvent({
+                    ...newTempEvent,
+                    color: 'orange'
+                });
+            } else {
+                setTempEvent(null);
+            }
+        }
+
         React.useEffect(() => {
             // TODO: API calls
         }, []);
 
         return (
             <div className="app-container">
-                <EventCalendar events={events} />
-                <CreateForm student={config.student} sigs={config.sigs} onSubmit={createEvent} />
+                <EventCalendar events={events} tempEvent={tempEvent} />
+                <CreateForm student={config.student} sigs={config.sigs} onChange={handleChange} onSubmit={createEvent} />
             </div>
         )
     };
@@ -274,7 +302,7 @@
     .app-container {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: wrap-reverse;
         margin-bottom: 50px;
     }
 
@@ -421,5 +449,9 @@
         .date-container div:nth-child(2) {
             margin-left: 20px;
         }
+    }
+
+    .form-submit {
+        margin-bottom: 40px;
     }
 </style>
