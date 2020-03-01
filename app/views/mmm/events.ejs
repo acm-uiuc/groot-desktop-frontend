@@ -156,7 +156,7 @@
         return (
             <div className="tagger">
                 <form onSubmit={handleSubmit}>
-                    <h4 className="input-title">Tags {taggerValue !== '' && <span className="tagger-enter">(↵ to add)</span>}</h4>
+                    <h4 className="input-title">Topics {taggerValue !== '' && <span className="tagger-enter">(↵ to add)</span>}</h4>
 
 
                     <div className="tag-list">
@@ -169,18 +169,31 @@
         );
     };
 
-    const CreateForm = ({ student, sigs }) => {
+    const CreateForm = ({ student, sigs, onSubmit }) => {
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
         const [eventDesc, setEventDesc] = React.useState("");
         const [eventLocation, setEventLocation] = React.useState("");
-        const [tags, setTags] = React.useState([]);
+        const [eventTags, setEventTags] = React.useState([]);
         const [eventStart, setEventStart] = React.useState(new Date());
         const [eventEnd, setEventEnd] = React.useState(new Date());
 
         const handleSubmit = () => {
             event.preventDefault();
         };
+
+        const onClickSubmit = React.useCallback(() => {
+            onSubmit({
+                creator: student.netid,
+                organization: sigName,
+                title: eventTitle,
+                description: eventDesc,
+                location: eventLocation,
+                topics: eventTags,
+                start: new Date(eventStart),
+                end: new Date(eventEnd)
+            });
+        }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         return (
             <div className="form-container">
@@ -204,7 +217,9 @@
                         <DatetimePicker label="End" value={eventEnd} onChange={(newDatetime) => setEventEnd(newDatetime)} />
                     </div>
 
-                    <Tagger tags={tags} onChange={(newTags) => setTags(newTags)} />
+                    <Tagger tags={eventTags} onChange={(newTags) => setEventTags(newTags)} />
+
+                    <button className="button" onClick={onClickSubmit}>Submit</button>
                 </div>
             </div>
         )
@@ -218,9 +233,24 @@
                 location: "University of Illinois at Urbana Champaign",
                 start: '2020-02-28 16:00',
                 end: '2020-03-01 10:00',
-                tags: ["hackathon"]
+                topics: ["hackathon"]
             }
         ]);
+
+        const createEvent = (eventData) => {
+            const {
+                creator,
+                organization,
+                title,
+                description,
+                location,
+                tags,
+                start,
+                end
+            } = eventData;
+
+            console.log(eventData);
+        }
 
         React.useEffect(() => {
             // TODO: API calls
@@ -229,7 +259,7 @@
         return (
             <div className="app-container">
                 <EventCalendar events={events} />
-                <CreateForm student={config.student} sigs={config.sigs} />
+                <CreateForm student={config.student} sigs={config.sigs} onSubmit={createEvent} />
             </div>
         )
     };
@@ -327,6 +357,10 @@
         text-transform: uppercase;
     }
 
+    .blame {
+        color: rgb(148, 31, 31);
+    }
+
     .text-input {}
 
     .text-area {
@@ -381,10 +415,12 @@
         display: flex;
         flex-direction: row;
         justify-content: start;
+        flex-wrap: wrap;
     }
 
-    .date-container div:nth-child(2) {
-        margin-left: 20px;
+    @media (min-width: 552px) {
+        .date-container div:nth-child(2) {
+            margin-left: 20px;
+        }
     }
-    
 </style>
