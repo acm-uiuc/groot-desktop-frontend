@@ -46,8 +46,10 @@
         };
 
         const renderEvent = (info) => {
+            const { organization, location, description } = info.event.extendedProps;
+
             tippy(info.el, {
-                content: info.event.extendedProps.description
+                content: `${organization}: ${description}<br />@ ${location}`
             });
         }
 
@@ -242,6 +244,7 @@
     const App = ({ config }) => {
         const [events, setEvents] = React.useState([
             {
+                organization: 'ACM',
                 title: 'HackIllinois',
                 description: 'University of Illinois\' Open Source hackathon',
                 location: "University of Illinois at Urbana Champaign",
