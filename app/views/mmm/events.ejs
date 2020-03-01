@@ -294,7 +294,7 @@
                             {
                                 editingEvent !== undefined ? (
                                     <React.Fragment>
-                                        <span className="underline">Editing</span><span>{` Event #${editingEvent._id}`}</span>
+                                        <span className="underline">Editing</span><span> Event </span><span className="acm-font">{`{${editingEvent.title}}`}</span>
                                     </React.Fragment>
                                 ) : (
                                     <React.Fragment>
@@ -599,6 +599,10 @@
 
     .underline {
         text-decoration: underline;
+    }
+
+    .acm-font {
+        font-family: "Roboto Mono", monospace;
     }
 </style>
 
