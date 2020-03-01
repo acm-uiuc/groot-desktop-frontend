@@ -226,7 +226,7 @@
             if (taggerValue !== '') {
                 onChange([{
                     id: tags.length,
-                    text: taggerValue
+                    text: taggerValue.toLowerCase()
                 }].concat(tags));
 
                 setTaggerValue("");
@@ -280,6 +280,7 @@
 
         const onClickSubmit = React.useCallback(() => {
             onSubmit({
+                _id: editingEvent ? editingEvent._id : undefined,
                 creator: student.netid,
                 organization: {
                     name: orgName
@@ -291,7 +292,7 @@
                 start: new Date(eventStart),
                 end: new Date(eventEnd)
             });
-        }, [orgName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
+        }, [editingEvent, orgName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         const onClickCancel = React.useCallback(() => {
             clear();
@@ -300,8 +301,8 @@
 
         const onClickDelete = React.useCallback(() => {
             clear();
-            onDelete();
-        }, []);
+            onDelete(editingEvent);
+        }, [editingEvent]);
 
         React.useEffect(() => {
             if (!editingEvent) {
@@ -376,15 +377,19 @@
                     <Tagger tags={eventTags} onChange={(newTags) => setEventTags(newTags)} />
 
                     <div className="button-container">
-                        <button className="button form-submit" onClick={onClickSubmit}>Submit</button>
-
                         {
-                            (editingEvent !== undefined) && (
-                                <button className="form-cancel" onClick={onClickDelete}>Delete</button>
+                            (editingEvent !== undefined) ? (
+                                <React.Fragment>
+                                    <button className="button form-submit" onClick={onClickSubmit}>Update</button>
+                                    <button className="form-cancel" onClick={onClickDelete}>Delete</button>
+                                    <button className="form-cancel" onClick={onClickCancel}>Cancel</button>
+                                </React.Fragment>
+                            ) : (
+                                <button className="button form-submit" onClick={onClickSubmit}>Create</button>
                             )
                         }
                         {
-                            (editingEvent !== undefined || tempEvent !== undefined) && (
+                            (tempEvent !== undefined) && (
                                 <button className="form-cancel" onClick={onClickCancel}>Cancel</button>
                             )
                         }
@@ -399,22 +404,7 @@
         const [blame, setBlame] = React.useState();
 
         const [orgs, setOrgs] = React.useState([]);
-        const [events, setEvents] = React.useState([
-            {
-                _id: 0,
-                organization: {
-                    name: 'ACM',
-                    kind: 'committee'
-                },
-                title: 'HackIllinois',
-                description: 'University of Illinois\' Open Source hackathon',
-                location: "University of Illinois at Urbana Champaign",
-                start: '2020-02-28 16:00',
-                end: '2020-03-01 10:00',
-                topics: ["hackathon"],
-                color: getColor('committee')
-            }
-        ]);
+        const [events, setEvents] = React.useState([]);
 
         const [startDate, setStartDate] = React.useState(new Date());
         const [endDate, setEndDate] = React.useState(new Date());
@@ -422,26 +412,10 @@
         const [tempEvent, setTempEvent] = React.useState();
         const [editingEvent, setEditingEvent] = React.useState();
 
-        const createEvent = (eventData) => {
-            const {
-                creator,
-                organization,
-                title,
-                description,
-                location,
-                tags,
-                start,
-                end
-            } = eventData;
-
-            console.log(eventData);
-        }
-
-        const handleClickEvent = (event) => {
-            console.log(event);
+        const handleClickEvent = React.useCallback((event) => {
             setEditingEvent(event);
             setTempEvent(undefined);
-        };
+        }, []);
 
         const handleChange = (newTempEvent) => {
             if (newTempEvent.title !== '') {
@@ -467,12 +441,117 @@
             getEvents(activeStart, activeEnd);
         };
 
-        const deleteEvent = () => {
-            if (editingEvent !== undefined) {
-                // TODO
+        const lookupOrg = React.useCallback((orgName) => {
+            for (const org of orgs) {
+                if (org.name === orgName) {
+                    return org._id;
+                }
             }
 
-            setEditingEvent(undefined);
+            return "";
+        }, [orgs]);
+
+        const createEvent = async (eventData) => {
+            const {
+                creator,
+                organization,
+                title,
+                description,
+                location,
+                topics,
+                start,
+                end
+            } = eventData;
+
+            const response = await mmm(ENDPOINT_POST_EVENTS(), "POST", {
+                event: {
+                    org: {
+                        _id: lookupOrg(organization.name)
+                    },
+                    name: title,
+                    topics,
+                    location,
+                    eventDate: {
+                        startTime: start,
+                        endTime: end
+                    },
+                    description,
+                    creator: config.student.netid
+                }
+            });
+
+            console.log("POST", response);
+
+            if (response.status) {
+                getEvents(new Date(), new Date());
+                setTempEvent(undefined);
+            } else {
+                alert("Issue connecting to MMM backend");
+            }
+        }
+
+        const updateEvent = async (eventData) => {
+            const {
+                _id,
+                creator,
+                organization,
+                title,
+                description,
+                location,
+                topics,
+                start,
+                end
+            } = eventData;
+
+            const response = await mmm(ENDPOINT_PATCH_EVENTS(_id), "PATCH", {
+                event: {
+                    org: {
+                        _id: lookupOrg(organization.name)
+                    },
+                    name: title,
+                    topics,
+                    location,
+                    eventDate: {
+                        startTime: start,
+                        endTime: end
+                    },
+                    description,
+                    creator: config.student.netid
+                }
+            });
+
+            console.log("PATCH", response);
+
+            if (response.status) {
+                getEvents(new Date(), new Date());
+                setEditingEvent(undefined);
+                setTempEvent(undefined);
+            } else {
+                alert("Issue connecting to MMM backend");
+            }
+        }
+
+        const handleSubmit = (eventData) => {
+            if (eventData._id) {
+                updateEvent(eventData);
+            } else {
+                createEvent(eventData);
+            }
+        }
+
+        const deleteEvent = async (event) => {
+            if (event) {
+                const response = await mmm(ENDPOINT_DELETE_EVENTS(event._id), "DELETE");
+
+                console.log("DELETE", response);
+
+                if (response.status) {
+                    getEvents(new Date(), new Date());
+                    setEditingEvent(undefined);
+                } else {
+                    alert("Issue connecting to MMM backend");
+                }
+            }
         };
 
         const initOrgs = async () => {
@@ -486,7 +565,8 @@
                 const orgs = [
                     {
                         name: "Select one",
-                        kind: ""
+                        kind: "",
+                        _id: ""
                     }
                 ].concat(response.data.orgs);
 
@@ -549,7 +629,7 @@
                 <EventCalendar startDate={startDate} endDate={endDate} events={events} onChangeView={handleChangeView} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
-                    <CreateForm student={config.student} orgs={orgs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={createEvent} />
+                    <CreateForm student={config.student} orgs={orgs} tempEvent={tempEvent} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onDelete={deleteEvent} onSubmit={handleSubmit} />
                 )}
             </div>
         )
