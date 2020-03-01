@@ -26,6 +26,21 @@
         name: "Select one"
     });
 
+    const getColor = (type) => {
+        switch (type) {
+            case "sig":
+                return "default";
+            case "company":
+                return "purple";
+            case "committee":
+                return "orange";
+            case "general":
+                return "#378006";
+            default:
+                return "#C32148";
+        }
+    }
+
     console.log(config);
 </script>
 
@@ -49,7 +64,7 @@
             const { organization, location, description } = info.event.extendedProps;
 
             tippy(info.el, {
-                content: `${organization}: ${description}<br />@ ${location}`
+                content: `${organization.name}: ${description}<br />@ ${location}`
             });
         }
 
@@ -244,13 +259,17 @@
     const App = ({ config }) => {
         const [events, setEvents] = React.useState([
             {
-                organization: 'ACM',
+                organization: {
+                    name: 'ACM',
+                    kind: 'committee'
+                },
                 title: 'HackIllinois',
                 description: 'University of Illinois\' Open Source hackathon',
                 location: "University of Illinois at Urbana Champaign",
                 start: '2020-02-28 16:00',
                 end: '2020-03-01 10:00',
-                topics: ["hackathon"]
+                topics: ["hackathon"],
+                color: getColor('committee')
             }
         ]);
 
@@ -275,7 +294,7 @@
             if (newTempEvent.title !== '') {
                 setTempEvent({
                     ...newTempEvent,
-                    color: 'orange'
+                    color: 'gray'
                 });
             } else {
                 setTempEvent(null);
