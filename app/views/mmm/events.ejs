@@ -125,7 +125,7 @@
             const { organization, location, description } = info.event.extendedProps;
 
             const line1 = `${organization.name}: ${description}`;
-            const line2 = location ? `<br />${location}` : '';
+            const line2 = location ? `<br />@ ${location}` : '';
 
             tippy(info.el, {
                 content: line1 + line2
@@ -314,7 +314,7 @@
             setEventLocation(editingEvent.location);
             setEventTags(editingEvent.topics.map((tag, index) => ({
                 id: index,
-                text: tag
+                text: tag._id
             })));
             setEventStart(editingEvent.start);
             setEventEnd(editingEvent.end);
@@ -531,6 +531,7 @@
                     end: event.eventDate.endTime,
                     location: event.location,
                     creator: event.creator,
+                    topics: event.topics,
                     color: getColor(event.org.kind)
                 })));
             } else {
