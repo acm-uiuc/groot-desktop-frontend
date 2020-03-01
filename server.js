@@ -241,22 +241,11 @@ app.get('/corporate/careerweek/2017', function(req, res) {
 });
 
 app.get('/events', function(req, res) {
-  const DEV_REQ = {
-    session: {
-      isStudent: true,
-      student: {
-        netid: 'jjt4',
-        firstName: 'Jeff',
-        lastName: 'Taylor-Chang'
-      }
-    }
-  };
-
-  const authenticated = DEV_REQ !== undefined || utils.isAuthenticated(req);
+  const authenticated = utils.isAuthenticated(req);
 
   res.render('mmm/events.ejs', {
     authenticated,
-    session: DEV_REQ.session || req.session
+    session: req.session
   });
 });
 
