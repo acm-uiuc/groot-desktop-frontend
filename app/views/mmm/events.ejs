@@ -26,6 +26,10 @@
     };
 
     config.sigs.unshift({
+        name: "ACM"
+    });
+
+    config.sigs.unshift({
         name: "Select one"
     });
 
@@ -98,7 +102,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek'
                 },
-                events: tempEvent ? events.concat(tempEvent) : events,
+                events: tempEvent !== undefined ? events.concat(tempEvent) : events,
                 eventRender: renderEvent,
                 eventClick: onEventClick,
                 dateClick: onDayClick
@@ -207,7 +211,7 @@
         );
     };
 
-    const CreateForm = ({ student, sigs, onChange, onSubmit }) => {
+    const CreateForm = ({ student, sigs, editingEvent, onChange, onCancel, onSubmit }) => {
 
         const [sigName, setSigName] = React.useState("Select one");
         const [eventTitle, setEventTitle] = React.useState("");
@@ -228,13 +232,46 @@
                 title: eventTitle,
                 description: eventDesc,
                 location: eventLocation,
-                topics: eventTags,
+                topics: eventTags.map(tagObj => tagObj.text),
                 start: new Date(eventStart),
                 end: new Date(eventEnd)
             });
         }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
+        const onClickCancel = React.useCallback(() => {
+            setSigName("Select one");
+            setEventTitle("");
+            setEventDesc("");
+            setEventLocation("");
+            setEventTags([]);
+            setEventStart(new Date());
+            setEventEnd(new Date());
+
+            onCancel();
+        }, []);
+
         React.useEffect(() => {
+            if (!editingEvent) {
+                return;
+            }
+
+            setSigName(editingEvent.organization.name);
+            setEventTitle(editingEvent.title);
+            setEventDesc(editingEvent.description);
+            setEventLocation(editingEvent.location);
+            setEventTags(editingEvent.topics.map((tag, index) => ({
+                id: index,
+                text: tag
+            })));
+            setEventStart(editingEvent.start);
+            setEventEnd(editingEvent.end);
+        }, [editingEvent]);
+
+        React.useEffect(() => {
+            if (editingEvent) {
+                return;
+            }
+
             onChange({
                 creator: student.netid,
                 organization: {
@@ -243,18 +280,26 @@
                 title: eventTitle,
                 description: eventDesc,
                 location: eventLocation,
-                topics: eventTags,
+                topics: eventTags.map(tagObj => tagObj.text),
                 start: eventStart,
                 end: eventEnd
             });
-        }, [sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
+        }, [editingEvent, sigName, eventTitle, eventDesc, eventLocation, eventTags, eventStart, eventEnd]);
 
         return (
             <div className="form-container">
                 <div className="form">
                     <div>
                         <p className="greeting">Hello {student.firstName}</p>
-                        <p className="greeting-title">Let's Create an Event</p>
+                        <p className="greeting-title">
+                            {
+                                editingEvent !== undefined ? (
+                                    `Editing Event #${editingEvent._id}`
+                                ) : (
+                                    "Let's Create an Event"
+                                )
+                            }
+                        </p>
                     </div>
 
                     <form onSubmit={handleSubmit}>
@@ -273,7 +318,13 @@
 
                     <Tagger tags={eventTags} onChange={(newTags) => setEventTags(newTags)} />
 
-                    <button className="button form-submit" onClick={onClickSubmit}>Submit</button>
+                    <div className="button-container">
+                        <button className="button form-submit" onClick={onClickSubmit}>Submit</button>
+
+                        {
+                            editingEvent !== undefined && <button className="form-cancel" onClick={onClickCancel}>Cancel</button>
+                        }
+                    </div>
                 </div>
             </div>
         )
@@ -301,6 +352,7 @@
         ]);
 
         const [tempEvent, setTempEvent] = React.useState();
+        const [editingEvent, setEditingEvent] = React.useState();
 
         const createEvent = (eventData) => {
             const {
@@ -321,6 +373,7 @@
 
         const handleClickEvent = (event) => {
             console.log(event);
+            setEditingEvent(event);
         };
 
         const handleChange = (newTempEvent) => {
@@ -331,8 +384,13 @@
                     color: 'gray'
                 });
             } else {
-                setTempEvent(null);
+                setTempEvent(undefined);
             }
+        };
+
+        const handleCancel = () => {
+            setTempEvent(undefined);
+            setEditingEvent(undefined);
         };
 
         React.useEffect(() => {
@@ -344,7 +402,7 @@
                 <EventCalendar events={events} tempEvent={tempEvent} onClickEvent={handleClickEvent} />
                 
                 {config.authenticated && (
-                    <CreateForm student={config.student} sigs={config.sigs} onChange={handleChange} onSubmit={createEvent} />
+                    <CreateForm student={config.student} sigs={config.sigs} editingEvent={editingEvent} onChange={handleChange} onCancel={handleCancel} onSubmit={createEvent} />
                 )}
             </div>
         )
@@ -515,8 +573,24 @@
         }
     }
 
-    .form-submit {
+    .button-container {
+        display: flex;
+        align-items: center;
         margin-bottom: 40px;
+    }
+
+    .form-submit {
+    }
+
+    .form-cancel {
+        margin-left: 20px;
+        padding: 10px 10px 10px 10px;
+        cursor: pointer;
+        font-family: "Roboto Mono", monospace;
+    }
+
+    .form-cancel:hover {
+        text-decoration: underline;
     }
 </style>
 
