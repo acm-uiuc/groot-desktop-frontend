@@ -200,7 +200,6 @@
                 <form onSubmit={handleSubmit}>
                     <h4 className="input-title">Topics {taggerValue !== '' && <span className="tagger-enter">(↵ to add)</span>}</h4>
 
-
                     <div className="tag-list">
                         <input className="tagger-input" maxLength={35} type="text" placeholder="Tags (ex: machine learning)" value={taggerValue} onChange={(e) => setTaggerValue(e.target.value)} />
                         
@@ -294,9 +293,13 @@
                         <p className="greeting-title">
                             {
                                 editingEvent !== undefined ? (
-                                    `Editing Event #${editingEvent._id}`
+                                    <React.Fragment>
+                                        <span className="underline">Editing</span><span>{` Event #${editingEvent._id}`}</span>
+                                    </React.Fragment>
                                 ) : (
-                                    "Let's Create an Event"
+                                    <React.Fragment>
+                                        <span>Let's </span><span className="underline">Create</span><span> an Event</span>
+                                    </React.Fragment>
                                 )
                             }
                         </p>
@@ -591,6 +594,10 @@
     }
 
     .form-cancel:hover {
+        text-decoration: underline;
+    }
+
+    .underline {
         text-decoration: underline;
     }
 </style>
