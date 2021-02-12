@@ -35,16 +35,17 @@ this license in a file with the distribution.
       </tr>
     </table>
     <form action="/credits/purchaseMembership" method="POST">
-    <script
-      src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-      data-key='<%= stripePublishableKey %>'
-      data-amount="4150"
-      data-name="ACM @ Illinois"
-      data-description="ACM Membership"
-      data-image="http://acm.illinois.edu/images/acm-logo-flat-og.png"
-      data-locale="auto">
-    </script>
-  </form>
+      <input type="hidden" name="netid" value="<%= purchaserNetid %>"/>
+      <script
+        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key='<%= stripePublishableKey %>'
+        data-amount="4150"
+        data-name="ACM @ Illinois"
+        data-description="ACM Membership"
+        data-image="https://acm.illinois.edu/images/acm-logo-flat-og.png"
+        data-locale="auto">
+      </script>
+    </form>
   </div>
 </div>
 

@@ -14,19 +14,22 @@ const STRIPE_PUBLISHABLE_KEY = process.env.STRIPE_PUBLISHABLE_KEY || "TEMP_STRIN
 const request = require('request');
 const moment = require('moment');
 
-function makeUserPaid(req, res, nextSteps) {
+function makeUserPaid(req, res, netid, nextSteps) {
   request({
-    method:"GET",
-    url: `${SERVICES_URL}/users/${req.session.student.netid}/paid`,
+    method:"PUT",
+    url: `${SERVICES_URL}/users/${netid}/paid`,
     headers: {
-      "Authorization": GROOT_ACCESS_TOKEN
-    }
-  }, function(error) {
-    if(error) {
+      "Authorization": GROOT_ACCESS_TOKEN,
+      "Accept": "application/json"
+    },
+    json: true,
+    body: {}
+  }, function(error, response) {
+    if(error || response.statusCode != 200) {
       req.flash('error', "Unable to make user a paid user. Talk to someone in ACM Admin.");
-      return req.redirect("/");
+      return res.redirect("/");
     }
-    nextSteps(req, res);
+    return nextSteps(req, res);
   });
 }
 
@@ -185,19 +188,46 @@ module.exports = function(app){
     });
   });
   app.get('/credits/purchaseMembership', function(req, res) {
-    // TODO: Redirect if not a 'pre-member'
-    res.render('credits/credits_purchase_membership', {
-      authenticated: true,
-      stripePublishableKey: STRIPE_PUBLISHABLE_KEY
+    var netid = req.query.netid;
+    if(!netid) {
+      req.flash('error', "Invalid membership purchase link.");
+      return res.redirect('/');
+    }
+
+    request({
+      url: `${SERVICES_URL}/users/${netid}/is_member`,
+      method: "GET",
+      json: true,
+      headers: {
+        "Authorization": GROOT_ACCESS_TOKEN
+      }
+    }, function(error, response, body) {
+      if(response.statusCode == 404) {
+        req.flash('error', "Invalid netid.");
+        return res.redirect('/'); 
+      }
+      else if (response.statusCode != 200) {
+        return res.sendStatus(500);
+      }
+      else if (body.data.is_member) {
+        req.flash('error', "You're already a paid member!");
+        return res.redirect('/');
+      }
+
+      return res.render('credits/credits_purchase_membership', {
+        authenticated: false,
+        stripePublishableKey: STRIPE_PUBLISHABLE_KEY,
+        purchaserNetid: netid
+      });
     });
   });
-  app.post('/credits/purchaseMembership', function(req, res) {
-    // TODO: Redirect if not a 'pre-member'
 
+  app.post('/credits/purchaseMembership', function(req, res) {
     // Sanity checks
-    if(!req.body.stripeToken) {
+    if(!req.body.stripeToken || !req.body.netid) {
       return res.sendStatus(500);
     }
+
     // Send payment details to groot-credits-service for processing
     request({
       url: `${SERVICES_URL}/payment`,
@@ -207,10 +237,10 @@ module.exports = function(app){
       },
       json: true,
       body: {
-        netid: req.session.student.netid,
+        netid: req.body.netid,
         amount: 4150, // Membership fee + Stripe processing fee
         token: req.body.stripeToken,
-        description: "Membership purchase",
+        description: "ACM Membership Purchase",
         adjust_balance: false // Don't give the user credit for this transaction
       }
     }, function(err, response, body){
@@ -218,14 +248,16 @@ module.exports = function(app){
         return res.status(500).send(err);
       }
       if(response.statusCode != 200 || !body.successful){
-        req.flash('error', "Something went wrong with your payment. Talk to someone in ACM Admin.");
+        req.flash('error', "Something went wrong with your payment. Please talk to someone in ACM Admin.");
         return res.redirect('/');
       }
       else {
         // Make user a paid user
-        makeUserPaid(req, res, function() {
+        makeUserPaid(req, res, req.body.netid, function() {
           req.flash('success', "Success! Your membership fee is being processed.");
-          res.redirect('/intranet');
+          return res.render('credits/credits_membership_success', {
+            authenticated: false
+          });
         });
       }
     });
